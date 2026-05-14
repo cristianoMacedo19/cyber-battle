@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Battle — Fase 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff2244;--blue:#00aaff;--green:#00ff88;--amber:#ffaa00;--dark:#080c14;--panel:#0d1526;--border:#1a2a4a;--text:#c8d8f0;--mono:'Share Tech Mono',monospace;--orb:'Orbitron',sans-serif;--raj:'Rajdhani',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--text);font-family:var(--raj);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,170,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,170,255,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:20px;}
+.header{text-align:center;padding:28px 0 18px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.logo{font-family:var(--orb);font-size:1.8rem;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.subtitle{font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;letter-spacing:3px;margin-top:5px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.panel.blue-accent::before{background:var(--blue);}
+.panel.green-accent::before{background:var(--green);}
+.panel.red-accent::before{background:var(--red);}
+.panel.amber-accent::before{background:var(--amber);}
+.panel-title{font-family:var(--orb);font-size:0.7rem;letter-spacing:3px;color:#4a6a8a;margin-bottom:18px;}
+label{font-family:var(--mono);font-size:0.75rem;color:#4a8aaa;display:block;margin-bottom:5px;}
+input[type=text],input[type=password]{width:100%;background:#060c18;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.95rem;padding:11px 14px;border-radius:4px;outline:none;transition:border-color 0.2s;margin-bottom:14px;}
+input[type=text]:focus,input[type=password]:focus{border-color:var(--blue);}
+input::placeholder{color:#2a4a6a;}
+.team-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px;margin-bottom:14px;}
+.team-btn{padding:14px;border-radius:6px;cursor:pointer;text-align:center;transition:all 0.2s;font-family:var(--orb);font-size:0.75rem;letter-spacing:2px;color:#4a6a8a;border:2px solid var(--border);background:#060c18;}
+.team-btn:hover{border-color:#2a4a6a;}
+.team-btn.selected-red{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,34,68,0.1)!important;}
+.team-btn.selected-blue{border-color:var(--blue)!important;color:var(--blue)!important;background:rgba(0,170,255,0.1)!important;}
+.team-icon{font-size:1.6rem;display:block;margin-bottom:5px;}
+.btn-primary{width:100%;padding:13px;background:transparent;border:2px solid var(--blue);color:var(--blue);font-family:var(--orb);font-size:0.82rem;letter-spacing:3px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.btn-primary:hover{background:rgba(0,170,255,0.15);}
+.btn-primary:disabled{opacity:0.3;cursor:not-allowed;}
+.msg{padding:13px 15px;border-radius:6px;font-family:var(--mono);font-size:0.8rem;line-height:1.6;border:1px solid;margin-bottom:12px;display:none;}
+.msg.error{border-color:#4a2a2a;background:rgba(255,34,68,0.05);color:var(--red);}
+.msg.info{border-color:#2a3a4a;background:rgba(0,170,255,0.05);color:var(--blue);}
+.msg.success{border-color:#2a4a2a;background:rgba(0,255,136,0.05);color:var(--green);}
+.msg.warn{border-color:#4a3a1a;background:rgba(255,170,0,0.05);color:var(--amber);}
+.pulse{animation:pulse 1.5s infinite;display:block;font-size:2.8rem;margin-bottom:14px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.wt-title{font-family:var(--orb);font-size:0.95rem;letter-spacing:3px;color:var(--blue);margin-bottom:6px;}
+.wt-sub{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;}
+.badge{display:inline-block;padding:4px 12px;border-radius:4px;font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;margin-bottom:14px;}
+.badge.red{background:rgba(255,34,68,0.15);color:var(--red);border:1px solid rgba(255,34,68,0.3);}
+.badge.blue{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
+.lab-link-box{background:#060c18;border:1px solid rgba(0,255,136,0.3);border-radius:6px;padding:16px;margin-top:14px;}
+.lab-link-title{font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--green);margin-bottom:8px;}
+.lab-link-desc{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;margin-bottom:10px;line-height:1.6;}
+.lab-link-url{font-family:var(--mono);font-size:0.8rem;color:var(--blue);word-break:break-all;text-decoration:underline;cursor:pointer;}
+.lab-link-btn{width:100%;margin-top:12px;padding:11px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:var(--orb);font-size:0.78rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.lab-link-btn:hover{background:rgba(0,255,136,0.1);}
+.reauth-box{background:#060c18;border:1px solid rgba(255,170,0,0.3);border-radius:6px;padding:16px;margin-top:14px;}
+.reauth-title{font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--amber);margin-bottom:8px;}
+.reauth-desc{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;line-height:1.6;}
+.score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:9px 14px;background:#060c18;border:1px solid var(--border);border-radius:6px;}
+.score-item{text-align:center;}
+.score-lbl{font-family:var(--mono);font-size:0.62rem;color:#4a6a8a;letter-spacing:2px;}
+.score-val{font-family:var(--orb);font-size:1.2rem;font-weight:700;}
+.score-val.red{color:var(--red);}
+.score-val.blue{color:var(--blue);}
+.score-sep{font-family:var(--mono);color:#2a4a6a;}
+.timer-wrap{text-align:center;margin-bottom:18px;}
+.timer-circle{width:88px;height:88px;border-radius:50%;border:3px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:var(--orb);font-size:1.6rem;font-weight:700;transition:all 0.3s;}
+.timer-circle.urgent{border-color:var(--red);color:var(--red);animation:blink 0.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.6}}
+.timer-lbl{font-family:var(--mono);font-size:0.68rem;color:#4a6a8a;letter-spacing:2px;}
+.q-counter{font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;margin-bottom:8px;letter-spacing:2px;}
+.q-text{font-size:1.05rem;font-weight:600;line-height:1.5;margin-bottom:18px;color:#e0eeff;}
+.options{display:grid;gap:9px;}
+.opt-btn{padding:13px 16px;background:#060c18;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--raj);font-size:0.95rem;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:11px;}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:rgba(0,170,255,0.06);}
+.opt-btn:disabled{cursor:not-allowed;opacity:0.5;}
+.opt-btn.selected{border-color:var(--blue);background:rgba(0,170,255,0.12);color:var(--blue);}
+.opt-btn.correct{border-color:var(--green);background:rgba(0,255,136,0.1);color:var(--green);}
+.opt-btn.wrong{border-color:var(--red);background:rgba(255,34,68,0.1);color:var(--red);}
+.opt-letter{font-family:var(--orb);font-size:0.72rem;width:22px;height:22px;border:1px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-send{width:100%;margin-top:14px;padding:13px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:var(--orb);font-size:0.82rem;letter-spacing:3px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.btn-send:hover:not(:disabled){background:rgba(0,255,136,0.1);}
+.btn-send:disabled{opacity:0.3;cursor:not-allowed;}
+.hint-box{margin-top:12px;padding:9px 13px;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.2);border-radius:4px;font-family:var(--mono);font-size:0.75rem;color:#4a8aaa;display:none;line-height:1.5;}
+.btn-hint{margin-top:9px;padding:5px 13px;background:transparent;border:1px solid #1a3a5a;color:#4a6a8a;font-family:var(--mono);font-size:0.72rem;cursor:pointer;border-radius:4px;}
+.btn-hint:hover{border-color:var(--blue);color:var(--blue);}
+#result-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,16,0.93);z-index:100;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
+.res-icon{font-size:3.5rem;margin-bottom:12px;}
+.res-title{font-family:var(--orb);font-size:1.3rem;letter-spacing:4px;margin-bottom:8px;}
+.res-title.red{color:var(--red);}
+.res-title.blue{color:var(--blue);}
+.res-title.draw{color:var(--green);}
+.res-sub{font-family:var(--mono);font-size:0.8rem;color:#4a6a8a;margin-bottom:5px;}
+.res-winner{font-family:var(--orb);font-size:1rem;letter-spacing:3px;margin-top:10px;}
+.res-winner.red{color:var(--red);}
+.res-winner.blue{color:var(--blue);}
+.res-winner.draw{color:var(--green);}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:14px;}
+.prog-fill{height:100%;border-radius:2px;background:var(--blue);transition:width 0.5s;}
+#end-screen{display:none;text-align:center;padding:30px 0;}
+.end-title{font-family:var(--orb);font-size:1.4rem;letter-spacing:4px;margin-bottom:14px;}
+.final-scores{display:flex;justify-content:center;gap:36px;margin:18px 0;}
+.fs-item{text-align:center;}
+.fs-val{font-family:var(--orb);font-size:2.2rem;font-weight:700;}
+.fs-val.red{color:var(--red);}
+.fs-val.blue{color:var(--blue);}
+.voted-msg{text-align:center;padding:18px;font-family:var(--mono);font-size:0.82rem;color:var(--green);border:1px solid rgba(0,255,136,0.2);border-radius:6px;background:rgba(0,255,136,0.05);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">CYBER BATTLE</div>
+    <div class="subtitle">// FASE 01 — QUIZ DE SEGURANÇA //</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="screen-login">
+    <div class="panel blue-accent">
+      <div class="panel-title">> identificação do agente</div>
+      <label>CÓDIGO DA TURMA</label>
+      <input type="password" id="inp-code" placeholder="Digite o código fornecido pelo professor">
+      <label>SEU NOME COMPLETO</label>
+      <input type="text" id="inp-name" placeholder="Digite seu nome completo" maxlength="60">
+      <div style="margin-bottom:5px;"><label>SUA EQUIPE</label></div>
+      <div class="team-select">
+        <button class="team-btn" id="btn-red" onclick="selectTeam('red')">
+          <span class="team-icon">🔴</span>VERMELHA<br>
+          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">ATAQUE</small>
+        </button>
+        <button class="team-btn" id="btn-blue" onclick="selectTeam('blue')">
+          <span class="team-icon">🔵</span>AZUL<br>
+          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">DEFESA</small>
+        </button>
+      </div>
+      <div class="msg error" id="msg-error">⚠ Preencha todos os campos e selecione uma equipe.</div>
+      <div class="msg info" id="msg-info"></div>
+      <button class="btn-primary" onclick="doRegister()">[ ENTRAR NO CAMPO DE BATALHA ]</button>
+    </div>
+  </div>
+
+  <!-- AGUARDANDO -->
+  <div id="screen-wait" style="display:none;">
+    <div class="panel blue-accent" style="text-align:center;">
+      <div id="badge-wait"></div>
+      <span class="pulse" id="wait-icon">⚡</span>
+      <div class="wt-title" id="wait-title">AGUARDANDO INÍCIO</div>
+      <div class="wt-sub" id="wait-name"></div>
+      <div class="wt-sub" style="margin-top:6px;" id="wait-msg">O professor irá iniciar em breve...</div>
+      <div class="msg success" style="display:block;margin-top:16px;text-align:center;">
+        Agentes conectados: <span id="wait-count">0</span>
+      </div>
+      <!-- Laboratório disponível -->
+      <div class="lab-link-box" id="lab-box" style="display:none;">
+        <div class="lab-link-title">🔬 LABORATÓRIO DISPONÍVEL</div>
+        <button class="lab-link-btn" onclick="openLab()">[ ACESSAR LABORATÓRIO ]</button>
+      </div>
+      <!-- Aguardando reautorização -->
+      <div class="reauth-box" id="reauth-box" style="display:none;">
+        <div class="reauth-title">⏳ AGUARDANDO REAUTORIZAÇÃO</div>
+        <div class="reauth-desc">Sua reconexão foi detectada. Aguarde o professor autorizar seu reacesso no painel.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" style="display:none;">
+    <div class="score-bar">
+      <div class="score-item">
+        <div class="score-lbl">🔴 VERMELHA</div>
+        <div class="score-val red" id="q-sr">0</div>
+      </div>
+      <div class="score-sep">|</div>
+      <div class="score-item">
+        <div class="score-lbl">PERGUNTA</div>
+        <div class="score-val" id="q-prog" style="color:#4a6a8a;">0/25</div>
+      </div>
+      <div class="score-sep">|</div>
+      <div class="score-item">
+        <div class="score-lbl">🔵 AZUL</div>
+        <div class="score-val blue" id="q-sb">0</div>
+      </div>
+    </div>
+    <div class="panel red-accent" id="quiz-panel">
+      <div id="badge-quiz"></div>
+      <div class="prog-bar"><div class="prog-fill" id="q-pfill" style="width:0%"></div></div>
+      <div class="timer-wrap">
+        <div class="timer-circle" id="timer-circle"><span id="timer-disp">2:00</span></div>
+        <div class="timer-lbl">// TEMPO RESTANTE //</div>
+      </div>
+      <div class="q-counter" id="q-counter">PERGUNTA 1 DE 25</div>
+      <div class="q-text" id="q-text">Carregando...</div>
+      <div class="options" id="q-options"></div>
+      <button class="btn-hint" id="btn-hint" onclick="toggleHint()">[ VER DICA ]</button>
+      <div class="hint-box" id="hint-box"></div>
+      <button class="btn-send" id="btn-send" onclick="submitAnswer()" disabled>[ ENVIAR RESPOSTA ]</button>
+    </div>
+  </div>
+
+  <!-- FIM -->
+  <div id="end-screen">
+    <div class="panel green-accent">
+      <div class="end-title">🏁 FIM DA FASE 1</div>
+      <div class="wt-sub">Aguarde o professor para a próxima fase!</div>
+      <div class="final-scores">
+        <div class="fs-item"><div class="score-lbl">🔴 VERMELHA</div><div class="fs-val red" id="end-sr">0</div></div>
+        <div class="fs-item"><div class="score-lbl">🔵 AZUL</div><div class="fs-val blue" id="end-sb">0</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div id="result-overlay">
+  <div class="res-icon" id="res-icon">🏆</div>
+  <div class="res-title" id="res-title">RESULTADO</div>
+  <div class="res-sub" id="res-sub"></div>
+  <div class="res-winner" id="res-winner"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyAFEvYY-E0qJRVaAJZ30ODTZr1OW3R6aqw",
+  authDomain:"cyber-battle-game.firebaseapp.com",
+  projectId:"cyber-battle-game",
+  storageBucket:"cyber-battle-game.firebasestorage.app",
+  messagingSenderId:"330360546983",
+  appId:"1:330360546983:web:9093c120bafdcc31bd9d82"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const QUESTIONS=[
+  {q:"Qual das propriedades abaixo garante que apenas usuários autorizados possam consultar os recursos de um sistema?",opts:["Disponibilidade","Integridade","Confidencialidade","Irretratabilidade"],correct:2,hint:"Sou a parede que impede olhos curiosos de ler o que não lhes pertence."},
+  {q:"O princípio que diz que 'se um acesso não é explicitamente permitido, deve ser negado' é chamado de:",opts:["Privilégio mínimo","Default seguro","Mediação completa","Projeto aberto"],correct:1,hint:"Quando a regra não fala nada sobre você, a resposta já foi dada — e não foi 'sim'."},
+  {q:"Um sistema bancário que exige a autorização de dois gerentes para operações de alto valor é exemplo de qual princípio?",opts:["Economia de mecanismo","Compartilhamento mínimo","Separação de privilégios","Facilidade de uso"],correct:2,hint:"Uma chave sozinha não abre este cofre."},
+  {q:"Segundo o princípio do 'elo mais fraco', onde está o maior risco de segurança de um sistema?",opts:["No sistema operacional mais desatualizado","No elemento mais vulnerável, seja usuário, rede ou software","Sempre na conexão de rede","Nos servidores sem firewall"],correct:1,hint:"Uma corrente não é mais forte que sua peça mais frágil."},
+  {q:"O princípio que defende que o projeto de segurança deve ser simples o suficiente para ser facilmente testado e validado chama-se:",opts:["Proteção adequada","Eficiência","Economia de mecanismo","Compartilhamento mínimo"],correct:2,hint:"Na segurança, o simples é belo — e mais fácil de checar."},
+  {q:"Um processo que vasculha áreas de memória de outros processos buscando senhas e números de cartão de crédito é uma ameaça a qual propriedade?",opts:["Disponibilidade","Confidencialidade","Integridade","Autenticidade"],correct:1,hint:"Você não percebe, mas alguém está lendo sua correspondência."},
+  {q:"Um usuário que aloca toda a memória e processador do sistema para si, impedindo outros de usá-lo, ameaça qual propriedade?",opts:["Confidencialidade","Autenticidade","Integridade","Disponibilidade"],correct:3,hint:"Imagina um restaurante onde um único cliente come toda a comida antes dos outros chegarem."},
+  {q:"A propriedade que garante que nenhuma ação realizada no sistema pode ser negada por seu autor é conhecida como:",opts:["Autenticidade","Irretratabilidade","Confidencialidade","Disponibilidade"],correct:1,hint:"Assinou? Não tem como dizer que não foi você."},
+  {q:"Qual das alternativas melhor define uma vulnerabilidade de sistema?",opts:["Um ataque bem-sucedido ao sistema","Um defeito na especificação, implementação ou configuração que pode ser explorado","A ação de um atacante externo","Um programa malicioso instalado no sistema"],correct:1,hint:"Não é o ladrão, é a janela que ele encontrou aberta."},
+  {q:"O famoso 'Ping of Death' explora qual tipo de vulnerabilidade?",opts:["Ausência de senha de usuário","Estouro de buffer no protocolo ICMP","Falha de autenticação no servidor web","Falta de criptografia no banco de dados"],correct:1,hint:"Um 'olá' tão grande que derrubou quem tentou respondê-lo."},
+  {q:"O estouro de buffer (buffer overflow) é um erro especialmente comum em quais linguagens?",opts:["Python e Java","JavaScript e PHP","C e C++","Ruby e Kotlin"],correct:2,hint:"Linguagens que te dão liberdade total costumam cobrar um preço."},
+  {q:"Qual é a diferença principal entre DoS e DDoS?",opts:["DoS usa criptografia, DDoS não","DDoS usa múltiplos computadores (zumbis) simultâneos, DoS parte de uma única origem","DoS ataca dados, DDoS ataca a rede","Não há diferença técnica entre eles"],correct:1,hint:"Um é um punho. O outro é uma avalanche de punhos ao mesmo tempo."},
+  {q:"O ataque XSS (Cross-Site Scripting) geralmente ocorre em sites com qual tipo de falha?",opts:["Falta de criptografia HTTPS","Não validação de entrada de dados","Ausência de firewall","Senhas fracas no banco de dados"],correct:1,hint:"O porteiro não checou o que estava dentro da mala."},
+  {q:"No ataque XSS refletido, o código malicioso é:",opts:["Armazenado permanentemente no servidor","Injetado e executado imediatamente no navegador da vítima via URL ou campo","Enviado por e-mail diretamente","Instalado como extensão do navegador"],correct:1,hint:"Vai, volta e explode — tudo na mesma viagem."},
+  {q:"O que é Phishing?",opts:["Um ataque de força bruta contra senhas","Um ataque que usa engenharia social para induzir vítimas a fornecer dados confidenciais","Um tipo de vírus que criptografa arquivos","Um ataque de negação de serviço distribuído"],correct:1,hint:"Linha, anzol e isca — você é o peixe."},
+  {q:"O 'Spear Phishing' se diferencia do Phishing comum porque:",opts:["Usa SMS em vez de e-mail","É um ataque direcionado a uma vítima específica, com pesquisa prévia","Utiliza keyloggers","Só ocorre em redes corporativas"],correct:1,hint:"Não é uma rede jogada ao mar — é um atirador com mira."},
+  {q:"O Ransomware é um tipo de ataque que:",opts:["Monitora o tráfego de rede silenciosamente","Criptografa os dados da vítima e exige resgate para liberar o acesso","Redireciona o usuário para sites falsos","Instala anúncios indesejados no navegador"],correct:1,hint:"Seu arquivo estava aqui. Agora está trancado. Pague para ver a chave."},
+  {q:"O ataque 'Man in the Middle' consiste em:",opts:["Derrubar um servidor com requisições excessivas","Inserir-se de forma oculta numa comunicação entre duas partes, podendo interceptar ou alterar dados","Criar cópias falsas de sites legítimos","Explorar vulnerabilidades em APIs REST"],correct:1,hint:"Você achou que estava falando com seu banco. Alguém estava ouvindo tudo."},
+  {q:"A Engenharia Social em cibersegurança consiste em:",opts:["Programação avançada de exploits","Manipulação psicológica para obter informações ou acesso, explorando emoções e falhas humanas","Engenharia reversa de softwares","Ataque automatizado por robôs na rede"],correct:1,hint:"Nenhuma senha é necessária quando a própria pessoa abre a porta."},
+  {q:"Qual dos objetivos abaixo NÃO está entre os objetivos comuns de um ataque cibernético?",opts:["Mineração de criptomoedas","Espionagem","Melhorar a performance do sistema atacado","Negação de serviços (DoS)"],correct:2,hint:"Um desses itens foi colocado por um intruso bem-humorado."},
+  {q:"O que diferencia a Dark Web da Deep Web?",opts:["A Dark Web é indexada pelo Google, a Deep Web não","A Dark Web exige navegadores especializados como o Tor e é intencionalmente oculta; a Deep Web é apenas não indexada","A Deep Web é ilegal, a Dark Web é legal","Não há diferença entre elas"],correct:1,hint:"Uma é simplesmente não estar no mapa. A outra usa capa de invisibilidade."},
+  {q:"Os sites da Dark Web geralmente terminam com qual extensão de domínio?",opts:[".dark",".hidden",".onion",".tor"],correct:2,hint:"Pense em camadas. Muitas camadas."},
+  {q:"O Smishing é uma técnica de ataque que utiliza qual canal para enganar a vítima?",opts:["E-mail com anexo malicioso","Ligação telefônica com voz sintética","Mensagens de texto (SMS) com links para sites de phishing","Notificações falsas de aplicativos"],correct:2,hint:"Coube numa mensagem curta. Mas o estrago foi grande."},
+  {q:"O Vishing é uma variante de phishing que utiliza qual canal de comunicação?",opts:["E-mail","SMS","Ligações telefônicas com identificador de chamadas falso","Redes sociais"],correct:2,hint:"Sua voz é a chave. E alguém ligou pedindo emprestada."},
+  {q:"Um ataque que planta código malicioso em campos de comentários ou fóruns, ficando armazenado no servidor e afetando todos que acessam a página, é chamado de:",opts:["XSS Refletido","SQL Injection","XSS Armazenado","CSRF"],correct:2,hint:"Não é uma bomba que explode na hora — é uma armadilha plantada esperando as visitas."},
+];
+
+// ── ESTADO ─────────────────────────────────────
+let playerName='', playerTeam='', playerId='', sessionToken='';
+let currentQ=0, selectedOpt=null, answered=false;
+let timerInterval=null, timeLeft=120, questionStartTime=0;
+let gameStarted=false, labUrl='';
+
+// ── SELEÇÃO DE EQUIPE ───────────────────────────
+window.selectTeam = function(team) {
+  playerTeam = team;
+  const btnRed  = document.getElementById('btn-red');
+  const btnBlue = document.getElementById('btn-blue');
+  btnRed.className  = 'team-btn' + (team==='red'  ? ' selected-red'  : '');
+  btnBlue.className = 'team-btn' + (team==='blue' ? ' selected-blue' : '');
+};
+
+// ── REGISTRO ────────────────────────────────────
+window.doRegister = async function() {
+  const code = document.getElementById('inp-code').value.trim();
+  const name = document.getElementById('inp-name').value.trim();
+  const errEl = document.getElementById('msg-error');
+  const infoEl = document.getElementById('msg-info');
+  errEl.style.display='none'; infoEl.style.display='none';
+
+  if (!code || !name || !playerTeam) {
+    errEl.textContent='⚠ Preencha o código da turma, seu nome e selecione uma equipe.';
+    errEl.style.display='block'; return;
+  }
+
+  // Verificar código da turma no Firebase
+  infoEl.textContent='Verificando código da turma...';
+  infoEl.style.display='block';
+  try {
+    const cfgSnap = await getDoc(doc(db,'config','session'));
+    if (!cfgSnap.exists()) {
+      errEl.textContent='⚠ Sessão não configurada. Aguarde o professor.';
+      errEl.style.display='block'; infoEl.style.display='none'; return;
+    }
+    const cfg = cfgSnap.data();
+    if (cfg.code !== code) {
+      errEl.textContent='⚠ Código da turma incorreto. Verifique com o professor.';
+      errEl.style.display='block'; infoEl.style.display='none'; return;
+    }
+
+    // Verificar se jogo já iniciou
+    const gameSnap = await getDoc(doc(db,'game','state'));
+    const gameData = gameSnap.exists() ? gameSnap.data() : {};
+    if (gameData.status === 'running' || gameData.status === 'ended') {
+      errEl.textContent='⚠ O jogo já está em andamento. Não é possível entrar agora.';
+      errEl.style.display='block'; infoEl.style.display='none'; return;
+    }
+
+    // Verificar se nome já existe (reacesso)
+    const playersSnap = await getDoc(doc(db,'players', name.toLowerCase().replace(/\s+/g,'_')));
+    if (playersSnap.exists()) {
+      const existing = playersSnap.data();
+      if (existing.status === 'approved') {
+        // Reacesso — gerar novo token e pedir reautorização
+        sessionToken = Date.now().toString();
+        playerId = name.toLowerCase().replace(/\s+/g,'_');
+        playerName = name;
+        await updateDoc(doc(db,'players', playerId), {
+          status: 'reauth_pending',
+          sessionToken,
+          reconnectedAt: serverTimestamp()
+        });
+        showWait('reauth');
+        listenGame();
+        return;
+      }
+    }
+
+    // Novo registro
+    playerName = name;
+    playerId = name.toLowerCase().replace(/\s+/g,'_');
+    sessionToken = Date.now().toString();
+    infoEl.textContent='✓ Registrando agente...';
+    await setDoc(doc(db,'players', playerId), {
+      name: playerName,
+      team: playerTeam,
+      status: 'approved',
+      sessionToken,
+      registeredAt: serverTimestamp()
+    });
+    showWait('normal');
+    listenGame();
+  } catch(e) {
+    errEl.textContent='⚠ Erro: ' + e.message;
+    errEl.style.display='block'; infoEl.style.display='none';
+  }
+};
+
+// ── TELA DE ESPERA ──────────────────────────────
+function showWait(mode) {
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-wait').style.display='block';
+  document.getElementById('wait-name').textContent = '// ' + playerName.toUpperCase() + ' //';
+  const badge = document.getElementById('badge-wait');
+  badge.innerHTML = `<span class="badge ${playerTeam}">${playerTeam==='red'?'🔴 EQUIPE VERMELHA':'🔵 EQUIPE AZUL'}</span>`;
+  if (mode === 'reauth') {
+    document.getElementById('wait-title').textContent = 'RECONEXÃO DETECTADA';
+    document.getElementById('wait-icon').textContent = '⏳';
+    document.getElementById('wait-msg').textContent = 'Aguarde o professor autorizar seu reacesso.';
+    document.getElementById('reauth-box').style.display='block';
+  } else {
+    document.getElementById('wait-title').textContent = 'AGUARDANDO INÍCIO';
+    document.getElementById('wait-icon').textContent = '⚡';
+    document.getElementById('wait-msg').textContent = 'O professor irá iniciar a batalha em breve...';
+  }
+}
+
+// ── LISTENERS ───────────────────────────────────
+function listenGame() {
+  // Contar jogadores conectados
+  onSnapshot(collection(db,'players'), snap => {
+    document.getElementById('wait-count').textContent = snap.size;
+  });
+
+  // Escutar status do próprio jogador (reautorização)
+  onSnapshot(doc(db,'players', playerId), snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (data.status === 'approved' && data.sessionToken === sessionToken) {
+      document.getElementById('reauth-box').style.display='none';
+      document.getElementById('wait-title').textContent = 'AGUARDANDO INÍCIO';
+      document.getElementById('wait-icon').textContent = '⚡';
+      document.getElementById('wait-msg').textContent = 'Reacesso autorizado! Aguardando o professor iniciar.';
+    }
+    if (data.status === 'denied') {
+      document.getElementById('screen-wait').style.display='none';
+      document.getElementById('screen-login').style.display='block';
+      const err=document.getElementById('msg-error');
+      err.textContent='⚠ Seu reacesso foi negado pelo professor. Entre em contato com ele.';
+      err.style.display='block';
+    }
+  });
+
+  // Escutar link do laboratório
+  onSnapshot(doc(db,'lab','link'), snap => {
+    if (!snap.exists()) return;
+    const url = snap.data().url;
+    if (url && url !== labUrl) {
+      labUrl = url;
+      document.getElementById('lab-box').style.display = 'block';
+    }
+  });
+
+  // Escutar estado do jogo
+  onSnapshot(doc(db,'game','state'), snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (data.status === 'running' && data.currentQuestion !== undefined) {
+      if (document.getElementById('screen-wait').style.display !== 'none') showQuiz();
+      loadQuestion(data.currentQuestion, data.questionStartedAt);
+      document.getElementById('q-sr').textContent = data.scoreRed||0;
+      document.getElementById('q-sb').textContent = data.scoreBlue||0;
+      document.getElementById('q-prog').textContent = (data.currentQuestion+1)+'/25';
+      document.getElementById('q-pfill').style.width = ((data.currentQuestion+1)/25*100)+'%';
+    }
+    if (data.status === 'result') showResult(data);
+    if (data.status === 'ended')  showEnd(data);
+    if (data.status === 'paused') clearInterval(timerInterval);
+  });
+}
+
+window.openLab = function() {
+  if (labUrl) window.location.href = labUrl;
+};
+
+function showQuiz() {
+  document.getElementById('screen-wait').style.display='none';
+  document.getElementById('screen-quiz').style.display='block';
+  const badge = document.getElementById('badge-quiz');
+  badge.innerHTML = `<span class="badge ${playerTeam}" style="margin-bottom:12px;display:inline-block;">${playerTeam==='red'?'🔴 VERMELHA':'🔵 AZUL'}</span>`;
+}
+
+function loadQuestion(qi, startedAt) {
+  if (qi === currentQ && answered) return;
+  currentQ = qi; answered = false; selectedOpt = null;
+  const q = QUESTIONS[qi];
+  document.getElementById('q-counter').textContent = `PERGUNTA ${qi+1} DE 25`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('hint-box').style.display='none';
+  document.getElementById('hint-box').textContent = q.hint;
+  document.getElementById('btn-hint').textContent = '[ VER DICA ]';
+  document.getElementById('btn-send').disabled = true;
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.opts.forEach((o,i) => {
+    const btn = document.createElement('button');
+    btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}`;
+    btn.onclick=()=>selectOption(i);
+    opts.appendChild(btn);
+  });
+  let elapsed = 0;
+  if (startedAt && startedAt.toMillis) elapsed = Math.floor((Date.now()-startedAt.toMillis())/1000);
+  timeLeft = Math.max(0, 120-elapsed);
+  questionStartTime = Date.now() - elapsed*1000;
+  startTimer();
+}
+
+function selectOption(i) {
+  if (answered) return;
+  selectedOpt = i;
+  document.querySelectorAll('.opt-btn').forEach((b,idx) => {
+    b.className = 'opt-btn' + (idx===i?' selected':'');
+  });
+  document.getElementById('btn-send').disabled = false;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft<=0) { clearInterval(timerInterval); if (!answered) autoSkip(); }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  document.getElementById('timer-disp').textContent = m+':'+(s<10?'0':'')+s;
+  const c = document.getElementById('timer-circle');
+  if (timeLeft<=30) c.classList.add('urgent'); else c.classList.remove('urgent');
+}
+
+function autoSkip() {
+  if (answered) return;
+  answered = true;
+  document.getElementById('btn-send').disabled=true;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  recordAnswer(null, 0);
+}
+
+window.submitAnswer = async function() {
+  if (answered || selectedOpt===null) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const timeTaken = 120-timeLeft;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  document.getElementById('btn-send').disabled=true;
+  await recordAnswer(selectedOpt, timeTaken);
+};
+
+async function recordAnswer(opt, timeTaken) {
+  const q = QUESTIONS[currentQ];
+  const isCorrect = opt!==null && opt===q.correct;
+  try {
+    await setDoc(doc(db,'answers', playerId+'_q'+currentQ), {
+      playerId, playerName, team: playerTeam,
+      questionIndex: currentQ,
+      answer: opt, correct: isCorrect, timeTaken,
+      answeredAt: serverTimestamp()
+    });
+  } catch(e) { console.error(e); }
+}
+
+window.toggleHint = function() {
+  const box = document.getElementById('hint-box');
+  const btn = document.getElementById('btn-hint');
+  const show = box.style.display==='none'||!box.style.display;
+  box.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '[ OCULTAR DICA ]' : '[ VER DICA ]';
+};
+
+function showResult(data) {
+  const overlay = document.getElementById('result-overlay');
+  const winner = data.questionWinner;
+  overlay.style.display='flex';
+  document.getElementById('res-title').textContent = 'RESULTADO DA QUESTÃO '+(data.lastQuestion+1);
+  document.getElementById('res-sub').textContent = `🔴 Vermelha: ${data.redCorrect||0} acertos | 🔵 Azul: ${data.blueCorrect||0} acertos`;
+  const winEl = document.getElementById('res-winner');
+  const iconEl = document.getElementById('res-icon');
+  if (winner==='red')       { winEl.textContent='🏆 PONTO PARA EQUIPE VERMELHA!'; winEl.className='res-winner red';  iconEl.textContent='🔴'; }
+  else if (winner==='blue') { winEl.textContent='🏆 PONTO PARA EQUIPE AZUL!';     winEl.className='res-winner blue'; iconEl.textContent='🔵'; }
+  else if (winner==='draw') { winEl.textContent='⚡ EMPATE TOTAL — PONTO PARA AMBAS!'; winEl.className='res-winner draw'; iconEl.textContent='⚡'; }
+  else                      { winEl.textContent='✗ NINGUÉM PONTUA — AMBAS ZERARAM!';  winEl.className='res-winner draw'; iconEl.textContent='💀'; }
+  document.getElementById('q-sr').textContent = data.scoreRed||0;
+  document.getElementById('q-sb').textContent = data.scoreBlue||0;
+  setTimeout(() => { overlay.style.display='none'; }, 5000);
+}
+
+function showEnd(data) {
+  clearInterval(timerInterval);
+  document.getElementById('screen-quiz').style.display='none';
+  document.getElementById('result-overlay').style.display='none';
+  document.getElementById('end-screen').style.display='block';
+  document.getElementById('end-sr').textContent = data.scoreRed||0;
+  document.getElementById('end-sb').textContent = data.scoreBlue||0;
+}
+</script>
+</body>
+</html>

