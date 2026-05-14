@@ -624,7 +624,7 @@ window.registerPlayer = async function(){
       err.style.display='block'; document.getElementById('reg-info').style.display='none'; return;
     }
     const cfg=cfgSnap.data();
-    if(cfg.code.toUpperCase() !== code.toUpperCase()){
+    if(cfg.code !== code){
       err.textContent='⚠ Código da turma incorreto. Verifique com o professor.';
       err.style.display='block'; document.getElementById('reg-info').style.display='none'; return;
     }
@@ -689,11 +689,14 @@ function listenGame(){
   // Escutar link do laboratório
   onSnapshot(doc(db,'lab','link'),snap=>{
     if(!snap.exists())return;
-    const url=snap.data().url;
-    if(url&&url!==labUrl2){
-      labUrl2=url;
+    const data=snap.data();
+    if(data.active&&data.url){
+      labUrl2=data.url;
       const box=document.getElementById('lab-box2');
       if(box) box.style.display='block';
+    } else {
+      const box=document.getElementById('lab-box2');
+      if(box) box.style.display='none';
     }
   });
 

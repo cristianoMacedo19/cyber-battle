@@ -329,17 +329,22 @@ body::before{content:'';position:fixed;inset:0;
       <div class="panel-box accent-green">
         <div class="lab-title">LABORATÓRIO DE SIMULAÇÃO DE ATAQUES</div>
         <div class="lab-desc">
-          Cole o link do laboratório abaixo e clique em enviar.<br>
-          O botão de acesso aparecerá automaticamente nas telas de todos os alunos conectados.
+          Clique em liberar para disponibilizar o laboratório nas telas de todos os alunos conectados.
+          O acesso aparecerá automaticamente como botão na tela de espera de cada aluno.
         </div>
-        <div class="lab-input-wrap">
-          <label class="lab-input-label">LINK DO LABORATÓRIO</label>
-          <input type="text" class="lab-input" id="lab-link-input"
-            placeholder="https://seu-usuario.github.io/cyber-battle/lab.html">
+        <div style="display:flex;gap:8px;">
+          <button class="lab-send-btn" id="btn-lab-release" onclick="sendLabLink()">
+            [ 🔬 LIBERAR LABORATÓRIO PARA OS ALUNOS ]
+          </button>
+          <button onclick="revokeLabLink()" title="Revogar acesso ao laboratório"
+            style="padding:0 16px;height:44px;border:2px solid var(--red);color:var(--red);
+            background:transparent;font-family:var(--mono);font-size:0.8rem;cursor:pointer;
+            border-radius:4px;transition:all 0.2s;white-space:nowrap;"
+            onmouseover="this.style.background='rgba(255,34,68,0.1)'"
+            onmouseout="this.style.background='transparent'">
+            ✗ REVOGAR
+          </button>
         </div>
-        <button class="lab-send-btn" onclick="sendLabLink()">
-          [ ▶ LIBERAR LABORATÓRIO PARA OS ALUNOS ]
-        </button>
         <div class="lab-status" id="lab-status"></div>
       </div>
 
@@ -755,7 +760,7 @@ onSnapshot(doc(db,'config','session'), snap => {
 });
 
 window.saveSessionCode = async function() {
-  const code = document.getElementById('session-code-input').value.trim().toUpperCase();
+  const code = document.getElementById('session-code-input').value.trim();
   const status = document.getElementById('code-status');
   if (!code) {
     status.textContent='⚠ Digite um código antes de salvar.';
@@ -858,18 +863,39 @@ function renderReauthList(pending) {
 
 listenReauth();
 // ════════════════════════════════════════
+// LABORATÓRIO
+// ════════════════════════════════════════
 window.sendLabLink = async function() {
-  const link = document.getElementById('lab-link-input').value.trim();
   const status = document.getElementById('lab-status');
-  if(!link){ status.textContent='⚠ Cole o link do laboratório antes de enviar.'; status.className='lab-status err'; status.style.display='block'; return; }
-  if(!link.startsWith('http')){ status.textContent='⚠ O link deve começar com http:// ou https://'; status.className='lab-status err'; status.style.display='block'; return; }
   try {
-    await setDoc(doc(db,'lab','link'),{ url: link, sentAt: serverTimestamp() });
-    status.textContent='✓ Link enviado! Os alunos verão o laboratório automaticamente em suas telas.';
-    status.className='lab-status ok'; status.style.display='block';
-  } catch(e){
-    status.textContent='⚠ Erro ao enviar: '+e.message;
-    status.className='lab-status err'; status.style.display='block';
+    // Caminho relativo automático — funciona em qualquer hospedagem
+    const base = window.location.href.replace(/\/[^/]*$/, '/');
+    const labUrl = base + 'lab.html';
+    await setDoc(doc(db,'lab','link'), { url: labUrl, sentAt: serverTimestamp(), active: true });
+    const btn = document.getElementById('btn-lab-release');
+    btn.textContent = '[ ✓ LABORATÓRIO LIBERADO ]';
+    btn.style.borderColor = 'var(--green)'; btn.style.color = 'var(--green)';
+    status.textContent = '✓ Laboratório liberado! Botão apareceu nas telas dos alunos.';
+    status.className = 'lab-status ok'; status.style.display = 'block';
+  } catch(e) {
+    status.textContent = '⚠ Erro ao liberar: ' + e.message;
+    status.className = 'lab-status err'; status.style.display = 'block';
+  }
+};
+
+window.revokeLabLink = async function() {
+  if(!confirm('Revogar acesso ao laboratório? O botão desaparecerá das telas dos alunos.')) return;
+  const status = document.getElementById('lab-status');
+  try {
+    await setDoc(doc(db,'lab','link'), { url: '', sentAt: serverTimestamp(), active: false });
+    const btn = document.getElementById('btn-lab-release');
+    btn.textContent = '[ 🔬 LIBERAR LABORATÓRIO PARA OS ALUNOS ]';
+    status.textContent = '✓ Acesso ao laboratório revogado.';
+    status.className = 'lab-status ok'; status.style.display = 'block';
+    setTimeout(()=>{ status.style.display='none'; }, 4000);
+  } catch(e) {
+    status.textContent = '⚠ Erro: ' + e.message;
+    status.className = 'lab-status err'; status.style.display = 'block';
   }
 };
 

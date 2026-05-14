@@ -400,10 +400,12 @@ function listenGame() {
   // Escutar link do laboratório
   onSnapshot(doc(db,'lab','link'), snap => {
     if (!snap.exists()) return;
-    const url = snap.data().url;
-    if (url && url !== labUrl) {
-      labUrl = url;
+    const data = snap.data();
+    if (data.active && data.url) {
+      labUrl = data.url;
       document.getElementById('lab-box').style.display = 'block';
+    } else {
+      document.getElementById('lab-box').style.display = 'none';
     }
   });
 
