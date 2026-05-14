@@ -165,6 +165,52 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="algo-card c-purple" onclick="openAlgo('mitm')"><div class="card-num">07 / 08</div><span class="card-icon">👤</span><div class="card-title">Man in the Middle</div><span class="card-tag tag-purple">INTERCEPTAÇÃO</span><div class="card-desc">ARP Poisoning para interceptar comunicações. Pacotes capturados e modificados em trânsito sem as partes perceberem.</div><div class="card-steps">⬡ 5 passos interativos <span class="card-arrow">→</span></div></div>
     <div class="algo-card c-amber" onclick="openAlgo('ransom')"><div class="card-num">08 / 08</div><span class="card-icon">🔒</span><div class="card-title">Ransomware</div><span class="card-tag tag-amber">SEQUESTRO DE DADOS</span><div class="card-desc">Ciclo completo: infiltração, propagação, exfiltração, criptografia e extorsão. Arquivos bloqueados em tempo real.</div><div class="card-steps">⬡ 7 passos interativos <span class="card-arrow">→</span></div></div>
   </div>
+
+  <!-- BOTÃO CONCLUIR -->
+  <div style="padding:20px 48px 40px;max-width:1400px;margin:0 auto;width:100%;">
+    <button onclick="finishLab()"
+      style="width:100%;padding:16px;background:transparent;
+      border:2px solid var(--green);color:var(--green);
+      font-family:'Orbitron',sans-serif;font-size:0.85rem;
+      letter-spacing:3px;cursor:pointer;border-radius:6px;
+      transition:all 0.2s;"
+      onmouseover="this.style.background='rgba(0,229,160,0.1)'"
+      onmouseout="this.style.background='transparent'">
+      ✓ CONCLUÍ O LABORATÓRIO — VOLTAR AO JOGO
+    </button>
+  </div>
+</div>
+
+<!-- TELA DE CONCLUSÃO DO LABORATÓRIO -->
+<div id="screen-finish" style="display:none;position:fixed;inset:0;z-index:20;
+  background:var(--bg);display:none;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:40px;">
+  <div style="font-size:4rem;margin-bottom:20px;">🏆</div>
+  <div style="font-family:'Orbitron',sans-serif;font-size:clamp(1.2rem,4vw,2rem);
+    font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:3px;">
+    PARABÉNS!
+  </div>
+  <div style="font-family:'Orbitron',sans-serif;font-size:clamp(0.8rem,2vw,1rem);
+    color:var(--green);letter-spacing:2px;margin-bottom:24px;">
+    FASE LABORATÓRIO CONCLUÍDA
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;
+    color:#4a7090;line-height:1.8;max-width:480px;margin-bottom:36px;
+    background:rgba(13,21,38,0.8);border:1px solid #112240;
+    border-radius:8px;padding:20px;">
+    Você explorou os principais algoritmos de ataque utilizados por cibercriminosos.<br><br>
+    Aguarde o professor iniciar a próxima fase do jogo.
+  </div>
+  <button onclick="goBackToGame()"
+    style="padding:14px 40px;background:transparent;
+    border:2px solid var(--green);color:var(--green);
+    font-family:'Orbitron',sans-serif;font-size:0.82rem;
+    letter-spacing:3px;cursor:pointer;border-radius:6px;
+    transition:all 0.2s;"
+    onmouseover="this.style.background='rgba(0,229,160,0.1)'"
+    onmouseout="this.style.background='transparent'">
+    [ VOLTAR AO JOGO ]
+  </button>
 </div>
 
 <div id="screen-algo">
@@ -607,6 +653,20 @@ a.code.forEach((_,i)=>{const el=document.getElementById('cl'+i);if(el)el.classNa
 }
 
 window.openAlgo=openAlgo;window.closeAlgo=closeAlgo;window.goStep=goStep;window.doReset=doReset;
+
+// ── CONCLUIR LABORATÓRIO ──────────────────────────────────
+window.finishLab = function() {
+  document.getElementById('screen-menu').style.display='none';
+  document.getElementById('screen-algo').style.display='none';
+  const finish = document.getElementById('screen-finish');
+  finish.style.display='flex';
+};
+
+window.goBackToGame = function() {
+  // Volta para index.html (Fase 1) — mesmo diretório
+  const base = window.location.href.replace(/\/[^/]*$/, '/');
+  window.location.href = base + 'index.html';
+};
 </script>
 </body>
 </html>
