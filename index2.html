@@ -602,29 +602,30 @@ window.selectTeam = function(team){
 };
 
 window.registerPlayer = async function(){
-  const code = document.getElementById('inp-code2').value.trim();
-  const name = document.getElementById('player-name').value.trim();
-  const err  = document.getElementById('reg-error');
+  const code    = document.getElementById('inp-code2').value.trim();
+  const nameRaw = document.getElementById('player-name').value.trim();
+  const err     = document.getElementById('reg-error');
   err.style.display='none';
 
-  if(!code||!name||!playerTeam){
+  if(!code||!nameRaw||!playerTeam){
     err.textContent='⚠ Preencha o código da turma, seu nome e selecione uma equipe.';
     err.style.display='block'; return;
   }
 
-  playerName=name;
+  // Normalizar nome — remove espaços duplos, ignora maiúsculas para ID
+  const nameTrimmed = nameRaw.replace(/\s+/g,' ').trim();
+  const nameNorm    = nameTrimmed.toLowerCase().replace(/\s+/g,'_');
+
   document.getElementById('reg-info').textContent='✓ Verificando acesso...';
   document.getElementById('reg-info').style.display='block';
 
   try{
-    // Verificar código da turma
     const cfgSnap = await getDoc(doc(db,'config','session'));
     if(!cfgSnap.exists()||!cfgSnap.data().code){
       err.textContent='⚠ Sessão não configurada. Aguarde o professor definir o código.';
       err.style.display='block'; document.getElementById('reg-info').style.display='none'; return;
     }
-    const cfg=cfgSnap.data();
-    if(cfg.code !== code){
+    if(cfgSnap.data().code !== code){
       err.textContent='⚠ Código da turma incorreto. Verifique com o professor.';
       err.style.display='block'; document.getElementById('reg-info').style.display='none'; return;
     }
@@ -637,18 +638,28 @@ window.registerPlayer = async function(){
       err.style.display='block'; document.getElementById('reg-info').style.display='none'; return;
     }
 
-    // Verificar reacesso
-    playerId = name.toLowerCase().replace(/\s+/g,'_');
+    // Verificar reacesso usando ID normalizado
+    playerId     = nameNorm;
     sessionToken = Date.now().toString();
-    const existSnap = await getDoc(doc(db,'players2',playerId));
-    if(existSnap.exists() && existSnap.data().status==='approved'){
-      await updateDoc(doc(db,'players2',playerId),{
-        status:'reauth_pending', sessionToken, reconnectedAt:serverTimestamp()
-      });
-      showWaiting('reauth'); listenGame(); return;
+    const existSnap = await getDoc(doc(db,'players2', playerId));
+    if(existSnap.exists()){
+      const existing = existSnap.data();
+      // Preserva nome e equipe originais do cadastro
+      playerName = existing.name;
+      playerTeam = existing.team;
+      if(existing.status==='approved'||existing.status==='denied'){
+        await updateDoc(doc(db,'players2',playerId),{
+          status:'reauth_pending', sessionToken, reconnectedAt:serverTimestamp()
+        });
+        showWaiting('reauth'); listenGame(); return;
+      }
+      if(existing.status==='reauth_pending'){
+        showWaiting('reauth'); listenGame(); return;
+      }
     }
 
     // Novo registro
+    playerName = nameTrimmed;
     await setDoc(doc(db,'players2',playerId),{
       name:playerName, team:playerTeam, status:'approved',
       sessionToken, registeredAt:serverTimestamp()
@@ -660,6 +671,7 @@ window.registerPlayer = async function(){
     err.style.display='block'; document.getElementById('reg-info').style.display='none';
   }
 };
+
 
 function showWaiting(mode){
   document.getElementById('register-screen').style.display='none';
@@ -734,7 +746,12 @@ function showBattle(){
   document.getElementById('waiting-screen').style.display='none';
   document.getElementById('battle-screen').style.display='block';
   const b=document.getElementById('my-badge-battle');
-  b.innerHTML=`<span class="my-team-badge ${playerTeam}" style="margin-bottom:12px;display:inline-block;">${playerTeam==='red'?'🔴 ATAQUE — escolha o vetor':'🔵 DEFESA — escolha a contramedida'}</span>`;
+  b.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
+      padding:8px 12px;background:#060c18;border:1px solid var(--border);border-radius:5px;">
+      <span class="my-team-badge ${playerTeam}" style="margin:0;">${playerTeam==='red'?'🔴 ATAQUE':'🔵 DEFESA'}</span>
+      <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text);">👤 ${playerName}</span>
+    </div>`;
 }
 
 // ─── CARREGAR RODADA ──────────────────────────────────────
