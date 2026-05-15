@@ -430,7 +430,7 @@ function listenGame() {
     }
   });
 
-  // Escutar estado do jogo — Fase 1
+ // Escutar estado do jogo — Fase 1
   onSnapshot(doc(db,'game','state'), snap => {
     if (!snap.exists()) return;
     const d = snap.data();
