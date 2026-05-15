@@ -235,7 +235,7 @@ input::placeholder{color:#2a4a6a;}
     </div>
     <div class="msg error" id="login-err"></div>
     <div class="msg info" id="login-info"></div>
-    <button class="btn btn-blue" >[ ENTRAR NO CAMPO DE BATALHA ]</button>
+    <button class="btn btn-blue" id="btn-login">[ ENTRAR NO CAMPO DE BATALHA ]</button>
   </div>
 </div>
 
@@ -475,7 +475,8 @@ function showPage(id){
 }
 
 // ── BIND TODOS OS BOTÕES ─────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
+// Scripts type="module" já são diferidos — DOM está pronto quando o script executa
+function bindButtons(){
   // Equipe
   const br=document.getElementById('btn-red');
   const bb=document.getElementById('btn-blue');
@@ -483,7 +484,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(bb)bb.addEventListener('click',()=>selectTeam('blue'));
 
   // Login
-  const btnLogin=document.querySelector('#p-login .btn-blue');
+  const btnLogin=document.getElementById('btn-login');
   if(btnLogin)btnLogin.addEventListener('click',doLogin);
 
   // Lab — botão acessar
@@ -495,16 +496,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(btnFinishLab)btnFinishLab.addEventListener('click',finishLab);
 
   // Lab — cards de algoritmos
-  const algos=[
-    {sel:'.c-red:nth-of-type(1)',id:'brute'},
-    {sel:'.c-amber',id:'sqli'},
-    {sel:'.c-purple:nth-of-type(1)',id:'xss'},
-    {sel:'.c-blue',id:'phish'},
-    {sel:'.c-red:nth-of-type(2)',id:'buffer'},
-    {sel:'.c-red:nth-of-type(3)',id:'ddos'},
-    {sel:'.c-purple:nth-of-type(2)',id:'mitm'},
-    {sel:'.c-amber:nth-of-type(2)',id:'ransom'},
-  ];
   document.querySelectorAll('.algo-card').forEach(card=>{
     const oc=card.getAttribute('onclick');
     if(oc){
@@ -532,7 +523,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Battle
   const btnVote=document.getElementById('b-btn-send');
   if(btnVote)btnVote.addEventListener('click',submitVote);
-});
+}
+
+// Módulos ES6 são diferidos — DOM já está pronto
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',bindButtons);
+}else{
+  bindButtons();
+}
 
 function selectTeam(t){
   pTeam=t;
@@ -924,13 +922,13 @@ updV(s){
     const p=document.getElementById('bp');if(p)p.style.width=(pos/6*100)+'%';},55);}
 }},
 sqli:{title:'SQL Injection',fname:'sqli.py',
-code:[{t:'<span class="cm"># Login vulnerável</span>'},{t:'<span class="var">user</span>=<span class="fn">input</span>(<span class="str">"usuário:"</span>)'},{t:'<span class="var">passw</span>=<span class="fn">input</span>(<span class="str">"senha:"</span>)'},{t:''},{t:'<span class="cm"># ❌ Concatenação direta</span>'},{t:'<span class="var">q</span>=<span class="str">f"SELECT * FROM users WHERE login='{user}' AND pass='{passw}'"</span>'},{t:''},{t:'<span class="cm"># Payload do atacante:</span>'},{t:'<span class="var">user</span>=<span class="str">"admin'--"</span>  <span class="cm"># fecha string + comenta</span>'},{t:'<span class="cm"># Resultado: WHERE login='admin'-- AND pass='x'</span>'},{t:'<span class="cm"># AND pass ignorado! Login sem senha.</span>'},{t:''},{t:'<span class="cm"># ✅ Prepared Statement</span>'},{t:'<span class="var">cursor</span>.<span class="fn">execute</span>(<span class="str">"...WHERE login=? AND pass=?"</span>,(<span class="var">user</span>,<span class="var">passw</span>))'}],
+code:[{t:'<span class="cm"># Login vulnerável</span>'},{t:'<span class="var">user</span>=<span class="fn">input</span>(<span class="str">"usuário:"</span>)'},{t:'<span class="var">passw</span>=<span class="fn">input</span>(<span class="str">"senha:"</span>)'},{t:''},{t:'<span class="cm"># ❌ Concatenação direta</span>'},{t:'<span class="var">q</span>=<span class="str">f"SELECT * FROM users WHERE login=\'{user}\' AND pass=\'{passw}\'"</span>'},{t:''},{t:'<span class="cm"># Payload do atacante:</span>'},{t:'<span class="var">user</span>=<span class="str">"admin\'--"</span>  <span class="cm"># fecha string + comenta</span>'},{t:'<span class="cm"># WHERE login=\'admin\'-- AND pass=\'x\'</span>'},{t:'<span class="cm"># AND pass ignorado! Login sem senha.</span>'},{t:''},{t:'<span class="cm"># ✅ Prepared Statement</span>'},{t:'<span class="var">cursor</span>.<span class="fn">execute</span>(<span class="str">"...WHERE login=? AND pass=?"</span>,(<span class="var">user</span>,<span class="var">passw</span>))'}],
 steps:[
 {lines:[],hl:'',lbl:'CENÁRIO',cls:'',txt:'Login concatena input diretamente na query SQL — vulnerabilidade clássica ainda muito comum.'},
 {lines:[1,2,5,6],hl:'hl-amber',lbl:'QUERY NORMAL',cls:'warn',txt:'Login legítimo: query verifica login E senha. Funciona normalmente para usuários comuns.'},
-{lines:[8,9],hl:'hl-red',lbl:'PAYLOAD INJETADO',cls:'danger',txt:'Atacante digita admin'-- no campo. O apóstrofo fecha a string prematuramente e -- comenta tudo que vem depois.'},
-{lines:[9,10,11],hl:'hl-red',lbl:'QUERY QUEBRADA',cls:'danger',txt:'WHERE login='admin'-- → verificação de senha ignorada! Banco retorna o usuário sem checar a senha.'},
-{lines:[13,14],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:'Prepared Statements tratam o input como dado puro. O payload admin'-- vira um nome literal inexistente.'}],
+{lines:[8,9],hl:'hl-red',lbl:'PAYLOAD INJETADO',cls:'danger',txt:"Atacante digita admin'-- no campo. O apóstrofo fecha a string prematuramente e -- comenta o restante."},
+{lines:[9,10,11],hl:'hl-red',lbl:'QUERY QUEBRADA',cls:'danger',txt:"WHERE login='admin'-- → verificação de senha ignorada! Banco retorna o usuário sem checar a senha."},
+{lines:[13,14],hl:'hl-green',lbl:'DEFESA',cls:'info',txt:"Prepared Statements tratam o input como dado puro. O payload admin'-- vira um nome literal inexistente."}],
 initV(){document.getElementById('algo-vis').innerHTML=`<span class="vis-lbl">// QUERY AO VIVO //</span><div class="sql-wrap"><span class="sq-n">WHERE login='</span><span id="su" class="sq-s">admin</span><span class="sq-n">' AND pass='</span><span id="sp" class="sq-s">••••</span><span class="sq-n">'</span></div><div class="sql-res" id="sr">Aguardando...</div><div class="exp-box" id="se"><span class="exp-lbl">AGUARDANDO</span>Clique ▶ para iniciar.</div>`;},
 updV(s){
   const e=document.getElementById('se');if(e){e.className='exp-box'+(this.steps[s].cls?' '+this.steps[s].cls:'');e.innerHTML=`<span class="exp-lbl">${this.steps[s].lbl}</span>${this.steps[s].txt}`;}
