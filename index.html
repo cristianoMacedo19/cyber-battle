@@ -268,7 +268,7 @@ let timerInterval=null, timeLeft=120, questionStartTime=0;
 let gameStarted=false, labUrl='';
 
 // ── RESTAURAR SESSÃO (volta do laboratório) ─────
-(function restoreSession(){
+window.addEventListener('load', function restoreSession(){
   const name  = sessionStorage.getItem('cb_name');
   const team  = sessionStorage.getItem('cb_team');
   const id    = sessionStorage.getItem('cb_id');
@@ -282,7 +282,7 @@ let gameStarted=false, labUrl='';
     showWait('normal');
     listenGame();
   }
-})();
+});
 
 // ── SELEÇÃO DE EQUIPE ───────────────────────────
 window.selectTeam = function(team) {

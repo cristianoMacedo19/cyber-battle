@@ -574,8 +574,8 @@ let currentRound=0, myVote=null, voted=false;
 let timerInterval=null, timeLeft=90;
 let roundResults=[], labUrl2='';
 
-// ── RESTAURAR SESSÃO DO index.html ─────────────
-(function restoreSession(){
+// ── RESTAURAR SESSÃO — roda após DOM e funções carregados ──
+window.addEventListener('load', function restoreSession(){
   const name  = sessionStorage.getItem('cb_name');
   const team  = sessionStorage.getItem('cb_team');
   const id    = sessionStorage.getItem('cb_id');
@@ -585,15 +585,15 @@ let roundResults=[], labUrl2='';
     playerTeam  = team;
     playerId    = id;
     sessionToken= token;
-    // Já logado — pula o formulário e vai direto para espera
+    // Pula formulário, mostra standby
     document.getElementById('register-screen').style.display='none';
     showWaiting('normal');
     listenGame();
   } else {
-    // Sem sessão — redireciona para login no index.html
+    // Sem sessão — volta para login
     window.location.href = 'index.html';
   }
-})();
+});
 
 // ─── REGISTRO ─────────────────────────────────────────────
 window.selectTeam = function(team){
