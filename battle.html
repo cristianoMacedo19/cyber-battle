@@ -721,16 +721,7 @@ function listenGame(){
     document.getElementById('connected-count').textContent=snap.size;
   });
 
-  // Escutar Fase 1 — se professor iniciar, redireciona para index.html
-  onSnapshot(doc(db,'game','state'),snap=>{
-    if(!snap.exists())return;
-    const d=snap.data();
-    if(d.status==='running') window.location.href='index.html';
-    if(d.status==='waiting'){
-      // Professor clicou Reiniciar Jogo
-      window.location.href='index.html';
-    }
-  });
+  // Redirecionamento para index.html controlado pelo painel via botões
 
   // Escutar sinal de encerramento de sessão do professor
   onSnapshot(doc(db,'control','session'),snap=>{
