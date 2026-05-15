@@ -670,8 +670,13 @@ window.finishLab = function() {
 };
 
 window.goBackToGame = function() {
-  // Volta para index.html — sessão já está no sessionStorage
-  window.location.href = 'index.html';
+  // Verifica de qual fase o aluno veio para voltar corretamente
+  const from = sessionStorage.getItem('cb_lab_from');
+  if (from === 'battle') {
+    window.location.href = 'battle.html';
+  } else {
+    window.location.href = 'index.html';
+  }
 };
 </script>
 </body>
