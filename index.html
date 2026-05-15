@@ -268,21 +268,21 @@ let timerInterval=null, timeLeft=120, questionStartTime=0;
 let gameStarted=false, labUrl='';
 
 // ── RESTAURAR SESSÃO (volta do laboratório) ─────
-window.addEventListener('load', function restoreSession(){
-  const name  = sessionStorage.getItem('cb_name');
-  const team  = sessionStorage.getItem('cb_team');
-  const id    = sessionStorage.getItem('cb_id');
-  const token = sessionStorage.getItem('cb_token');
-  if(name && team && id && token){
-    playerName  = name;
-    playerTeam  = team;
-    playerId    = id;
-    sessionToken= token;
-    // Já está logado — mostra tela de espera diretamente
+const _cbName  = sessionStorage.getItem('cb_name');
+const _cbTeam  = sessionStorage.getItem('cb_team');
+const _cbId    = sessionStorage.getItem('cb_id');
+const _cbToken = sessionStorage.getItem('cb_token');
+
+if(_cbName && _cbTeam && _cbId && _cbToken){
+  playerName   = _cbName;
+  playerTeam   = _cbTeam;
+  playerId     = _cbId;
+  sessionToken = _cbToken;
+  document.addEventListener('DOMContentLoaded', ()=>{
     showWait('normal');
     listenGame();
-  }
-});
+  });
+}
 
 // ── SELEÇÃO DE EQUIPE ───────────────────────────
 window.selectTeam = function(team) {
