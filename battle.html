@@ -653,13 +653,15 @@ function showWaiting(mode){
   document.getElementById('waiting-screen').style.display='block';
   document.getElementById('waiting-name').textContent='// '+playerName.toUpperCase()+' //';
   document.getElementById('my-badge-wait').innerHTML=`<span class="my-team-badge ${playerTeam}">${playerTeam==='red'?'🔴 EQUIPE VERMELHA — ATAQUE':'🔵 EQUIPE AZUL — DEFESA'}</span>`;
-  // Mostrar placar da Fase 1 vindo do sessionStorage
-  const f1r = sessionStorage.getItem('cb_f1_red')||'0';
-  const f1b = sessionStorage.getItem('cb_f1_blue')||'0';
-  const elR = document.getElementById('sb-f1-red');
-  const elB = document.getElementById('sb-f1-blue');
-  if(elR) elR.textContent = f1r;
-  if(elB) elB.textContent = f1b;
+  // Buscar placar da Fase 1 diretamente do Firestore (independe de sessionStorage)
+  getDoc(doc(db,'game','state')).then(snap=>{
+    const f1r = snap.exists() ? (snap.data().scoreRed||0) : 0;
+    const f1b = snap.exists() ? (snap.data().scoreBlue||0) : 0;
+    const elR = document.getElementById('sb-f1-red');
+    const elB = document.getElementById('sb-f1-blue');
+    if(elR) elR.textContent = f1r;
+    if(elB) elB.textContent = f1b;
+  }).catch(()=>{});
 }
 
 // ─── ESCUTAR JOGO ─────────────────────────────────────────
@@ -923,21 +925,26 @@ function showEnd(data){
   document.getElementById('result-overlay').style.display='none';
   document.getElementById('end-screen').style.display='block';
   const f2r=data.scoreRed||0, f2b=data.scoreBlue||0;
-  const f1r=parseInt(sessionStorage.getItem('cb_f1_red')||'0');
-  const f1b=parseInt(sessionStorage.getItem('cb_f1_blue')||'0');
-  const totalR=f1r+f2r, totalB=f1b+f2b;
-  // Detalhamento
-  const f1rl=document.getElementById('f1r-lbl');if(f1rl)f1rl.textContent=f1r;
-  const f1bl=document.getElementById('f1b-lbl');if(f1bl)f1bl.textContent=f1b;
-  const f2rl=document.getElementById('f2r-lbl');if(f2rl)f2rl.textContent=f2r;
-  const f2bl=document.getElementById('f2b-lbl');if(f2bl)f2bl.textContent=f2b;
-  // Totais
-  document.getElementById('final-red').textContent=totalR;
-  document.getElementById('final-blue').textContent=totalB;
-  const fw=document.getElementById('final-winner');
-  if(totalR>totalB){ fw.textContent='🏆 VITÓRIA DA EQUIPE VERMELHA!'; fw.className='final-winner red'; }
-  else if(totalB>totalR){ fw.textContent='🏆 VITÓRIA DA EQUIPE AZUL!'; fw.className='final-winner blue'; }
-  else { fw.textContent='⚡ EMPATE GERAL!'; fw.className='final-winner draw'; }
+  // Busca placar F1 do Firestore para garantir valor correto mesmo sem sessionStorage
+  getDoc(doc(db,'game','state')).then(snap=>{
+    const f1r=snap.exists()?(snap.data().scoreRed||0):0;
+    const f1b=snap.exists()?(snap.data().scoreBlue||0):0;
+    const totalR=f1r+f2r, totalB=f1b+f2b;
+    const f1rl=document.getElementById('f1r-lbl');if(f1rl)f1rl.textContent=f1r;
+    const f1bl=document.getElementById('f1b-lbl');if(f1bl)f1bl.textContent=f1b;
+    const f2rl=document.getElementById('f2r-lbl');if(f2rl)f2rl.textContent=f2r;
+    const f2bl=document.getElementById('f2b-lbl');if(f2bl)f2bl.textContent=f2b;
+    document.getElementById('final-red').textContent=totalR;
+    document.getElementById('final-blue').textContent=totalB;
+    const fw=document.getElementById('final-winner');
+    if(totalR>totalB){ fw.textContent='🏆 VITÓRIA DA EQUIPE VERMELHA!'; fw.className='final-winner red'; }
+    else if(totalB>totalR){ fw.textContent='🏆 VITÓRIA DA EQUIPE AZUL!'; fw.className='final-winner blue'; }
+    else { fw.textContent='⚡ EMPATE GERAL!'; fw.className='final-winner draw'; }
+  }).catch(()=>{
+    // fallback: sem F1
+    document.getElementById('final-red').textContent=f2r;
+    document.getElementById('final-blue').textContent=f2b;
+  });
   // Dots das rodadas
   const fd=document.getElementById('final-dots');
   fd.innerHTML='';
