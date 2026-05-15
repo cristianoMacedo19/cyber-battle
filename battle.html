@@ -308,6 +308,10 @@
         </div>
       </div>
       <div class="final-winner" id="final-winner">—</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;">
+        <button onclick="goToIndex()" style="padding:12px 24px;border-radius:5px;font-family:var(--orb);font-size:0.75rem;letter-spacing:2px;cursor:pointer;background:rgba(0,170,255,0.08);border:1px solid var(--blue);color:var(--blue);">↩ VOLTAR AO INÍCIO</button>
+        <button onclick="endSession()" style="padding:12px 24px;border-radius:5px;font-family:var(--orb);font-size:0.75rem;letter-spacing:2px;cursor:pointer;background:rgba(255,34,68,0.08);border:1px solid var(--red);color:var(--red);">✕ ENCERRAR SESSÃO</button>
+      </div>
     </div>
   </div>
 
@@ -716,6 +720,28 @@ function listenGame(){
   onSnapshot(collection(db,'players2'),snap=>{
     document.getElementById('connected-count').textContent=snap.size;
   });
+
+  // Escutar Fase 1 — se professor iniciar, redireciona para index.html
+  onSnapshot(doc(db,'game','state'),snap=>{
+    if(!snap.exists())return;
+    const d=snap.data();
+    if(d.status==='running') window.location.href='index.html';
+    if(d.status==='waiting'){
+      // Professor clicou Reiniciar Jogo
+      window.location.href='index.html';
+    }
+  });
+
+  // Escutar sinal de encerramento de sessão do professor
+  onSnapshot(doc(db,'control','session'),snap=>{
+    if(!snap.exists())return;
+    const d=snap.data();
+    if(d.action==='logout'){
+      sessionStorage.clear();
+      window.location.href='index.html';
+    }
+  });
+
   onSnapshot(doc(db,'game2','state'),snap=>{
     if(!snap.exists())return;
     const d=snap.data();
@@ -741,6 +767,17 @@ function listenGame(){
 }
 
 window.openLab2=function(){ if(labUrl2){ sessionStorage.setItem('cb_lab_from','battle'); window.location.href=labUrl2; } };
+
+window.goToIndex=function(){
+  // Volta para index.html mantendo a sessão (não desloga)
+  window.location.href='index.html';
+};
+
+window.endSession=function(){
+  // Desloga o aluno limpando a sessão
+  sessionStorage.clear();
+  window.location.href='index.html';
+};
 
 function showBattle(){
   const ws=document.getElementById('waiting-screen');
