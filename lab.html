@@ -654,18 +654,24 @@ a.code.forEach((_,i)=>{const el=document.getElementById('cl'+i);if(el)el.classNa
 
 window.openAlgo=openAlgo;window.closeAlgo=closeAlgo;window.goStep=goStep;window.doReset=doReset;
 
+// ── SESSÃO ────────────────────────────────────────────────
+// Se aluno não está logado, volta para login
+(function checkSession(){
+  const name = sessionStorage.getItem('cb_name');
+  if (!name) window.location.href = 'index.html';
+})();
+
 // ── CONCLUIR LABORATÓRIO ──────────────────────────────────
 window.finishLab = function() {
   document.getElementById('screen-menu').style.display='none';
   document.getElementById('screen-algo').style.display='none';
   const finish = document.getElementById('screen-finish');
-  finish.style.display='flex';
+  if(finish) finish.style.display='flex';
 };
 
 window.goBackToGame = function() {
-  // Volta para index.html (Fase 1) — mesmo diretório
-  const base = window.location.href.replace(/\/[^/]*$/, '/');
-  window.location.href = base + 'index.html';
+  // Volta para index.html — sessão já está no sessionStorage
+  window.location.href = 'index.html';
 };
 </script>
 </body>
