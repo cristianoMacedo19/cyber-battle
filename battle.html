@@ -595,6 +595,7 @@ let playerName='', playerTeam='', playerId='', sessionToken='';
 let currentRound=0, myVote=null, voted=false;
 let timerInterval=null, timeLeft=90;
 let roundResults=[];
+let labUrl2='';
 
 
 
@@ -687,7 +688,6 @@ function showWaiting(mode){
 }
 
 // ─── ESCUTAR JOGO ─────────────────────────────────────────
-let labUrl2='', sessionToken='';
 function listenGame(){
   // Escutar status do próprio jogador (reautorização)
   onSnapshot(doc(db,'players2',playerId),snap=>{
