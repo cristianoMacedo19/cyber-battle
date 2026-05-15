@@ -69,7 +69,7 @@
   .status-box.waiting{border-color:#2a4a2a;background:rgba(0,255,136,0.05);color:var(--green);}
 
   /* WAITING */
-  #waiting-screen{display:block;text-align:center;padding:40px 0;}
+  #waiting-screen{display:none;text-align:center;padding:40px 0;}
   .pulse-icon{font-size:3rem;animation:pulse 1.5s infinite;display:block;margin-bottom:16px;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
   .waiting-title{font-family:var(--orb);font-size:1rem;letter-spacing:3px;color:var(--blue);margin-bottom:8px;}
@@ -185,7 +185,29 @@
   </div>
 
   <!-- REGISTRO -->
-  
+  <div id="screen-login-b2" style="display:none;">
+    <div class="panel blue-accent">
+      <div class="panel-title">> identificação do agente — fase 2</div>
+      <label>CÓDIGO DA TURMA</label>
+      <input type="password" id="b2-inp-code" placeholder="Digite o código fornecido pelo professor">
+      <label>SEU NOME COMPLETO</label>
+      <input type="text" id="b2-inp-name" placeholder="Digite seu nome completo" maxlength="60">
+      <div style="margin-bottom:5px;"><label>SUA EQUIPE</label></div>
+      <div class="team-select">
+        <button class="team-btn" id="b2-btn-red" onclick="b2SelectTeam('red')">
+          <span class="team-icon">🔴</span>VERMELHA<br>
+          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">ATAQUE</small>
+        </button>
+        <button class="team-btn" id="b2-btn-blue" onclick="b2SelectTeam('blue')">
+          <span class="team-icon">🔵</span>AZUL<br>
+          <small style="font-size:0.58rem;letter-spacing:1px;opacity:0.7;">DEFESA</small>
+        </button>
+      </div>
+      <div class="msg error" id="b2-msg-error" style="display:none;"></div>
+      <div class="msg info"  id="b2-msg-info"  style="display:none;"></div>
+      <button class="btn-primary" onclick="b2DoRegister()">[ ENTRAR NA BATALHA ]</button>
+    </div>
+  </div>
 
   <!-- STANDBY FASE 2 -->
   <div id="waiting-screen">
@@ -718,9 +740,8 @@ function listenGame(){
   });
 }
 
-window.openLab2=function(){ if(labUrl2) window.location.href=labUrl2; };
+window.openLab2=function(){ if(labUrl2){ sessionStorage.setItem('cb_lab_from','battle'); window.location.href=labUrl2; } };
 
-function showBattle(){
 function showBattle(){
   const ws=document.getElementById('waiting-screen');
   const bs=document.getElementById('battle-screen');
@@ -988,9 +1009,67 @@ if(_n && _t && _i && _k){
   });
 
 } else {
-  // Sem sessão — volta para login
-  window.location.href = 'index.html';
+  // Sem sessão — mostra formulário de registro direto no battle.html
+  document.getElementById('screen-login-b2').style.display = 'block';
+  document.getElementById('waiting-screen').style.display  = 'none';
 }
+
+// ── FUNÇÕES DE REGISTRO DIRETO NA FASE 2 ──────────────────
+window.b2SelectTeam = function(team) {
+  playerTeam = team;
+  document.getElementById('b2-btn-red').className  = 'team-btn' + (team==='red'  ? ' selected-red'  : '');
+  document.getElementById('b2-btn-blue').className = 'team-btn' + (team==='blue' ? ' selected-blue' : '');
+};
+
+window.b2DoRegister = async function() {
+  const code    = document.getElementById('b2-inp-code').value.trim();
+  const nameRaw = document.getElementById('b2-inp-name').value.trim();
+  const errEl   = document.getElementById('b2-msg-error');
+  const infoEl  = document.getElementById('b2-msg-info');
+  errEl.style.display='none'; infoEl.style.display='none';
+
+  if (!code || !nameRaw || !playerTeam) {
+    errEl.textContent='⚠ Preencha o código, seu nome e selecione uma equipe.';
+    errEl.style.display='block'; return;
+  }
+
+  const nameTrimmed = nameRaw.replace(/\s+/g,' ').trim();
+  const nameNorm    = nameTrimmed.toLowerCase().replace(/\s+/g,'_');
+
+  infoEl.textContent='Verificando código...'; infoEl.style.display='block';
+  try {
+    const cfgSnap = await getDoc(doc(db,'config','session'));
+    if (!cfgSnap.exists() || !cfgSnap.data().code) {
+      errEl.textContent='⚠ Sessão não configurada. Aguarde o professor.';
+      errEl.style.display='block'; infoEl.style.display='none'; return;
+    }
+    if (cfgSnap.data().code !== code) {
+      errEl.textContent='⚠ Código incorreto. Verifique com o professor.';
+      errEl.style.display='block'; infoEl.style.display='none'; return;
+    }
+
+    playerName   = nameTrimmed;
+    playerId     = nameNorm;
+    sessionToken = Date.now().toString();
+
+    await setDoc(doc(db,'players2', playerId), {
+      name: playerName, team: playerTeam, status: 'approved',
+      sessionToken, registeredAt: serverTimestamp()
+    });
+
+    sessionStorage.setItem('cb_name',  playerName);
+    sessionStorage.setItem('cb_team',  playerTeam);
+    sessionStorage.setItem('cb_id',    playerId);
+    sessionStorage.setItem('cb_token', sessionToken);
+
+    document.getElementById('screen-login-b2').style.display = 'none';
+    showWaiting('normal');
+    listenGame();
+  } catch(e) {
+    errEl.textContent='⚠ Erro: ' + e.message;
+    errEl.style.display='block'; infoEl.style.display='none';
+  }
+};
 </script>
 </body>
 </html>
