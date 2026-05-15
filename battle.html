@@ -695,12 +695,9 @@ function listenGame(){
   onSnapshot(doc(db,'game2','state'),snap=>{
     if(!snap.exists())return;
     const d=snap.data();
-    // Sempre mostra battle quando running — independente da tela atual
     if(d.status==='running'){
-      const bs=document.getElementById('battle-screen');
-      if(bs&&bs.style.display==='none') showBattle();
-    }
-    if(d.status==='running'||d.status==='voting'){
+      // Força exibição da batalha sempre que running
+      showBattle();
       loadRound(d.currentRound, d.roundStartedAt);
       document.getElementById('score-red').textContent=d.scoreRed||0;
       document.getElementById('score-blue').textContent=d.scoreBlue||0;
@@ -722,10 +719,13 @@ function listenGame(){
 window.openLab2=function(){ if(labUrl2) window.location.href=labUrl2; };
 
 function showBattle(){
-  document.getElementById('waiting-screen').style.display='none';
-  document.getElementById('battle-screen').style.display='block';
+function showBattle(){
+  const ws=document.getElementById('waiting-screen');
+  const bs=document.getElementById('battle-screen');
+  if(ws) ws.style.display='none';
+  if(bs) bs.style.display='block';
   const b=document.getElementById('my-badge-battle');
-  b.innerHTML=`
+  if(b) b.innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;
       padding:8px 12px;background:#060c18;border:1px solid var(--border);border-radius:5px;">
       <span class="my-team-badge ${playerTeam}" style="margin:0;">${playerTeam==='red'?'🔴 ATAQUE':'🔵 DEFESA'}</span>
