@@ -430,20 +430,10 @@ function listenGame() {
     }
   });
 
-  // Escutar estado do jogo
-  // Escutar Fase 2 — só redireciona após Fase 1 terminar
-  let f1Ended = false; // flag: fase 1 encerrada nesta sessão
-
+  // Escutar estado do jogo — Fase 1
   onSnapshot(doc(db,'game','state'), snap => {
     if (!snap.exists()) return;
     const d = snap.data();
-    // Marca quando Fase 1 encerrar
-    if (d.status === 'ended') {
-      f1Ended = true;
-      // Salva placar F1
-      sessionStorage.setItem('cb_f1_red',  d.scoreRed||0);
-      sessionStorage.setItem('cb_f1_blue', d.scoreBlue||0);
-    }
     if (d.status === 'running' && d.currentQuestion !== undefined) {
       if (document.getElementById('screen-wait').style.display !== 'none') showQuiz();
       loadQuestion(d.currentQuestion, d.questionStartedAt);
@@ -457,11 +447,11 @@ function listenGame() {
     if (d.status === 'ended')  showEnd(d);
   });
 
+  // Escutar Fase 2 — redireciona independentemente da Fase 1
   onSnapshot(doc(db,'game2','state'), snap => {
     if (!snap.exists()) return;
     const d = snap.data();
-    // Só redireciona se Fase 1 já encerrou NESTA sessão
-    if (d.status === 'running' && f1Ended) {
+    if (d.status === 'running') {
       sessionStorage.setItem('cb_name',    playerName);
       sessionStorage.setItem('cb_team',    playerTeam);
       sessionStorage.setItem('cb_id',      playerId);
