@@ -468,17 +468,15 @@ function listenGame() {
   onSnapshot(doc(db,'game2','state'), snap => {
     if (!snap.exists()) return;
     const d = snap.data();
-    if (d.status === 'running' || d.status === 'waiting') {
-      // Só redireciona se Fase 1 já terminou
-      const f1Screen = document.getElementById('end-screen');
-      if (f1Screen && f1Screen.style.display !== 'none' && d.status === 'running') {
-        // Garante que sessão está salva antes de redirecionar
-        sessionStorage.setItem('cb_name',  playerName);
-        sessionStorage.setItem('cb_team',  playerTeam);
-        sessionStorage.setItem('cb_id',    playerId);
-        sessionStorage.setItem('cb_token', sessionToken);
-        window.location.href = 'index2.html';
-      }
+    if (d.status === 'running') {
+      // Salva sessão e redireciona para Fase 2
+      sessionStorage.setItem('cb_name',    playerName);
+      sessionStorage.setItem('cb_team',    playerTeam);
+      sessionStorage.setItem('cb_id',      playerId);
+      sessionStorage.setItem('cb_token',   sessionToken);
+      sessionStorage.setItem('cb_f1_red',  d.scoreRed||sessionStorage.getItem('cb_f1_red')||0);
+      sessionStorage.setItem('cb_f1_blue', d.scoreBlue||sessionStorage.getItem('cb_f1_blue')||0);
+      window.location.href = 'index2.html';
     }
   });
 }

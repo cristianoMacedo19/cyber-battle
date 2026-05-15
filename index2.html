@@ -585,12 +585,12 @@ window.addEventListener('load', function restoreSession(){
     playerTeam  = team;
     playerId    = id;
     sessionToken= token;
-    // Pula formulário, mostra standby
+    // Sessão válida — pula formulário, mostra standby
     document.getElementById('register-screen').style.display='none';
     showWaiting('normal');
     listenGame();
   } else {
-    // Sem sessão — volta para login
+    // Sem sessão — redireciona para login
     window.location.href = 'index.html';
   }
 });
@@ -721,8 +721,10 @@ function listenGame(){
   onSnapshot(doc(db,'game2','state'),snap=>{
     if(!snap.exists())return;
     const d=snap.data();
-    if(d.status==='running'&&document.getElementById('waiting-screen').style.display!=='none'){
-      showBattle();
+    // Sempre mostra battle quando running — independente da tela atual
+    if(d.status==='running'){
+      const bs=document.getElementById('battle-screen');
+      if(bs&&bs.style.display==='none') showBattle();
     }
     if(d.status==='running'||d.status==='voting'){
       loadRound(d.currentRound, d.roundStartedAt);
