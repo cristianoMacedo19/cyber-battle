@@ -185,52 +185,32 @@
   </div>
 
   <!-- REGISTRO -->
-  <div id="register-screen">
-    <div class="panel blue-accent">
-      <div class="panel-title">> identificação do agente</div>
-      <label>CÓDIGO DA TURMA</label>
-      <input type="password" id="inp-code2" placeholder="Digite o código fornecido pelo professor" style="width:100%;background:#060c18;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:1rem;padding:12px 16px;border-radius:4px;outline:none;margin-bottom:14px;">
-      <label>NOME DO AGENTE</label>
-      <input type="text" id="player-name" placeholder="Digite seu nome completo" maxlength="60">
-      <div style="margin-top:20px;">
-        <label>SELECIONE SUA EQUIPE</label>
-        <div class="team-select">
-          <button class="team-btn" id="btn-red" onclick="selectTeam('red')">
-            <span class="team-icon">🔴</span>VERMELHA<br>
-            <small style="font-size:0.6rem;letter-spacing:1px;color:#aa4455;">ATAQUE</small>
-          </button>
-          <button class="team-btn" id="btn-blue" onclick="selectTeam('blue')">
-            <span class="team-icon">🔵</span>AZUL<br>
-            <small style="font-size:0.6rem;letter-spacing:1px;color:#4488aa;">DEFESA</small>
-          </button>
-        </div>
-      </div>
-      <div class="status-box error" id="reg-error">⚠ Preencha seu nome e selecione uma equipe.</div>
-      <div class="status-box info" id="reg-info"></div>
-      <button class="btn-primary" onclick="registerPlayer()">[ ENTRAR NO CAMPO DE BATALHA ]</button>
-    </div>
-  </div>
+  <div id="register-screen" style="display:none;"><!-- formulário removido do fluxo --></div>
 
-  <!-- AGUARDANDO -->
+  <!-- STANDBY FASE 2 -->
   <div id="waiting-screen">
-    <div class="panel blue-accent">
-      <div id="my-badge-wait"></div>
-      <span class="pulse-icon">⚡</span>
-      <div class="waiting-title">AGUARDANDO INÍCIO</div>
-      <div class="waiting-sub" id="waiting-name"></div>
-      <div class="waiting-sub" style="margin-top:8px;">O professor irá iniciar a batalha em breve...</div>
+    <div class="panel blue-accent" style="text-align:center;padding:36px 28px;">
+      <div id="my-badge-wait" style="margin-bottom:16px;"></div>
+      <span class="pulse-icon">⚔️</span>
+      <div class="waiting-title">FASE 2 — CYBER BATALHA</div>
+      <div class="waiting-sub" id="waiting-name" style="margin-top:6px;"></div>
+      <div class="waiting-sub" style="margin-top:10px;color:#4a6a8a;">
+        Fase 1 concluída! Aguardando o professor iniciar a batalha...
+      </div>
       <div class="status-box waiting" style="display:block;margin-top:20px;text-align:center;">
         Agentes conectados: <span id="connected-count">0</span>
       </div>
-      <!-- Laboratório disponível -->
-      <div id="lab-box2" style="display:none;margin-top:14px;background:#060c18;border:1px solid rgba(0,255,136,0.3);border-radius:6px;padding:14px;">
-        <div style="font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--green);margin-bottom:10px;">🔬 LABORATÓRIO DISPONÍVEL</div>
-        <button onclick="openLab2()" style="width:100%;padding:11px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:var(--orb);font-size:0.72rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:all 0.2s;">[ ACESSAR LABORATÓRIO ]</button>
-      </div>
-      <!-- Reautorização -->
-      <div id="reauth-box2" style="display:none;margin-top:14px;background:#060c18;border:1px solid rgba(255,170,0,0.3);border-radius:6px;padding:14px;">
-        <div style="font-family:var(--orb);font-size:0.68rem;letter-spacing:2px;color:var(--amber);margin-bottom:6px;">⏳ AGUARDANDO REAUTORIZAÇÃO</div>
-        <div style="font-family:var(--mono);font-size:0.72rem;color:#4a6a8a;line-height:1.6;">Sua reconexão foi detectada. Aguarde o professor autorizar seu reacesso no painel.</div>
+      <!-- Placar F1 -->
+      <div style="display:flex;justify-content:center;gap:30px;margin-top:20px;padding:14px;background:#060c18;border:1px solid var(--border);border-radius:6px;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:0.6rem;color:#4a6a8a;letter-spacing:2px;">🔴 FASE 1</div>
+          <div style="font-family:var(--orb);font-size:1.4rem;font-weight:700;color:var(--red);" id="sb-f1-red">0</div>
+        </div>
+        <div style="font-family:var(--mono);color:#2a4a6a;align-self:center;">×</div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:0.6rem;color:#4a6a8a;letter-spacing:2px;">🔵 FASE 1</div>
+          <div style="font-family:var(--orb);font-size:1.4rem;font-weight:700;color:var(--blue);" id="sb-f1-blue">0</div>
+        </div>
       </div>
     </div>
   </div>
@@ -290,22 +270,22 @@
   <!-- FIM -->
   <div id="end-screen">
     <div class="panel green-accent">
-      <div class="end-title">🏁 FIM DA FASE 2</div>
+      <div class="end-title">🏆 PLACAR FINAL</div>
+      <div style="font-family:var(--mono);font-size:0.65rem;color:#4a6a8a;letter-spacing:2px;margin-bottom:16px;">FASE 1 + FASE 2</div>
       <div class="round-dots" id="final-dots" style="justify-content:center;margin-bottom:20px;"></div>
       <div class="final-scores">
         <div class="final-score-item">
           <div class="score-label">🔴 VERMELHA</div>
           <div class="final-score-val red" id="final-red">0</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:#4a6a8a;margin-top:4px;">F1:<span id="f1r-lbl">0</span> + F2:<span id="f2r-lbl">0</span></div>
         </div>
         <div class="final-score-item">
           <div class="score-label">🔵 AZUL</div>
           <div class="final-score-val blue" id="final-blue">0</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:#4a6a8a;margin-top:4px;">F1:<span id="f1b-lbl">0</span> + F2:<span id="f2b-lbl">0</span></div>
         </div>
       </div>
       <div class="final-winner" id="final-winner">—</div>
-      <div style="margin-top:16px;font-family:var(--mono);font-size:0.75rem;color:#4a6a8a;">
-        Aguarde o professor para o placar geral das duas fases!
-      </div>
     </div>
   </div>
 
@@ -609,8 +589,10 @@ let roundResults=[], labUrl2='';
     document.getElementById('register-screen').style.display='none';
     showWaiting('normal');
     listenGame();
+  } else {
+    // Sem sessão — redireciona para login no index.html
+    window.location.href = 'index.html';
   }
-  // Se não tem sessão, mostra tela de login normalmente
 })();
 
 // ─── REGISTRO ─────────────────────────────────────────────
@@ -697,11 +679,13 @@ function showWaiting(mode){
   document.getElementById('waiting-screen').style.display='block';
   document.getElementById('waiting-name').textContent='// '+playerName.toUpperCase()+' //';
   document.getElementById('my-badge-wait').innerHTML=`<span class="my-team-badge ${playerTeam}">${playerTeam==='red'?'🔴 EQUIPE VERMELHA — ATAQUE':'🔵 EQUIPE AZUL — DEFESA'}</span>`;
-  if(mode==='reauth'){
-    // show reauth message if element exists
-    const rb=document.getElementById('reauth-box2');
-    if(rb)rb.style.display='block';
-  }
+  // Mostrar placar da Fase 1 vindo do sessionStorage
+  const f1r = sessionStorage.getItem('cb_f1_red')||'0';
+  const f1b = sessionStorage.getItem('cb_f1_blue')||'0';
+  const elR = document.getElementById('sb-f1-red');
+  const elB = document.getElementById('sb-f1-blue');
+  if(elR) elR.textContent = f1r;
+  if(elB) elB.textContent = f1b;
 }
 
 // ─── ESCUTAR JOGO ─────────────────────────────────────────
@@ -962,15 +946,23 @@ function showEnd(data){
   document.getElementById('battle-screen').style.display='none';
   document.getElementById('result-overlay').style.display='none';
   document.getElementById('end-screen').style.display='block';
-  const sr=data.scoreRed||0, sb=data.scoreBlue||0;
-  document.getElementById('final-red').textContent=sr;
-  document.getElementById('final-blue').textContent=sb;
+  const f2r=data.scoreRed||0, f2b=data.scoreBlue||0;
+  const f1r=parseInt(sessionStorage.getItem('cb_f1_red')||'0');
+  const f1b=parseInt(sessionStorage.getItem('cb_f1_blue')||'0');
+  const totalR=f1r+f2r, totalB=f1b+f2b;
+  // Detalhamento
+  const f1rl=document.getElementById('f1r-lbl');if(f1rl)f1rl.textContent=f1r;
+  const f1bl=document.getElementById('f1b-lbl');if(f1bl)f1bl.textContent=f1b;
+  const f2rl=document.getElementById('f2r-lbl');if(f2rl)f2rl.textContent=f2r;
+  const f2bl=document.getElementById('f2b-lbl');if(f2bl)f2bl.textContent=f2b;
+  // Totais
+  document.getElementById('final-red').textContent=totalR;
+  document.getElementById('final-blue').textContent=totalB;
   const fw=document.getElementById('final-winner');
-  if(sr>sb){ fw.textContent='🏆 VITÓRIA DA EQUIPE VERMELHA!'; fw.className='final-winner red'; }
-  else if(sb>sr){ fw.textContent='🏆 VITÓRIA DA EQUIPE AZUL!'; fw.className='final-winner blue'; }
-  else { fw.textContent='⚡ EMPATE — BATALHA EQUILIBRADA!'; fw.className='final-winner draw'; }
-
-  // Dots finais
+  if(totalR>totalB){ fw.textContent='🏆 VITÓRIA DA EQUIPE VERMELHA!'; fw.className='final-winner red'; }
+  else if(totalB>totalR){ fw.textContent='🏆 VITÓRIA DA EQUIPE AZUL!'; fw.className='final-winner blue'; }
+  else { fw.textContent='⚡ EMPATE GERAL!'; fw.className='final-winner draw'; }
+  // Dots das rodadas
   const fd=document.getElementById('final-dots');
   fd.innerHTML='';
   (data.roundResults||[]).forEach(r=>{

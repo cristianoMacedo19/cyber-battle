@@ -614,6 +614,9 @@ function showEnd(data) {
   document.getElementById('end-screen').style.display='block';
   document.getElementById('end-sr').textContent = data.scoreRed||0;
   document.getElementById('end-sb').textContent = data.scoreBlue||0;
+  // Salvar placar F1 para exibir no standby da Fase 2
+  sessionStorage.setItem('cb_f1_red',  data.scoreRed||0);
+  sessionStorage.setItem('cb_f1_blue', data.scoreBlue||0);
 }
 </script>
 </body>
