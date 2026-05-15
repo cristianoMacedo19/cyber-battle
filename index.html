@@ -230,12 +230,12 @@ input::placeholder{color:#2a4a6a;}
     <input type="text" id="inp-name" placeholder="Digite seu nome completo" maxlength="60">
     <label>SUA EQUIPE</label>
     <div class="team-select">
-      <button class="team-btn" id="btn-red" onclick="selectTeam('red')"><span class="t-icon">🔴</span>VERMELHA<br><small style="font-size:0.54rem;opacity:0.7;">ATAQUE</small></button>
-      <button class="team-btn" id="btn-blue" onclick="selectTeam('blue')"><span class="t-icon">🔵</span>AZUL<br><small style="font-size:0.54rem;opacity:0.7;">DEFESA</small></button>
+      <button class="team-btn" id="btn-red"><span class="t-icon">🔴</span>VERMELHA<br><small style="font-size:0.54rem;opacity:0.7;">ATAQUE</small></button>
+      <button class="team-btn" id="btn-blue"><span class="t-icon">🔵</span>AZUL<br><small style="font-size:0.54rem;opacity:0.7;">DEFESA</small></button>
     </div>
     <div class="msg error" id="login-err"></div>
     <div class="msg info" id="login-info"></div>
-    <button class="btn btn-blue" onclick="doLogin()">[ ENTRAR NO CAMPO DE BATALHA ]</button>
+    <button class="btn btn-blue" >[ ENTRAR NO CAMPO DE BATALHA ]</button>
   </div>
 </div>
 
@@ -252,7 +252,7 @@ input::placeholder{color:#2a4a6a;}
       <div class="msg ok" style="display:block;margin-top:12px;">Agentes: <span id="wait-count">0</span></div>
       <div class="lab-box" id="lab-box">
         <div class="lab-box-title">🔬 LABORATÓRIO DISPONÍVEL</div>
-        <button class="btn btn-green" onclick="goToLab()">[ ACESSAR LABORATÓRIO ]</button>
+        <button class="btn btn-green" >[ ACESSAR LABORATÓRIO ]</button>
       </div>
       <div class="reauth-box" id="reauth-box">
         <div style="font-family:var(--orb);font-size:0.6rem;letter-spacing:2px;color:var(--amber);margin-bottom:6px;">⏳ AGUARDANDO REAUTORIZAÇÃO</div>
@@ -276,11 +276,11 @@ input::placeholder{color:#2a4a6a;}
       <div class="algo-card c-purple" onclick="openAlgo('mitm')"><div class="card-num">07/08</div><span class="card-icon">👤</span><div class="card-title">Man in the Middle</div><span class="card-tag tag-purple">INTERCEPTAÇÃO</span><div class="card-desc">ARP Poisoning para interceptar comunicações.</div><div style="font-size:0.56rem;color:#2a4a6a;">5 passos →</div></div>
       <div class="algo-card c-amber" onclick="openAlgo('ransom')"><div class="card-num">08/08</div><span class="card-icon">🔒</span><div class="card-title">Ransomware</div><span class="card-tag tag-amber">SEQUESTRO DE DADOS</span><div class="card-desc">Ciclo completo de infiltração e extorsão.</div><div style="font-size:0.56rem;color:#2a4a6a;">7 passos →</div></div>
     </div>
-    <button class="btn btn-green" onclick="finishLab()">[ ✓ CONCLUÍ O LABORATÓRIO — CONTINUAR ]</button>
+    <button class="btn btn-green" >[ ✓ CONCLUÍ O LABORATÓRIO — CONTINUAR ]</button>
   </div>
   <div id="lab-algo-view" style="display:none;">
     <div class="algo-topbar">
-      <button class="btn-back-lab" onclick="closeAlgo()">← VOLTAR</button>
+      <button class="btn-back-lab" >← VOLTAR</button>
       <div style="font-family:var(--orb);font-size:0.75rem;color:#fff;" id="algo-title">—</div>
       <span style="font-family:var(--mono);font-size:0.54rem;color:#2a4a6a;margin-left:auto;" id="algo-steps-lbl">0/0</span>
     </div>
@@ -289,9 +289,9 @@ input::placeholder{color:#2a4a6a;}
         <div class="code-head"><div class="cdot" style="background:#ff5f56"></div><div class="cdot" style="background:#ffbd2e"></div><div class="cdot" style="background:#27c93f"></div><span class="cfname" id="algo-fname">arquivo.py</span></div>
         <div class="code-scroll" id="algo-code"></div>
         <div class="step-bar">
-          <button class="sbtn sbtn-p" id="algo-prev" onclick="algoStep(-1)">◀</button>
-          <button class="sbtn sbtn-n" id="algo-next" onclick="algoStep(1)">▶</button>
-          <button class="sbtn sbtn-r" onclick="algoReset()">↺</button>
+          <button class="sbtn sbtn-p" id="algo-prev" >◀</button>
+          <button class="sbtn sbtn-n" id="algo-next" >▶</button>
+          <button class="sbtn sbtn-r" >↺</button>
           <span class="step-num" id="algo-snum">0/0</span>
         </div>
       </div>
@@ -323,9 +323,9 @@ input::placeholder{color:#2a4a6a;}
     <div class="q-counter" id="q-counter">QUESTÃO 1 DE 25</div>
     <div class="q-text" id="q-text">Carregando...</div>
     <div class="options" id="q-options"></div>
-    <button class="btn-hint" id="btn-hint" onclick="toggleHint()">[ VER DICA ]</button>
+    <button class="btn-hint" id="btn-hint" >[ VER DICA ]</button>
     <div class="hint-box" id="hint-box"></div>
-    <button class="btn btn-green" id="btn-send" onclick="submitAnswer()" disabled style="margin-top:11px;">[ ENVIAR RESPOSTA ]</button>
+    <button class="btn btn-green" id="btn-send" disabled style="margin-top:11px;">[ ENVIAR RESPOSTA ]</button>
   </div>
 </div>
 
@@ -375,7 +375,7 @@ input::placeholder{color:#2a4a6a;}
     <div id="b-choice-section">
       <div class="panel-title" id="b-choice-title">> escolha sua ação</div>
       <div class="choice-grid" id="b-choice-grid"></div>
-      <button class="btn btn-green" id="b-btn-send" onclick="submitVote()" disabled>[ CONFIRMAR VOTO ]</button>
+      <button class="btn btn-green" id="b-btn-send" disabled>[ CONFIRMAR VOTO ]</button>
     </div>
     <div id="b-voted-section" style="display:none;">
       <div class="voted-msg">✓ VOTO REGISTRADO<br><span style="color:#4a6a8a;font-size:0.7rem;">Aguardando os demais agentes...</span></div>
@@ -474,7 +474,67 @@ function showPage(id){
   window.scrollTo(0,0);
 }
 
-window.selectTeam=function(t){
+// ── BIND TODOS OS BOTÕES ─────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  // Equipe
+  const br=document.getElementById('btn-red');
+  const bb=document.getElementById('btn-blue');
+  if(br)br.addEventListener('click',()=>selectTeam('red'));
+  if(bb)bb.addEventListener('click',()=>selectTeam('blue'));
+
+  // Login
+  const btnLogin=document.querySelector('#p-login .btn-blue');
+  if(btnLogin)btnLogin.addEventListener('click',doLogin);
+
+  // Lab — botão acessar
+  const btnGoLab=document.querySelector('#lab-box .btn-green');
+  if(btnGoLab)btnGoLab.addEventListener('click',goToLab);
+
+  // Lab — concluir
+  const btnFinishLab=document.querySelector('#lab-menu .btn-green');
+  if(btnFinishLab)btnFinishLab.addEventListener('click',finishLab);
+
+  // Lab — cards de algoritmos
+  const algos=[
+    {sel:'.c-red:nth-of-type(1)',id:'brute'},
+    {sel:'.c-amber',id:'sqli'},
+    {sel:'.c-purple:nth-of-type(1)',id:'xss'},
+    {sel:'.c-blue',id:'phish'},
+    {sel:'.c-red:nth-of-type(2)',id:'buffer'},
+    {sel:'.c-red:nth-of-type(3)',id:'ddos'},
+    {sel:'.c-purple:nth-of-type(2)',id:'mitm'},
+    {sel:'.c-amber:nth-of-type(2)',id:'ransom'},
+  ];
+  document.querySelectorAll('.algo-card').forEach(card=>{
+    const oc=card.getAttribute('onclick');
+    if(oc){
+      const m=oc.match(/openAlgo\('(\w+)'\)/);
+      if(m){const id=m[1];card.addEventListener('click',()=>openAlgo(id));}
+    }
+  });
+
+  // Lab algo controles
+  const bprev=document.getElementById('algo-prev');
+  const bnext=document.getElementById('algo-next');
+  if(bprev)bprev.addEventListener('click',()=>algoStep(-1));
+  if(bnext)bnext.addEventListener('click',()=>algoStep(1));
+  const breset=document.querySelector('.sbtn-r');
+  if(breset)breset.addEventListener('click',algoReset);
+  const bback=document.querySelector('.btn-back-lab');
+  if(bback)bback.addEventListener('click',closeAlgo);
+
+  // Quiz
+  const btnHint=document.getElementById('btn-hint');
+  if(btnHint)btnHint.addEventListener('click',toggleHint);
+  const btnSend=document.getElementById('btn-send');
+  if(btnSend)btnSend.addEventListener('click',submitAnswer);
+
+  // Battle
+  const btnVote=document.getElementById('b-btn-send');
+  if(btnVote)btnVote.addEventListener('click',submitVote);
+});
+
+function selectTeam(t){
   pTeam=t;
   document.getElementById('btn-red').className='team-btn'+(t==='red'?' sel-red':'');
   document.getElementById('btn-blue').className='team-btn'+(t==='blue'?' sel-blue':'');
