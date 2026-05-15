@@ -267,23 +267,6 @@ let currentQ=0, selectedOpt=null, answered=false;
 let timerInterval=null, timeLeft=120, questionStartTime=0;
 let gameStarted=false, labUrl='';
 
-// ── RESTAURAR SESSÃO (volta do laboratório) ─────
-const _cbName  = sessionStorage.getItem('cb_name');
-const _cbTeam  = sessionStorage.getItem('cb_team');
-const _cbId    = sessionStorage.getItem('cb_id');
-const _cbToken = sessionStorage.getItem('cb_token');
-
-if(_cbName && _cbTeam && _cbId && _cbToken){
-  playerName   = _cbName;
-  playerTeam   = _cbTeam;
-  playerId     = _cbId;
-  sessionToken = _cbToken;
-  document.addEventListener('DOMContentLoaded', ()=>{
-    showWait('normal');
-    listenGame();
-  });
-}
-
 // ── SELEÇÃO DE EQUIPE ───────────────────────────
 window.selectTeam = function(team) {
   playerTeam = team;
@@ -615,6 +598,23 @@ function showEnd(data) {
   // Salvar placar F1 para exibir no standby da Fase 2
   sessionStorage.setItem('cb_f1_red',  data.scoreRed||0);
   sessionStorage.setItem('cb_f1_blue', data.scoreBlue||0);
+}
+
+// ── RESTAURAR SESSÃO (volta do laboratório) ─────
+// No final do script — todas as funções já definidas
+{
+  const n = sessionStorage.getItem('cb_name');
+  const t = sessionStorage.getItem('cb_team');
+  const i = sessionStorage.getItem('cb_id');
+  const k = sessionStorage.getItem('cb_token');
+  if(n && t && i && k){
+    playerName   = n;
+    playerTeam   = t;
+    playerId     = i;
+    sessionToken = k;
+    showWait('normal');
+    listenGame();
+  }
 }
 </script>
 </body>

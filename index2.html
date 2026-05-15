@@ -574,32 +574,6 @@ let currentRound=0, myVote=null, voted=false;
 let timerInterval=null, timeLeft=90;
 let roundResults=[], labUrl2='';
 
-// ── RESTAURAR SESSÃO ───────────────────────────
-// Executa assim que o módulo carrega (scripts module já são diferidos)
-const _cbName  = sessionStorage.getItem('cb_name');
-const _cbTeam  = sessionStorage.getItem('cb_team');
-const _cbId    = sessionStorage.getItem('cb_id');
-const _cbToken = sessionStorage.getItem('cb_token');
-
-if(_cbName && _cbTeam && _cbId && _cbToken){
-  playerName   = _cbName;
-  playerTeam   = _cbTeam;
-  playerId     = _cbId;
-  sessionToken = _cbToken;
-  // Esconde formulário imediatamente
-  document.getElementById('register-screen').style.display='none';
-  // Mostra standby e inicia listeners após DOM pronto
-  document.addEventListener('DOMContentLoaded', ()=>{
-    showWaiting('normal');
-    listenGame();
-  });
-} else {
-  // Sem sessão — volta para login
-  document.addEventListener('DOMContentLoaded', ()=>{
-    window.location.href = 'index.html';
-  });
-}
-
 // ─── REGISTRO ─────────────────────────────────────────────
 window.selectTeam = function(team){
   playerTeam=team;
@@ -977,6 +951,25 @@ function showEnd(data){
     d.className='round-dot '+r;
     fd.appendChild(d);
   });
+}
+
+// ── RESTAURAR SESSÃO ─────────────────────────────────────
+// Colocado no final para garantir que todas as funções já estão definidas
+const _n = sessionStorage.getItem('cb_name');
+const _t = sessionStorage.getItem('cb_team');
+const _i = sessionStorage.getItem('cb_id');
+const _k = sessionStorage.getItem('cb_token');
+
+if(_n && _t && _i && _k){
+  playerName   = _n;
+  playerTeam   = _t;
+  playerId     = _i;
+  sessionToken = _k;
+  document.getElementById('register-screen').style.display='none';
+  showWaiting('normal');
+  listenGame();
+} else {
+  window.location.href = 'index.html';
 }
 </script>
 </body>
