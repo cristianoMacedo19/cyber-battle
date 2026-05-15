@@ -431,34 +431,41 @@ function listenGame() {
   });
 
   // Escutar estado do jogo
+  // Escutar Fase 2 — só redireciona após Fase 1 terminar
+  let f1Ended = false; // flag: fase 1 encerrada nesta sessão
+
   onSnapshot(doc(db,'game','state'), snap => {
     if (!snap.exists()) return;
-    const data = snap.data();
-    if (data.status === 'running' && data.currentQuestion !== undefined) {
-      if (document.getElementById('screen-wait').style.display !== 'none') showQuiz();
-      loadQuestion(data.currentQuestion, data.questionStartedAt);
-      document.getElementById('q-sr').textContent = data.scoreRed||0;
-      document.getElementById('q-sb').textContent = data.scoreBlue||0;
-      document.getElementById('q-prog').textContent = (data.currentQuestion+1)+'/25';
-      document.getElementById('q-pfill').style.width = ((data.currentQuestion+1)/25*100)+'%';
+    const d = snap.data();
+    // Marca quando Fase 1 encerrar
+    if (d.status === 'ended') {
+      f1Ended = true;
+      // Salva placar F1
+      sessionStorage.setItem('cb_f1_red',  d.scoreRed||0);
+      sessionStorage.setItem('cb_f1_blue', d.scoreBlue||0);
     }
-    if (data.status === 'result') showResult(data);
-    if (data.status === 'ended')  showEnd(data);
-    if (data.status === 'paused') clearInterval(timerInterval);
+    if (d.status === 'running' && d.currentQuestion !== undefined) {
+      if (document.getElementById('screen-wait').style.display !== 'none') showQuiz();
+      loadQuestion(d.currentQuestion, d.questionStartedAt);
+      document.getElementById('q-sr').textContent = d.scoreRed||0;
+      document.getElementById('q-sb').textContent = d.scoreBlue||0;
+      document.getElementById('q-prog').textContent = (d.currentQuestion+1)+'/25';
+      document.getElementById('q-pfill').style.width = ((d.currentQuestion+1)/25*100)+'%';
+    }
+    if (d.status === 'result') showResult(d);
+    if (d.status === 'paused') clearInterval(timerInterval);
+    if (d.status === 'ended')  showEnd(d);
   });
 
-  // Escutar Fase 2 — redirecionar para index2.html quando professor iniciar
   onSnapshot(doc(db,'game2','state'), snap => {
     if (!snap.exists()) return;
     const d = snap.data();
-    if (d.status === 'running') {
-      // Salva sessão e redireciona para Fase 2
+    // Só redireciona se Fase 1 já encerrou NESTA sessão
+    if (d.status === 'running' && f1Ended) {
       sessionStorage.setItem('cb_name',    playerName);
       sessionStorage.setItem('cb_team',    playerTeam);
       sessionStorage.setItem('cb_id',      playerId);
       sessionStorage.setItem('cb_token',   sessionToken);
-      sessionStorage.setItem('cb_f1_red',  d.scoreRed||sessionStorage.getItem('cb_f1_red')||0);
-      sessionStorage.setItem('cb_f1_blue', d.scoreBlue||sessionStorage.getItem('cb_f1_blue')||0);
       window.location.href = 'battle.html';
     }
   });
