@@ -948,8 +948,7 @@ function showEnd(data){
   });
 }
 
-// ── RESTAURAR SESSÃO ─────────────────────────────────────
-// Colocado no final para garantir que todas as funções já estão definidas
+
 // ── INÍCIO AUTOMÁTICO ──────────────────────────
 // Lê sessão salva pelo index.html e inicia batalha
 const _n = sessionStorage.getItem('cb_name');
@@ -962,10 +961,25 @@ if(_n && _t && _i && _k){
   playerTeam   = _t;
   playerId     = _i;
   sessionToken = _k;
-  // Atualiza badge e nome na tela de espera
-  showWaiting('normal');
-  // Inicia listeners Firebase
-  listenGame();
+
+  // Registrar/atualizar em players2 no Firebase
+  // Sem isso os votos e listeners não funcionam
+  setDoc(doc(db,'players2', playerId), {
+    name: playerName,
+    team: playerTeam,
+    status: 'approved',
+    sessionToken: sessionToken,
+    registeredAt: serverTimestamp()
+  }).then(()=>{
+    showWaiting('normal');
+    listenGame();
+  }).catch(err=>{
+    console.error('Erro ao registrar players2:', err);
+    // Tenta continuar mesmo com erro
+    showWaiting('normal');
+    listenGame();
+  });
+
 } else {
   // Sem sessão — volta para login
   window.location.href = 'index.html';
