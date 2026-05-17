@@ -263,6 +263,28 @@ body::before{content:'';position:fixed;inset:0;
 </style>
 </head>
 <body>
+
+<!-- ══ TELA DE LOGIN ══ -->
+<div id="login-screen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#060c18;">
+  <div style="background:#0a1628;border:1px solid #1a3a5a;border-radius:8px;padding:40px;width:100%;max-width:380px;">
+    <div style="font-family:'Orbitron',sans-serif;color:#00aaff;font-size:1rem;letter-spacing:3px;text-align:center;margin-bottom:6px;">CYBER BATTLE</div>
+    <div style="font-family:'Orbitron',sans-serif;color:#4a6a8a;font-size:0.65rem;letter-spacing:2px;text-align:center;margin-bottom:30px;">// ACESSO DO PROFESSOR //</div>
+    <label style="font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;color:#4a8aaa;display:block;margin-bottom:6px;">E-MAIL</label>
+    <input type="email" id="login-email" placeholder="seu@email.com"
+      style="width:100%;background:#060c18;border:1px solid #1a3a5a;color:#e0e8f0;padding:10px 14px;border-radius:4px;font-size:14px;margin-bottom:14px;box-sizing:border-box;">
+    <label style="font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:2px;color:#4a8aaa;display:block;margin-bottom:6px;">SENHA</label>
+    <input type="password" id="login-senha" placeholder="••••••••"
+      style="width:100%;background:#060c18;border:1px solid #1a3a5a;color:#e0e8f0;padding:10px 14px;border-radius:4px;font-size:14px;margin-bottom:20px;box-sizing:border-box;">
+    <div id="login-erro" style="display:none;color:#ff2244;font-size:12px;margin-bottom:14px;font-family:monospace;"></div>
+    <button onclick="doLogin()"
+      style="width:100%;padding:12px;background:rgba(0,170,255,0.1);border:1px solid #00aaff;color:#00aaff;font-family:'Orbitron',sans-serif;font-size:0.7rem;letter-spacing:2px;border-radius:4px;cursor:pointer;">
+      [ ENTRAR ]
+    </button>
+  </div>
+</div>
+
+<!-- ══ PAINEL PRINCIPAL ══ -->
+<div id="painel-main" style="display:none;">
 <div class="layout">
 
   <!-- ══ SIDEBAR ══ -->
@@ -288,6 +310,7 @@ body::before{content:'';position:fixed;inset:0;
     </div>
 
     <div class="status-pill pill-wait" id="sb-status">⬤ AGUARDANDO</div>
+    <button onclick="doLogout()" style="margin:8px 16px 0;width:calc(100% - 32px);padding:6px;background:rgba(255,34,68,0.08);border:1px solid #ff2244;color:#ff2244;font-family:'Orbitron',sans-serif;font-size:0.6rem;letter-spacing:1px;border-radius:4px;cursor:pointer;">SAIR</button>
 
     <div class="sidebar-scores">
       <div class="ssc-label">PLACAR ACUMULADO</div>
@@ -601,6 +624,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc,
          collection, getDocs, writeBatch, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAFEvYY-E0qJRVaAJZ30ODTZr1OW3R6aqw",
@@ -610,10 +635,44 @@ const firebaseConfig = {
   messagingSenderId: "330360546983",
   appId: "1:330360546983:web:9093c120bafdcc31bd9d82"
 };
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 // ════════════════════════════════════════
+
+// ── AUTENTICAÇÃO ─────────────────────────────────────────
+window.doLogin = async function(){
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const erro  = document.getElementById('login-erro');
+  erro.style.display='none';
+  try {
+    await signInWithEmailAndPassword(auth, email, senha);
+  } catch(e) {
+    erro.textContent = '⚠ Email ou senha incorretos.';
+    erro.style.display = 'block';
+  }
+};
+
+window.doLogout = async function(){
+  await signOut(auth);
+};
+
+// Controla exibição do painel baseado no estado de auth
+onAuthStateChanged(auth, user => {
+  if(user){
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('painel-main').style.display  = 'block';
+    initPainel();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('painel-main').style.display  = 'none';
+  }
+});
+
+function initPainel(){
+
 // DADOS DO JOGO
 // ════════════════════════════════════════
 const QUESTIONS = [
@@ -1485,6 +1544,9 @@ function addLog(phase,msg,cls=''){
   div.textContent=`[${t}] ${msg}`;
   el.insertBefore(div,el.firstChild);
 }
+
+} // fim initPainel
 </script>
+</div><!-- /painel-main -->
 </body>
 </html>
