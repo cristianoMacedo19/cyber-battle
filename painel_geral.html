@@ -650,7 +650,16 @@ window.doLogin = async function(){
   try {
     await signInWithEmailAndPassword(auth, email, senha);
   } catch(e) {
-    erro.textContent = '⚠ Email ou senha incorretos.';
+    console.error('ERRO LOGIN:', e.code, e.message);
+    if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found'){
+      erro.textContent = '⚠ Email ou senha incorretos.';
+    } else if(e.code === 'auth/api-key-not-valid') {
+      erro.textContent = '⚠ Erro de configuração: API Key inválida.';
+    } else if(e.code === 'auth/network-request-failed') {
+      erro.textContent = '⚠ Erro de rede. Verifique sua conexão.';
+    } else {
+      erro.textContent = '⚠ Erro: ' + e.code;
+    }
     erro.style.display = 'block';
   }
 };
